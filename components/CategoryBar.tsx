@@ -1,24 +1,27 @@
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { CategoryType } from '../types';
-import { Coffee, Milk, Zap, Loader, ChevronLeft, Percent, History } from 'lucide-react';
+import { Coffee, Milk, Zap, Loader, ChevronLeft, Percent, History, Droplets } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CategoryBarProps {
   selected: CategoryType;
   onSelect: (cat: CategoryType) => void;
+  categories?: { id: CategoryType; label: string; icon: string }[];
+  loading?: boolean;
 }
 
-const CATEGORIES = [
-  { id: CategoryType.PREVIOUS_ORDERS, label: 'سفارشات قبلی', icon: History },
-  { id: CategoryType.DISCOUNTED, label: 'تخفیف‌دارها', icon: Percent },
-  { id: CategoryType.CAPPUCCINO, label: 'کاپوچینو', icon: Coffee },
-  { id: CategoryType.LATTE, label: 'لته آرت', icon: Milk },
-  { id: CategoryType.ESPRESSO, label: 'اسپرسو', icon: Zap },
-  { id: CategoryType.MOCHA, label: 'موکا فندق', icon: Loader },
-];
+const ICON_MAP: Record<string, React.FC<any>> = {
+  'History': History,
+  'Percent': Percent,
+  'Coffee': Coffee,
+  'Droplets': Droplets,
+  'Zap': Zap,
+  'Loader': Loader,
+  'Milk': Milk,
+};
 
-const CategoryBar: React.FC<CategoryBarProps> = ({ selected, onSelect }) => {
+const CategoryBar: React.FC<CategoryBarProps> = ({ selected, onSelect, categories = [], loading = false }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showIndicator, setShowIndicator] = useState(true);
 
@@ -35,7 +38,7 @@ const CategoryBar: React.FC<CategoryBarProps> = ({ selected, onSelect }) => {
   return (
     <div className="relative group">
       <AnimatePresence>
-        {showIndicator && (
+        {showIndicator && !loading && categories.length > 0 && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -59,24 +62,33 @@ const CategoryBar: React.FC<CategoryBarProps> = ({ selected, onSelect }) => {
         onScroll={handleScroll}
         className="flex gap-3 overflow-x-auto no-scrollbar px-6 py-4 touch-pan-x"
       >
-        {CATEGORIES.map((cat) => {
-          const Icon = cat.icon;
-          const active = selected === cat.id;
-          return (
-            <button
-              key={cat.id}
-              onClick={() => onSelect(cat.id as CategoryType)}
-              className={`flex flex-col items-center gap-2 shrink-0 min-w-[95px] p-4 rounded-[28px] transition-all duration-300 ${
-                active ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105' : 'bg-white dark:bg-black/20 text-muted dark:text-white/40 border border-gray-100 dark:border-white/5 hover:border-primary/20'
-              }`}
-            >
-              <div className={`p-2 rounded-full transition-colors ${active ? 'bg-white/20' : 'bg-secondary/30 dark:bg-white/5 text-primary'}`}>
-                <Icon size={20} />
-              </div>
-              <span className="text-[10px] font-black whitespace-nowrap">{cat.label}</span>
-            </button>
-          );
-        })}
+        {loading ? (
+          Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="shrink-0 min-w-[95px] p-4 rounded-[28px] bg-white dark:bg-black/20 border border-gray-100 dark:border-white/5 animate-pulse flex flex-col items-center gap-2">
+              <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5"></div>
+              <div className="w-12 h-2 rounded-full bg-gray-100 dark:bg-white/5"></div>
+            </div>
+          ))
+        ) : (
+          categories.map((cat) => {
+            const Icon = ICON_MAP[cat.icon] || Coffee;
+            const active = selected === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => onSelect(cat.id)}
+                className={`flex flex-col items-center gap-2 shrink-0 min-w-[95px] p-4 rounded-[28px] transition-all duration-300 ${
+                  active ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105' : 'bg-white dark:bg-black/20 text-muted dark:text-white/40 border border-gray-100 dark:border-white/5 hover:border-primary/20'
+                }`}
+              >
+                <div className={`p-2 rounded-full transition-colors ${active ? 'bg-white/20' : 'bg-secondary/30 dark:bg-white/5 text-primary'}`}>
+                  <Icon size={20} />
+                </div>
+                <span className="text-[10px] font-black whitespace-nowrap">{cat.label}</span>
+              </button>
+            );
+          })
+        )}
       </div>
     </div>
   );

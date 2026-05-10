@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Bell, LayoutGrid, Hash, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,12 +8,19 @@ import CategoryBar from '../components/CategoryBar';
 import ProductCard from '../components/ProductCard';
 import { useProducts } from '../hooks/useProducts';
 import { CategoryType } from '../types';
+import { fetchCategories } from '../services/apiService';
 import PageTransition from '../components/PageTransition';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   // تنظیم دسته پیش فرض روی تخفیف دارها
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.DISCOUNTED);
+
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+  });
+
   const { products, loading } = useProducts(selectedCategory);
 
   const filteredProducts = products;
@@ -73,7 +81,7 @@ const Home: React.FC = () => {
             <h2 className="text-base font-black text-dark dark:text-white">دسته‌بندی‌ها</h2>
             <button onClick={() => navigate('/menu')} className="text-[11px] text-primary font-black bg-primary/10 px-3 py-1.5 rounded-full">نمایش همه</button>
           </div>
-          <CategoryBar selected={selectedCategory} onSelect={setSelectedCategory} />
+          <CategoryBar selected={selectedCategory} onSelect={setSelectedCategory} categories={categories} loading={categoriesLoading} />
         </div>
 
         <div className="px-6 mb-4">

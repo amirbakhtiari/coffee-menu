@@ -1,6 +1,6 @@
 
 import { PRODUCTS } from '../api/mockData';
-import { Product, CategoryType } from '../types';
+import { Product, CategoryType, UserProfile, Order } from '../types';
 
 /**
  * Simulates an API call to fetch products with pagination and optional category filtering.
@@ -196,4 +196,21 @@ export const updateUserProfile = async (data: Partial<UserProfile>): Promise<Use
   });
 };
 
-import { UserProfile, Order } from '../types';
+/**
+ * Simulates an API call to fetch categories
+ */
+export const fetchCategories = async (): Promise<{ id: CategoryType; label: string; icon: any }[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([
+        { id: CategoryType.PREVIOUS_ORDERS, label: 'سفارشات قبلی', icon: 'History' },
+        { id: CategoryType.DISCOUNTED, label: 'تخفیف‌دارها', icon: 'Percent' },
+        { id: CategoryType.CAPPUCCINO, label: 'کاپوچینو', icon: 'Coffee' },
+        { id: CategoryType.LATTE, label: 'لته آرت', icon: 'Droplets' },
+        { id: CategoryType.ESPRESSO, label: 'اسپرسو', icon: 'Zap' },
+        { id: CategoryType.MOCHA, label: 'موکا فندق', icon: 'Coffee' }
+      ]);
+    }, 600);
+  });
+};
+

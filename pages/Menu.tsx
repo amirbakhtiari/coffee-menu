@@ -1,11 +1,13 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, LayoutGrid, List } from 'lucide-react';
 import CategoryBar from '../components/CategoryBar';
 import ProductCard from '../components/ProductCard';
 import { useProducts } from '../hooks/useProducts';
 import { CategoryType } from '../types';
+import { fetchCategories } from '../services/apiService';
 import PageTransition from '../components/PageTransition';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -14,6 +16,12 @@ import AppBar from '../components/AppBar';
 const Menu: React.FC = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.DISCOUNTED);
+  
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+  });
+
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { products, loading, hasMore, fetchMoreProducts, isFetchingNextPage } = useProducts(selectedCategory);
 
@@ -49,7 +57,12 @@ const Menu: React.FC = () => {
         </div>
 
         <div className="sticky top-0 z-50 bg-lightGray/95 dark:bg-dark/95 backdrop-blur-md -mx-6 mb-4">
-          <CategoryBar selected={selectedCategory} onSelect={setSelectedCategory} />
+          <CategoryBar 
+            selected={selectedCategory} 
+            onSelect={setSelectedCategory} 
+            categories={categories}
+            loading={categoriesLoading}
+          />
         </div>
 
         <AnimatePresence mode="wait">
