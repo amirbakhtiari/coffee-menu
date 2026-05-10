@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronRight, Minus, Plus, Coffee, Droplets, Milk, Check, Tag } from 'lucide-react';
 import { fetchProductById } from '../services/apiService';
@@ -13,12 +14,16 @@ import AppBar from '../components/AppBar';
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
   const [actionSuccess, setActionSuccess] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [imageError, setImageError] = useState(false);
   
+  const { data: product, isLoading: loading } = useQuery({
+    queryKey: ['product', id],
+    queryFn: () => id ? fetchProductById(id) : Promise.resolve(null),
+    enabled: !!id,
+  });
+
   const [size, setSize] = useState<ProductOptions['size']>('M');
   const [sugar, setSugar] = useState<ProductOptions['sugar']>('50%');
   const [milk, setMilk] = useState<ProductOptions['milk']>('معمولی');
@@ -44,23 +49,10 @@ const ProductDetail: React.FC = () => {
   const existingItem = id ? getSpecificItem(id, currentOptions) : undefined;
 
   useEffect(() => {
-    const load = async () => {
-      if (id) {
-        try {
-          const data = await fetchProductById(id);
-          if (data) {
-            setProduct(data);
-            setImageError(!data.image);
-          }
-        } catch (error) {
-          console.error("Failed to fetch product:", error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-    load();
-  }, [id]);
+    if (product) {
+      setImageError(!product.image);
+    }
+  }, [product]);
 
   useEffect(() => {
     if (existingItem) {

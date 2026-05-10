@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Bell, LogOut, ChevronLeft, History, Crown, Settings2, Moon, Sun } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { User, Bell, LogOut, ChevronLeft, History, Crown, Settings2, Moon, Sun, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { requestNotificationPermission, scheduleTestNotification } from '../services/notificationService';
 import { useTheme } from '../ThemeContext';
 import PageTransition from '../components/PageTransition';
@@ -10,13 +10,20 @@ import AppBar from '../components/AppBar';
 import GuestProfile from './GuestProfile';
 import PhoneLogin from './PhoneLogin';
 import OTPVerification from './OTPVerification';
-import { UserProfile } from '../types';
+import { useQuery } from '@tanstack/react-query';
+import { fetchUserProfile } from '../services/apiService';
 
 type AuthStep = 'guest' | 'phone' | 'otp';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  
+  const { data: userProfile, isLoading: profileLoading } = useQuery({
+    queryKey: ['profile'],
+    queryFn: fetchUserProfile,
+  });
+
   const [isScheduling, setIsScheduling] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
@@ -27,14 +34,6 @@ const Profile: React.FC = () => {
   const [otp, setOtp] = useState(['', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(60);
-
-  const [userProfile, setUserProfile] = useState<UserProfile>({
-    fullName: 'امیر بختیاری',
-    mobile: '۰۹۱۲۳۴۵۶۷۸۹',
-    birthDate: '۱۳۷۰/۰۵/۱۵',
-    tier: 'bronze',
-    points: 450
-  });
 
   useEffect(() => {
     setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream);
@@ -86,6 +85,14 @@ const Profile: React.FC = () => {
       case 'otp': return <OTPVerification phone={phone} otp={otp} setOtp={setOtp} timer={timer} loading={loading} onBack={() => setAuthStep('phone')} onVerify={handleVerifyOtp} onResend={() => setTimer(60)} />;
     }
   }
+
+  if (profileLoading) return (
+    <div className="flex items-center justify-center min-h-screen bg-lightGray dark:bg-dark">
+      <Loader2 className="w-10 h-10 animate-spin text-primary" />
+    </div>
+  );
+
+  if (!userProfile) return null;
 
   return (
     <PageTransition>

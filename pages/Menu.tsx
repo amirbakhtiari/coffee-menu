@@ -14,25 +14,20 @@ import AppBar from '../components/AppBar';
 const Menu: React.FC = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.DISCOUNTED);
-  const [page, setPage] = useState(1);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const { products, loading, hasMore, fetchMoreProducts } = useProducts(selectedCategory, page);
+  const { products, loading, hasMore, fetchMoreProducts, isFetchingNextPage } = useProducts(selectedCategory);
 
   const observer = useRef<IntersectionObserver>();
   const lastProductElementRef = useCallback((node: HTMLDivElement) => {
-    if (loading) return;
+    if (loading || isFetchingNextPage) return;
     if (observer.current) observer.current.disconnect();
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore) {
-        setPage(prevPage => prevPage + 1);
+        fetchMoreProducts();
       }
     });
     if (node) observer.current.observe(node);
-  }, [loading, hasMore]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [selectedCategory]);
+  }, [loading, hasMore, fetchMoreProducts, isFetchingNextPage]);
 
   return (
     <PageTransition>

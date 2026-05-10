@@ -1,50 +1,21 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronRight, Package, Calendar, CreditCard, Coins, CheckCircle2, Clock, XCircle, MapPin } from 'lucide-react';
+import { ChevronRight, Package, Calendar, CreditCard, Coins, CheckCircle2, Clock, XCircle, MapPin, Loader2 } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 import AppBar from '../components/AppBar';
+import { useQuery } from '@tanstack/react-query';
+import { fetchOrderById } from '../services/apiService';
 
 const OrderDetail: React.FC = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  // Mock data for detail - usually would fetch by id
-  const order = {
-    id: id || 'ORD-1245',
-    date: '۱۴۰۲/۱۲/۲۰',
-    time: '۱۸:۳۰',
-    status: 'delivered',
-    paymentMethod: 'درگاه بانکی',
-    address: 'زعفرانیه، خیابان آصف، پلاک ۱۲',
-    points: 25,
-    items: [
-      { 
-        id: '1', 
-        name: 'لته آرت', 
-        subName: 'با شیر بادام',
-        price: 65000, 
-        quantity: 1, 
-        image: 'https://images.unsplash.com/photo-1541167760496-162955ed8a9f?w=400',
-        pointsEach: 15
-      },
-      { 
-        id: '2', 
-        name: 'کروسان شکلاتی', 
-        subName: 'تازه‌پز',
-        price: 60000, 
-        quantity: 1, 
-        image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400',
-        pointsEach: 10
-      }
-    ],
-    summary: {
-      subtotal: 125000,
-      delivery: 0,
-      discount: 15000,
-      total: 110000
-    }
-  };
+  const { data: order, isLoading: loading } = useQuery({
+    queryKey: ['order', id],
+    queryFn: () => id ? fetchOrderById(id) : Promise.resolve(undefined),
+    enabled: !!id,
+  });
 
   const getStatusInfo = (status: string) => {
     switch (status) {
@@ -53,6 +24,18 @@ const OrderDetail: React.FC = () => {
       default: return { label: 'لغو شده', color: 'text-red-500', bg: 'bg-red-50', icon: <XCircle size={18} /> };
     }
   };
+
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <Loader2 className="w-8 h-8 animate-spin text-primary" />
+    </div>
+  );
+
+  if (!order) return (
+    <div className="flex flex-col items-center justify-center min-h-screen text-muted font-black">
+      سفارش یافت نشد
+    </div>
+  );
 
   const statusInfo = getStatusInfo(order.status);
 

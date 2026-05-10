@@ -1,47 +1,36 @@
 
-import { useState, useEffect, useCallback } from 'react';
-import { Product, CategoryType } from '../types';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { CategoryType } from '../types';
 import { fetchProducts } from '../services/apiService';
 
-const PAGE_SIZE = 15; // تعداد محصولات در هر صفحه
+const PAGE_SIZE = 15;
 
-export const useProducts = (category?: CategoryType, page = 1) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
+export const useProducts = (category?: CategoryType) => {
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    error,
+  } = useInfiniteQuery({
+    queryKey: ['products', category],
+    queryFn: ({ pageParam = 1 }) => fetchProducts(category, pageParam, PAGE_SIZE),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === PAGE_SIZE ? allPages.length + 1 : undefined;
+    },
+  });
 
-  const loadData = useCallback(async (currentPage: number) => {
-    if (!hasMore && currentPage > 1) return; // جلوگیری از درخواست‌های اضافی پس از اتمام محصولات
+  const products = data?.pages.flat() || [];
 
-    try {
-      setLoading(true);
-      const data = await fetchProducts(category, currentPage, PAGE_SIZE);
-
-      if (currentPage === 1) {
-        setProducts(data);
-      } else {
-        setProducts(prevProducts => [...prevProducts, ...data]);
-      }
-      setHasMore(data.length === PAGE_SIZE);
-    } catch (err) {
-      setError('خطا در دریافت اطلاعات از سرور');
-    } finally {
-      setLoading(false);
-    }
-  }, [category, hasMore]);
-
-  useEffect(() => {
-    setProducts([]); // پاک کردن محصولات قبلی هنگام تغییر دسته‌بندی
-    setHasMore(true); // ریست کردن hasMore
-    loadData(1); // بارگذاری صفحه اول برای دسته‌بندی جدید
-  }, [category, loadData]);
-
-  useEffect(() => {
-    if (page > 1) {
-      loadData(page);
-    }
-  }, [page, loadData]);
-
-  return { products, loading, error, hasMore, fetchMoreProducts: () => loadData(page + 1) };
+  return { 
+    products, 
+    loading: isLoading, 
+    error: isError ? 'خطا در دریافت اطلاعات از سرور' : null, 
+    hasMore: hasNextPage, 
+    fetchMoreProducts: fetchNextPage,
+    isFetchingNextPage
+  };
 };

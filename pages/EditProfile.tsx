@@ -1,28 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, User, Calendar, Smartphone, Check, ShieldCheck } from 'lucide-react';
+import { ChevronRight, User, Calendar, Smartphone, Check, ShieldCheck, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageTransition from '../components/PageTransition';
 import AppBar from '../components/AppBar';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchUserProfile, updateUserProfile } from '../services/apiService';
 
 const EditProfile: React.FC = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    fullName: 'امیر بختیاری',
-    mobile: '۰۹۱۲۳۴۵۶۷۸۹',
-    birthDate: '۱۳۷۰/۰۵/۱۵'
+  const queryClient = useQueryClient();
+  
+  const { data: userProfile, isLoading } = useQuery({
+    queryKey: ['profile'],
+    queryFn: fetchUserProfile,
   });
 
-  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    mobile: '',
+    birthDate: ''
+  });
+
+  useEffect(() => {
+    if (userProfile) {
+      setFormData({
+        fullName: userProfile.fullName,
+        mobile: userProfile.mobile,
+        birthDate: userProfile.birthDate
+      });
+    }
+  }, [userProfile]);
+
+  const mutation = useMutation({
+    mutationFn: updateUserProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      navigate('/profile');
+    },
+  });
 
   const handleSave = () => {
-    setIsSaving(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSaving(false);
-      navigate('/profile');
-    }, 1500);
+    mutation.mutate(formData);
   };
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <Loader2 className="w-8 h-8 animate-spin text-primary" />
+    </div>
+  );
+
+  const isSaving = mutation.isPending;
 
   return (
     <PageTransition>

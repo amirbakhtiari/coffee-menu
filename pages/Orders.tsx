@@ -1,51 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, History, CheckCircle2, Clock, XCircle, CreditCard, Coins } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
 import AppBar from '../components/AppBar';
-import { Order } from '../types';
+import { fetchOrders } from '../services/apiService';
+import { useQuery } from '@tanstack/react-query';
 
 const Orders: React.FC = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [orders, setOrders] = useState<Order[]>([]);
-
-  useEffect(() => {
-    // Simulate loading data
-    const timer = setTimeout(() => {
-      setOrders([
-        {
-          id: 'ORD-1245',
-          date: '۱۴۰۲/۱۲/۲۰',
-          totalPrice: 125000,
-          discount: 15000,
-          status: 'delivered',
-          items: [
-            { id: '1', name: 'لته آرت', price: 65000, quantity: 1, image: '' },
-            { id: '2', name: 'کروسان شکلاتی', price: 60000, quantity: 1, image: '' }
-          ],
-          points: 25,
-          paymentMethod: 'درگاه بانکی'
-        },
-        {
-          id: 'ORD-1198',
-          date: '۱۴۰۲/۱۲/۱۵',
-          totalPrice: 89000,
-          status: 'delivered',
-          items: [
-            { id: '3', name: 'آیس کافی', price: 55000, quantity: 1, image: '' },
-            { id: '4', name: 'کوکی گردو', price: 34000, quantity: 1, image: '' }
-          ],
-          points: 15,
-          paymentMethod: 'نقدی'
-        }
-      ]);
-      setLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, []);
+  
+  const { data: orders = [], isLoading: loading } = useQuery({
+    queryKey: ['orders'],
+    queryFn: fetchOrders,
+  });
 
   return (
     <PageTransition>

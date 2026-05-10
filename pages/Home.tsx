@@ -13,14 +13,9 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   // تنظیم دسته پیش فرض روی تخفیف دارها
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.DISCOUNTED);
-  const { products, loading } = useProducts();
+  const { products, loading } = useProducts(selectedCategory);
 
-  const filteredProducts = products.filter(p => {
-    if (selectedCategory === CategoryType.DISCOUNTED) {
-      return (p.discountPercent || 0) > 0;
-    }
-    return p.category === selectedCategory;
-  });
+  const filteredProducts = products;
 
   return (
     <PageTransition>

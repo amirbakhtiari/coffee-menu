@@ -48,10 +48,18 @@ export interface UserProfile {
 export interface Order {
   id: string;
   date: string;
+  time?: string;
   items: CartItem[];
   totalPrice: number;
   discount?: number;
   status: 'delivered' | 'pending' | 'canceled';
   points: number;
   paymentMethod: 'نقدی' | 'درگاه بانکی' | 'عضویت';
+  address?: string;
+  summary?: {
+    subtotal: number;
+    delivery: number;
+    discount: number;
+    total: number;
+  };
 }
