@@ -20,7 +20,7 @@ const Profile: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   
   const { profile: userProfile, isLoading: profileLoading } = useUserProfileApi();
-  const { requestOtp, isRequestingOtp, verifyOtp, isVerifyingOtp } = useAuthApi();
+  const { requestOtp, isRequestingOtp, verifyOtp, isVerifyingOtp, verifyOtpError } = useAuthApi();
 
   const [isScheduling, setIsScheduling] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -68,12 +68,11 @@ const Profile: React.FC = () => {
   };
 
   const handleVerifyOtp = (data: { code: string }) => {
+    console.log('Attempting to verify OTP:', data.code);
     verifyOtp({ mobile: phone, code: data.code }, {
       onSuccess: () => {
+        console.log('Login successful, setting isLoggedIn to true');
         setIsLoggedIn(true);
-      },
-      onError: (error: any) => {
-        alert(error.message || 'خطایی رخ داد');
       }
     });
   };
@@ -82,7 +81,7 @@ const Profile: React.FC = () => {
     switch (authStep) {
       case 'guest': return <GuestProfile onLoginClick={() => setAuthStep('phone')} />;
       case 'phone': return <PhoneLogin onBack={() => setAuthStep('guest')} onSubmit={handleSendCode} loading={isRequestingOtp} />;
-      case 'otp': return <OTPVerification phone={phone} timer={timer} loading={isVerifyingOtp} onBack={() => setAuthStep('phone')} onVerify={handleVerifyOtp} onResend={() => setTimer(60)} />;
+      case 'otp': return <OTPVerification phone={phone} timer={timer} loading={isVerifyingOtp} error={verifyOtpError ? (verifyOtpError as Error).message : null} onBack={() => setAuthStep('phone')} onVerify={handleVerifyOtp} onResend={() => setTimer(60)} />;
     }
   }
 

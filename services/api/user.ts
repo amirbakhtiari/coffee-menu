@@ -11,7 +11,7 @@ export const fetchUserProfile = async (): Promise<UserProfile> => {
         tier: 'bronze',
         points: 450
       });
-    }, 1000);
+    }, 200);
   });
 };
 

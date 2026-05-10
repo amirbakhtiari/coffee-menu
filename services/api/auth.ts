@@ -32,20 +32,21 @@ export const requestOTP = async (mobile: string): Promise<LoginResponse> => {
  * Simulates an API call to verify OTP
  */
 export const verifyOTP = async (mobile: string, code: string): Promise<VerifyResponse> => {
+  console.log(`Verifying OTP for ${mobile} with code: ${code}`);
   return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (code === '1234') {
-        resolve({
-          success: true,
-          token: 'mock-jwt-token',
-          user: {
-            fullName: 'امیر بختیاری',
-            mobile: mobile
-          }
-        });
-      } else {
-        reject(new Error('کد وارد شده صحیح نیست'));
-      }
-    }, 1500);
+    if (code === '1234') {
+      console.log('OTP verified successfully!');
+      resolve({
+        success: true,
+        token: 'mock-jwt-token',
+        user: {
+          fullName: 'امیر بختیاری',
+          mobile: mobile
+        }
+      });
+    } else {
+      console.error('OTP verification failed: incorrect code');
+      reject(new Error('کد وارد شده صحیح نیست'));
+    }
   });
 };

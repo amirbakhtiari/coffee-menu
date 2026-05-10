@@ -2,6 +2,7 @@
 import React from 'react';
 import { CheckCircle2, RefreshCcw, ChevronRight } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
+import { motion, AnimatePresence } from 'framer-motion';
 import PageTransition from '../components/PageTransition';
 import Button from '../components/Button';
 import OTPInput from '../components/OTPInput';
@@ -10,13 +11,14 @@ interface OTPVerificationProps {
   phone: string;
   timer: number;
   loading: boolean;
+  error: string | null;
   onBack: () => void;
   onVerify: (data: { code: string }) => void;
   onResend: () => void;
 }
 
 const OTPVerification: React.FC<OTPVerificationProps> = ({ 
-  phone, timer, loading, onBack, onVerify, onResend 
+  phone, timer, loading, error, onBack, onVerify, onResend 
 }) => {
   const { control, handleSubmit, watch } = useForm({
     defaultValues: {
@@ -46,40 +48,52 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
            <p className="text-muted dark:text-white/60 text-[11px] font-medium leading-relaxed">کد ۴ رقمی به شماره <span className="text-dark dark:text-white font-black tracking-widest" dir="ltr">{phone}</span> ارسال شد.</p>
         </div>
 
-        <Controller
-          name="otp"
-          control={control}
-          rules={{ validate: (val) => val.every(d => d !== '') }}
-          render={({ field }) => (
-            <OTPInput value={field.value} onChange={field.onChange} length={4} />
-          )}
-        />
-
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4">
-           <Button 
-             type="submit"
-             loading={loading}
-             disabled={!isComplete || loading}
-             className="w-full h-16 rounded-[28px]"
-           >
-             تایید و ورود به حساب
-           </Button>
-
-           <button 
-              type="button"
-              disabled={timer > 0}
-              onClick={onResend}
-              className="flex items-center justify-center gap-2 w-full text-[11px] font-black text-primary disabled:opacity-50"
-            >
-              {timer > 0 ? (
-                <span>ارسال مجدد کد تا {timer} ثانیه دیگر</span>
-              ) : (
-                <>
-                  <RefreshCcw size={14} />
-                  <span>ارسال مجدد کد تایید</span>
-                </>
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col items-center gap-12">
+          <motion.div
+            animate={error ? { x: [-5, 5, -5, 5, 0] } : {}}
+            transition={{ duration: 0.4 }}
+          >
+            <Controller
+              name="otp"
+              control={control}
+              rules={{ validate: (val) => val.every(d => d !== '') }}
+              render={({ field }) => (
+                <OTPInput 
+                  value={field.value} 
+                  onChange={field.onChange} 
+                  length={4} 
+                  error={!!error}
+                />
               )}
-            </button>
+            />
+          </motion.div>
+
+          <div className="w-full space-y-4">
+            <Button 
+              type="submit"
+              loading={loading}
+              disabled={!isComplete || loading}
+              className="w-full h-16 rounded-[28px]"
+            >
+              تایید و ورود به حساب
+            </Button>
+
+            <button 
+                type="button"
+                disabled={timer > 0}
+                onClick={onResend}
+                className="flex items-center justify-center gap-2 w-full text-[11px] font-black text-primary disabled:opacity-50"
+              >
+                {timer > 0 ? (
+                  <span>ارسال مجدد کد تا {timer} ثانیه دیگر</span>
+                ) : (
+                  <>
+                    <RefreshCcw size={14} />
+                    <span>ارسال مجدد کد تایید</span>
+                  </>
+                )}
+              </button>
+          </div>
         </form>
       </div>
     </PageTransition>
