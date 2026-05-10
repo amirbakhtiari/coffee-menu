@@ -10,8 +10,7 @@ import AppBar from '../components/AppBar';
 import GuestProfile from './GuestProfile';
 import PhoneLogin from './PhoneLogin';
 import OTPVerification from './OTPVerification';
-import { useQuery } from '@tanstack/react-query';
-import { fetchUserProfile } from '../services/apiService';
+import { useUserProfileApi } from '../hooks/api/useUserApi';
 
 type AuthStep = 'guest' | 'phone' | 'otp';
 
@@ -19,10 +18,7 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   
-  const { data: userProfile, isLoading: profileLoading } = useQuery({
-    queryKey: ['profile'],
-    queryFn: fetchUserProfile,
-  });
+  const { profile: userProfile, isLoading: profileLoading } = useUserProfileApi();
 
   const [isScheduling, setIsScheduling] = useState(false);
   const [isIOS, setIsIOS] = useState(false);

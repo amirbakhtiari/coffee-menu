@@ -4,18 +4,13 @@ import { ChevronRight, User, Calendar, Smartphone, Check, ShieldCheck, Loader2 }
 import { motion } from 'framer-motion';
 import PageTransition from '../components/PageTransition';
 import AppBar from '../components/AppBar';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchUserProfile, updateUserProfile } from '../services/apiService';
+import { useUserProfileApi } from '../hooks/api/useUserApi';
 
 const EditProfile: React.FC = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   
-  const { data: userProfile, isLoading } = useQuery({
-    queryKey: ['profile'],
-    queryFn: fetchUserProfile,
-  });
-
+  const { profile: userProfile, isLoading, updateProfile, isUpdating } = useUserProfileApi();
+  
   const [formData, setFormData] = useState({
     fullName: '',
     mobile: '',
@@ -32,16 +27,10 @@ const EditProfile: React.FC = () => {
     }
   }, [userProfile]);
 
-  const mutation = useMutation({
-    mutationFn: updateUserProfile,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-      navigate('/profile');
-    },
-  });
-
   const handleSave = () => {
-    mutation.mutate(formData);
+    updateProfile(formData, {
+      onSuccess: () => navigate('/profile')
+    });
   };
 
   if (isLoading) return (
@@ -50,7 +39,7 @@ const EditProfile: React.FC = () => {
     </div>
   );
 
-  const isSaving = mutation.isPending;
+  const isSaving = isUpdating;
 
   return (
     <PageTransition>

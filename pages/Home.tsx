@@ -6,9 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import CategoryBar from '../components/CategoryBar';
 import ProductCard from '../components/ProductCard';
-import { useProducts } from '../hooks/useProducts';
+import { useProducts, useCategories } from '../hooks/api/useProductsApi';
 import { CategoryType } from '../types';
-import { fetchCategories } from '../services/apiService';
 import PageTransition from '../components/PageTransition';
 
 const Home: React.FC = () => {
@@ -16,10 +15,7 @@ const Home: React.FC = () => {
   // تنظیم دسته پیش فرض روی تخفیف دارها
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.DISCOUNTED);
 
-  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
-    queryKey: ['categories'],
-    queryFn: fetchCategories,
-  });
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
 
   const { products, loading } = useProducts(selectedCategory);
 

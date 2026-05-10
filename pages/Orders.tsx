@@ -4,16 +4,12 @@ import { ChevronRight, History, CheckCircle2, Clock, XCircle, CreditCard, Coins 
 import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
 import AppBar from '../components/AppBar';
-import { fetchOrders } from '../services/apiService';
-import { useQuery } from '@tanstack/react-query';
+import { useOrders } from '../hooks/api/useOrdersApi';
 
 const Orders: React.FC = () => {
   const navigate = useNavigate();
   
-  const { data: orders = [], isLoading: loading } = useQuery({
-    queryKey: ['orders'],
-    queryFn: fetchOrders,
-  });
+  const { data: orders = [], isLoading: loading } = useOrders();
 
   return (
     <PageTransition>

@@ -2,24 +2,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Bell, CheckCircle2 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
 import PageTransition from '../components/PageTransition';
 import AppBar from '../components/AppBar';
-import { fetchNotifications } from '../services/apiService';
+import { useNotificationsApi } from '../hooks/api/useNotificationsApi';
 
 const Messages: React.FC = () => {
   const navigate = useNavigate();
   const [localReadStatus, setLocalReadStatus] = useState<Record<number, boolean>>({});
 
-  const { data: notifications, isLoading } = useQuery({
-    queryKey: ['notifications'],
-    queryFn: fetchNotifications,
-  });
+  const { data: notifications = [], isLoading } = useNotificationsApi();
 
   const markAllAsRead = () => {
     if (!notifications) return;
     const newStatus = { ...localReadStatus };
-    notifications.forEach(n => {
+    (notifications as any[]).forEach(n => {
       newStatus[n.id] = true;
     });
     setLocalReadStatus(newStatus);

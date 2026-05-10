@@ -1,13 +1,11 @@
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, LayoutGrid, List } from 'lucide-react';
+import { LayoutGrid, List } from 'lucide-react';
 import CategoryBar from '../components/CategoryBar';
 import ProductCard from '../components/ProductCard';
-import { useProducts } from '../hooks/useProducts';
+import { useProducts, useCategories } from '../hooks/api/useProductsApi';
 import { CategoryType } from '../types';
-import { fetchCategories } from '../services/apiService';
 import PageTransition from '../components/PageTransition';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -17,10 +15,7 @@ const Menu: React.FC = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.DISCOUNTED);
   
-  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
-    queryKey: ['categories'],
-    queryFn: fetchCategories,
-  });
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
 
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { products, loading, hasMore, fetchMoreProducts, isFetchingNextPage } = useProducts(selectedCategory);

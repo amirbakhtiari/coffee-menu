@@ -1,7 +1,7 @@
 
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { CategoryType } from '../types';
-import { fetchProducts } from '../services/apiService';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { CategoryType } from '../../types';
+import { fetchProducts, fetchProductById, fetchCategories } from '../../services/api/products';
 
 const PAGE_SIZE = 15;
 
@@ -13,7 +13,6 @@ export const useProducts = (category?: CategoryType) => {
     isFetchingNextPage,
     isLoading,
     isError,
-    error,
   } = useInfiniteQuery({
     queryKey: ['products', category],
     queryFn: ({ pageParam = 1 }) => fetchProducts(category, pageParam, PAGE_SIZE),
@@ -33,4 +32,19 @@ export const useProducts = (category?: CategoryType) => {
     fetchMoreProducts: fetchNextPage,
     isFetchingNextPage
   };
+};
+
+export const useProduct = (id?: string) => {
+  return useQuery({
+    queryKey: ['product', id],
+    queryFn: () => id ? fetchProductById(id) : Promise.resolve(undefined),
+    enabled: !!id,
+  });
+};
+
+export const useCategories = () => {
+  return useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+  });
 };

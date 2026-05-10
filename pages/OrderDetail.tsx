@@ -4,18 +4,13 @@ import { motion } from 'framer-motion';
 import { ChevronRight, Package, Calendar, CreditCard, Coins, CheckCircle2, Clock, XCircle, MapPin, Loader2 } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 import AppBar from '../components/AppBar';
-import { useQuery } from '@tanstack/react-query';
-import { fetchOrderById } from '../services/apiService';
+import { useOrder } from '../hooks/api/useOrdersApi';
 
 const OrderDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { data: order, isLoading: loading } = useQuery({
-    queryKey: ['order', id],
-    queryFn: () => id ? fetchOrderById(id) : Promise.resolve(undefined),
-    enabled: !!id,
-  });
+  const { data: order, isLoading: loading } = useOrder(id);
 
   const getStatusInfo = (status: string) => {
     switch (status) {

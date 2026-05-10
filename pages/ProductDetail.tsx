@@ -1,9 +1,8 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronRight, Minus, Plus, Coffee, Droplets, Milk, Check, Tag } from 'lucide-react';
-import { fetchProductById } from '../services/apiService';
+import { useProduct } from '../hooks/api/useProductsApi';
 import { Product, ProductOptions } from '../types';
 import { useCartStore } from '../store/useCartStore';
 import Button from '../components/Button';
@@ -18,11 +17,7 @@ const ProductDetail: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const [imageError, setImageError] = useState(false);
   
-  const { data: product, isLoading: loading } = useQuery({
-    queryKey: ['product', id],
-    queryFn: () => id ? fetchProductById(id) : Promise.resolve(null),
-    enabled: !!id,
-  });
+  const { data: product, isLoading: loading } = useProduct(id);
 
   const [size, setSize] = useState<ProductOptions['size']>('M');
   const [sugar, setSugar] = useState<ProductOptions['sugar']>('50%');
