@@ -11,6 +11,7 @@ import GuestProfile from './GuestProfile';
 import PhoneLogin from './PhoneLogin';
 import OTPVerification from './OTPVerification';
 import { useUserProfileApi } from '../hooks/api/useUserApi';
+import { useAuthApi } from '../hooks/api/useAuthApi';
 
 type AuthStep = 'guest' | 'phone' | 'otp';
 
@@ -19,6 +20,7 @@ const Profile: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   
   const { profile: userProfile, isLoading: profileLoading } = useUserProfileApi();
+  const { requestOtp, isRequestingOtp, verifyOtp, isVerifyingOtp } = useAuthApi();
 
   const [isScheduling, setIsScheduling] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -27,8 +29,6 @@ const Profile: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authStep, setAuthStep] = useState<AuthStep>('guest');
   const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '']);
-  const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(60);
 
   useEffect(() => {
@@ -57,28 +57,32 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleSendCode = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setAuthStep('otp');
-      setTimer(60);
-    }, 1000);
+  const handleSendCode = (data: { mobile: string }) => {
+    setPhone(data.mobile);
+    requestOtp(data.mobile, {
+      onSuccess: () => {
+        setAuthStep('otp');
+        setTimer(60);
+      }
+    });
   };
 
-  const handleVerifyOtp = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setIsLoggedIn(true);
-    }, 1200);
+  const handleVerifyOtp = (data: { code: string }) => {
+    verifyOtp({ mobile: phone, code: data.code }, {
+      onSuccess: () => {
+        setIsLoggedIn(true);
+      },
+      onError: (error: any) => {
+        alert(error.message || 'خطایی رخ داد');
+      }
+    });
   };
 
   if (!isLoggedIn) {
     switch (authStep) {
       case 'guest': return <GuestProfile onLoginClick={() => setAuthStep('phone')} />;
-      case 'phone': return <PhoneLogin phone={phone} setPhone={setPhone} loading={loading} onBack={() => setAuthStep('guest')} onNext={handleSendCode} />;
-      case 'otp': return <OTPVerification phone={phone} otp={otp} setOtp={setOtp} timer={timer} loading={loading} onBack={() => setAuthStep('phone')} onVerify={handleVerifyOtp} onResend={() => setTimer(60)} />;
+      case 'phone': return <PhoneLogin onBack={() => setAuthStep('guest')} onSubmit={handleSendCode} loading={isRequestingOtp} />;
+      case 'otp': return <OTPVerification phone={phone} timer={timer} loading={isVerifyingOtp} onBack={() => setAuthStep('phone')} onVerify={handleVerifyOtp} onResend={() => setTimer(60)} />;
     }
   }
 

@@ -21,9 +21,85 @@ const OrderDetail: React.FC = () => {
   };
 
   if (loading) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Loader2 className="w-8 h-8 animate-spin text-primary" />
-    </div>
+    <PageTransition>
+      <div className="h-screen flex flex-col bg-lightGray dark:bg-dark overflow-hidden transition-colors" dir="rtl">
+        <div className="px-6 pt-6 mb-1 shrink-0">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-10 h-10 rounded-2xl bg-white dark:bg-black/20 animate-pulse" />
+            <div className="space-y-2">
+              <div className="h-4 w-32 bg-white dark:bg-black/20 rounded-lg animate-pulse" />
+              <div className="h-3 w-48 bg-white dark:bg-black/20 rounded-lg animate-pulse opacity-60" />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-6 pb-32 space-y-6">
+          {/* Status Skeleton */}
+          <div className="bg-white dark:bg-black/20 p-5 rounded-[32px] border border-gray-100 dark:border-white/5 flex flex-row items-center justify-between animate-pulse">
+            <div className="flex flex-row items-center gap-3">
+              <div className="w-10 h-10 bg-gray-50 dark:bg-white/5 rounded-xl" />
+              <div className="h-4 w-24 bg-gray-50 dark:bg-white/5 rounded-lg" />
+            </div>
+            <div className="h-3 w-32 bg-gray-50 dark:bg-white/5 rounded-lg" />
+          </div>
+
+          {/* Items Skeleton */}
+          <div className="space-y-3">
+            <div className="h-3 w-20 bg-gray-200 dark:bg-white/5 rounded mr-2 mb-2 animate-pulse" />
+            {[1, 2].map((i) => (
+              <div key={i} className="bg-white dark:bg-black/20 p-4 rounded-[28px] border border-gray-50 dark:border-white/5 flex flex-row items-center gap-4 animate-pulse">
+                <div className="w-16 h-16 rounded-2xl bg-gray-50 dark:bg-white/5" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-3/4 bg-gray-50 dark:bg-white/5 rounded-lg" />
+                  <div className="h-3 w-1/2 bg-gray-50 dark:bg-white/5 rounded-lg opacity-50" />
+                  <div className="flex justify-between mt-2">
+                    <div className="h-4 w-16 bg-gray-50 dark:bg-white/5 rounded-lg" />
+                    <div className="h-4 w-12 bg-gray-50 dark:bg-white/5 rounded-lg" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Details Skeleton */}
+          <div className="bg-white dark:bg-black/20 p-6 rounded-[32px] border border-gray-100 dark:border-white/5 space-y-5 animate-pulse">
+            <div className="flex gap-4">
+              <div className="w-10 h-10 bg-gray-50 dark:bg-white/5 rounded-xl shrink-0" />
+              <div className="space-y-2 flex-1">
+                <div className="h-3 w-20 bg-gray-50 dark:bg-white/5 rounded" />
+                <div className="h-4 w-full bg-gray-50 dark:bg-white/5 rounded-lg" />
+              </div>
+            </div>
+            <div className="h-px bg-gray-50 dark:bg-white/5" />
+            <div className="flex justify-between">
+              <div className="flex gap-3">
+                <div className="w-10 h-10 bg-gray-50 dark:bg-white/5 rounded-xl" />
+                <div className="space-y-2">
+                  <div className="h-3 w-16 bg-gray-50 dark:bg-white/5 rounded" />
+                  <div className="h-4 w-20 bg-gray-50 dark:bg-white/5 rounded-lg" />
+                </div>
+              </div>
+              <div className="space-y-2 text-left">
+                <div className="h-3 w-24 bg-gray-50 dark:bg-white/5 rounded mr-auto" />
+                <div className="h-4 w-12 bg-gray-50 dark:bg-white/5 rounded-lg mr-auto" />
+              </div>
+            </div>
+          </div>
+
+          {/* Invoice Skeleton */}
+          <div className="bg-dark rounded-[28px] p-6 animate-pulse">
+            <div className="flex justify-between mb-4">
+              <div className="h-4 w-20 bg-white/10 rounded" />
+              <div className="h-4 w-24 bg-white/10 rounded" />
+            </div>
+            <div className="flex justify-between items-end">
+              <div className="h-3 w-16 bg-white/10 rounded" />
+              <div className="h-8 w-32 bg-white/10 rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </PageTransition>
   );
 
   if (!order) return (
