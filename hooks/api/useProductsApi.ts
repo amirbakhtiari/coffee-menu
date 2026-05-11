@@ -3,7 +3,7 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { CategoryType } from '../../types';
 import { fetchProducts, fetchProductById, fetchCategories } from '../../services/api/products';
 
-const PAGE_SIZE = 15;
+const PAGE_SIZE = 8;
 
 export const useProducts = (category?: CategoryType) => {
   const {

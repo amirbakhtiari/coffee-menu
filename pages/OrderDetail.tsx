@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronRight, Package, Calendar, CreditCard, Coins, CheckCircle2, Clock, XCircle, MapPin, Loader2 } from 'lucide-react';
+import { ChevronRight, Package, Calendar, CreditCard, Coins, CheckCircle2, Clock, XCircle, MapPin, Loader2, Coffee } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 import AppBar from '../components/AppBar';
 import { useOrder } from '../hooks/api/useOrdersApi';
@@ -142,7 +142,15 @@ const OrderDetail: React.FC = () => {
             <h3 className="text-xs font-black text-dark dark:text-white mr-2 mb-2">اقلام سفارش</h3>
             {order.items.map((item) => (
               <div key={item.id} className="bg-white dark:bg-black/20 p-4 rounded-[28px] border border-gray-50 dark:border-white/5 flex flex-row items-center gap-4">
-                <img src={item.image} alt={item.name} className="w-16 h-16 rounded-2xl object-cover" />
+                <div className="relative w-16 h-16 shrink-0 rounded-2xl overflow-hidden bg-gray-50 dark:bg-white/5">
+                  {item.image ? (
+                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-primary/20">
+                      <Coffee size={24} />
+                    </div>
+                  )}
+                </div>
                 <div className="flex-1 text-right">
                   <h4 className="font-black text-sm text-dark dark:text-white">{item.name}</h4>
                   <p className="text-[10px] text-muted dark:text-white/40 font-bold mt-0.5">{item.subName}</p>
