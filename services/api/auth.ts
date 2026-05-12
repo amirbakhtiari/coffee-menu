@@ -34,7 +34,9 @@ export const requestOTP = async (mobile: string): Promise<LoginResponse> => {
 export const verifyOTP = async (mobile: string, code: string): Promise<VerifyResponse> => {
   console.log(`Verifying OTP for ${mobile} with code: ${code}`);
   return new Promise((resolve, reject) => {
-    if (code === '1234') {
+    // For development/mock purposes, any 4-digit code is accepted.
+    // In production, this would verify against a real backend.
+    if (code.length === 4 && /^\d+$/.test(code)) {
       console.log('OTP verified successfully!');
       resolve({
         success: true,
