@@ -16,6 +16,12 @@ export interface ProductOptions {
   syrupAmount: '۰' | '۱' | '۲';
 }
 
+export interface Category {
+  id: CategoryType;
+  label: string;
+  icon: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -35,6 +41,7 @@ export interface CartItem extends Product {
   selectedOptions?: ProductOptions;
   cartId: string;
   pointsEach?: number;
+  note?: string;
 }
 
 export interface UserProfile {

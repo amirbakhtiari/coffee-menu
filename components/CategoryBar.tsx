@@ -64,9 +64,10 @@ const CategoryBar: React.FC<CategoryBarProps> = ({ selected, onSelect, categorie
       >
         {loading ? (
           Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="shrink-0 min-w-[95px] p-4 rounded-[28px] bg-white dark:bg-black/20 border border-gray-100 dark:border-white/5 animate-pulse flex flex-col items-center gap-2">
-              <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5"></div>
-              <div className="w-12 h-2 rounded-full bg-gray-100 dark:bg-white/5"></div>
+            <div key={i} className="shrink-0 min-w-[95px] p-4 rounded-[28px] bg-white dark:bg-black/20 border border-gray-100 dark:border-white/5 flex flex-col items-center gap-3 overflow-hidden relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-100/50 dark:via-white/5 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
+              <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 animate-pulse"></div>
+              <div className="w-14 h-2.5 rounded-full bg-gray-100 dark:bg-white/5 animate-pulse"></div>
             </div>
           ))
         ) : (

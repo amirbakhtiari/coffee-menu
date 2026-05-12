@@ -83,7 +83,7 @@ const ProductDetail: React.FC = () => {
       <div className="relative flex flex-col bg-white dark:bg-dark min-h-screen transition-colors">
         {/* تصویر ثابت در پس‌زمینه */}
         <div className="fixed top-0 left-0 right-0 h-[320px] max-w-md mx-auto z-0 bg-secondary/10 dark:bg-black flex items-center justify-center overflow-hidden">
-          {!imageError ? (
+          {product.image && !imageError ? (
             <img 
               src={product.image} 
               alt={product.name} 

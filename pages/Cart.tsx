@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useCartStore } from '../store/useCartStore';
-import { Trash2, Plus, Minus, ChevronRight, ShoppingBag, AlertCircle, Coffee } from 'lucide-react';
+import { Trash2, Plus, Minus, ChevronRight, ShoppingBag, AlertCircle, Coffee, StickyNote, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageTransition from '../components/PageTransition';
@@ -12,7 +12,7 @@ const CartImage = ({ src, name }: { src: string; name: string }) => {
   const [error, setError] = useState(!src);
   return (
     <div className="w-20 h-20 shrink-0 rounded-[22px] bg-secondary/10 dark:bg-white/5 flex items-center justify-center overflow-hidden shadow-sm">
-      {!error ? (
+      {src && !error ? (
         <img src={src} className="w-full h-full object-cover" alt={name} onError={() => setError(true)} />
       ) : (
         <Coffee size={24} className="text-primary/20" />
@@ -22,9 +22,23 @@ const CartImage = ({ src, name }: { src: string; name: string }) => {
 };
 
 const Cart: React.FC = () => {
-  const { items, updateQuantity, removeFromCart, totalAmount, totalOriginalAmount, totalDiscount, clearCart } = useCartStore();
+  const { items, updateQuantity, removeFromCart, updateNote, totalAmount, totalOriginalAmount, totalDiscount, clearCart } = useCartStore();
   const navigate = useNavigate();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [editingNote, setEditingNote] = useState<{ cartId: string; note: string } | null>(null);
+  const [noteInput, setNoteInput] = useState('');
+
+  const handleOpenNoteModal = (cartId: string, currentNote?: string) => {
+    setEditingNote({ cartId, note: currentNote || '' });
+    setNoteInput(currentNote || '');
+  };
+
+  const handleSaveNote = () => {
+    if (editingNote) {
+      updateNote(editingNote.cartId, noteInput);
+      setEditingNote(null);
+    }
+  };
 
   const handleClearCart = () => {
     clearCart();
@@ -113,6 +127,11 @@ const Cart: React.FC = () => {
                              <span className="text-[8px] bg-gray-50 dark:bg-white/5 text-muted dark:text-white/40 px-2 py-0.5 rounded-full font-black">{item.selectedOptions.milk}</span>
                            )}
                         </div>
+                        {item.note && (
+                          <div className="mb-2 bg-gray-50 dark:bg-white/5 p-2 rounded-xl border border-dashed border-gray-200 dark:border-white/10">
+                            <p className="text-[9px] text-muted dark:text-white/40 leading-relaxed line-clamp-2">{item.note}</p>
+                          </div>
+                        )}
                       <div className="flex items-center gap-1 text-primary font-black text-sm leading-none">
                         <span>{item.price.toLocaleString()}</span>
                         <span className="text-[10px] italic font-black opacity-50 ml-0.5">T</span>
@@ -120,9 +139,14 @@ const Cart: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col items-end gap-2 shrink-0">
-                       <button onClick={() => removeFromCart(item.cartId)} className="text-gray-300 p-1 active:text-red-500 transition-colors">
-                         <Trash2 size={16} />
-                       </button>
+                       <div className="flex gap-1">
+                         <button onClick={() => handleOpenNoteModal(item.cartId, item.note)} className={`p-1 transition-colors ${item.note ? 'text-primary' : 'text-gray-300 active:text-primary'}`}>
+                           <StickyNote size={16} />
+                         </button>
+                         <button onClick={() => removeFromCart(item.cartId)} className="text-gray-300 p-1 active:text-red-500 transition-colors">
+                           <Trash2 size={16} />
+                         </button>
+                       </div>
                        <div className="flex items-center bg-lightGray dark:bg-white/5 rounded-[18px] p-1 gap-2.5 border border-gray-100 dark:border-white/5">
                           <button 
                             onClick={() => updateQuantity(item.cartId, item.quantity - 1)} 
@@ -189,6 +213,54 @@ const Cart: React.FC = () => {
         )}
 
         <AnimatePresence>
+          {editingNote && (
+            <div className="fixed inset-0 z-[110] flex items-end justify-center">
+              <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }} 
+                onClick={() => setEditingNote(null)} 
+                className="absolute inset-0 bg-dark/70 backdrop-blur-sm" 
+              />
+              <motion.div 
+                initial={{ y: "100%" }} 
+                animate={{ y: 0 }} 
+                exit={{ y: "100%" }} 
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="relative bg-white dark:bg-dark w-full rounded-t-[40px] p-8 shadow-2xl flex flex-col gap-6 border-t border-white/10"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                      <StickyNote size={20} />
+                    </div>
+                    <h3 className="text-lg font-black text-dark dark:text-white">یادداشت سفارش</h3>
+                  </div>
+                  <button onClick={() => setEditingNote(null)} className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-full text-dark dark:text-white">
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <p className="text-[11px] text-muted dark:text-white/40 font-bold px-2">توضیحات خاص خود را برای این آیتم بنویسید (مثلاً: داغ باشد، شکر کم و ...)</p>
+                  <textarea
+                    autoFocus
+                    value={noteInput}
+                    onChange={(e) => setNoteInput(e.target.value)}
+                    placeholder="اینجا بنویسید..."
+                    className="w-full h-32 bg-lightGray dark:bg-white/5 border-none rounded-[28px] p-6 text-sm font-bold text-dark dark:text-white focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none text-right"
+                    dir="rtl"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 mt-2">
+                  <button onClick={handleSaveNote} className="bg-primary text-white py-4 rounded-2xl font-black text-sm shadow-lg shadow-primary/20 active:scale-95 transition-transform">ثبت یادداشت</button>
+                  <button onClick={() => setEditingNote(null)} className="bg-gray-100 dark:bg-white/5 text-dark/70 dark:text-white/70 py-4 rounded-2xl font-black text-sm active:scale-95 transition-transform">انصراف</button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+
           {showConfirmModal && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowConfirmModal(false)} className="absolute inset-0 bg-dark/70 backdrop-blur-md" />

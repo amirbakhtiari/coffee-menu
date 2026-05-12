@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import CategoryBar from '../components/CategoryBar';
 import ProductCard from '../components/ProductCard';
-import { useProducts, useCategories } from '../hooks/api/useProductsApi';
+import { useProducts } from '../hooks/api/useProductsApi';
+import { useCategories } from '../hooks/api/useCategoriesApi';
 import { CategoryType } from '../types';
 import PageTransition from '../components/PageTransition';
 

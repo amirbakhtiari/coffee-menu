@@ -36,7 +36,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid' }) 
       >
         <div className="relative w-24 shrink-0 overflow-hidden rounded-[18px] bg-secondary/10 flex items-center justify-center p-1">
           <div className="w-full h-full overflow-hidden rounded-[14px]">
-            {!imageError ? (
+            {product.image && !imageError ? (
               <img 
                 src={product.image} 
                 alt={product.name} 
@@ -122,7 +122,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid' }) 
       {/* بخش تصویر با سایز کوچک شده (aspect-square) */}
       <div className="relative aspect-square overflow-hidden rounded-[22px] bg-secondary/10 flex items-center justify-center p-1">
         <div className="w-full h-full overflow-hidden rounded-[18px]">
-          {!imageError ? (
+          {product.image && !imageError ? (
             <img 
               src={product.image} 
               alt={product.name} 

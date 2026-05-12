@@ -26,25 +26,19 @@ export const fetchProducts = async (category?: CategoryType, page = 1, pageSize 
   });
 };
 
-export const fetchProductById = async (id: string): Promise<Product | undefined> => {
-  return new Promise((resolve) => {
+export const fetchProductById = async (id: string): Promise<Product> => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve(PRODUCTS.find(p => p.id === id));
+      // Extract original ID if it's a simulated page ID (e.g., "4-page-0" -> "4")
+      const originalId = id.includes('-page-') ? id.split('-page-')[0] : id;
+      const product = PRODUCTS.find(p => p.id === originalId);
+      
+      if (product) {
+        // Return a copy with the provided ID to maintain consistency
+        resolve({ ...product, id });
+      } else {
+        reject(new Error(`محصول با کد ${id} یافت نشد`));
+      }
     }, 500);
-  });
-};
-
-export const fetchCategories = async (): Promise<{ id: CategoryType; label: string; icon: string }[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve([
-        { id: CategoryType.PREVIOUS_ORDERS, label: 'سفارشات قبلی', icon: 'History' },
-        { id: CategoryType.DISCOUNTED, label: 'تخفیف‌دارها', icon: 'Percent' },
-        { id: CategoryType.CAPPUCCINO, label: 'کاپوچینو', icon: 'Coffee' },
-        { id: CategoryType.LATTE, label: 'لته آرت', icon: 'Droplets' },
-        { id: CategoryType.ESPRESSO, label: 'اسپرسو', icon: 'Zap' },
-        { id: CategoryType.MOCHA, label: 'موکا فندق', icon: 'Coffee' }
-      ]);
-    }, 600);
   });
 };

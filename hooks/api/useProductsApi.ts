@@ -1,7 +1,7 @@
 
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { CategoryType } from '../../types';
-import { fetchProducts, fetchProductById, fetchCategories } from '../../services/api/products';
+import { fetchProducts, fetchProductById } from '../../services/api/products';
 
 const PAGE_SIZE = 8;
 
@@ -37,14 +37,10 @@ export const useProducts = (category?: CategoryType) => {
 export const useProduct = (id?: string) => {
   return useQuery({
     queryKey: ['product', id],
-    queryFn: () => id ? fetchProductById(id) : Promise.resolve(undefined),
+    queryFn: () => {
+      if (!id) throw new Error('کد محصول الزامی است');
+      return fetchProductById(id);
+    },
     enabled: !!id,
-  });
-};
-
-export const useCategories = () => {
-  return useQuery({
-    queryKey: ['categories'],
-    queryFn: fetchCategories,
   });
 };
