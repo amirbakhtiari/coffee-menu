@@ -25,6 +25,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     location.pathname.startsWith('/tier-detail/') ||
     location.pathname === '/gateway-transition' ||
     location.pathname === '/payment-result' ||
+    location.pathname === '/cafe-info' ||
     location.pathname === '/success';
 
   // دکمه ویتر را در صفحات خاص مخفی می‌کنیم
@@ -36,6 +37,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     location.pathname.startsWith('/tier-detail/') ||
     location.pathname === '/gateway-transition' ||
     location.pathname === '/payment-result' ||
+    location.pathname === '/cafe-info' ||
     location.pathname === '/success';
 
   // برای صفحاتی که فوتر اختصاصی دارند یا تمام‌صفحه هستند، پدینگ پایین پیش‌فرض را حذف می‌کنیم

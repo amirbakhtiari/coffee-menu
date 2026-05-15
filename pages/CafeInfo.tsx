@@ -28,7 +28,7 @@ const CafeInfo: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-white dark:bg-dark flex flex-col pb-20">
+      <div className="min-h-screen bg-white dark:bg-dark flex flex-col pb-10">
         {/* Custom Premium AppBar */}
         <div className="sticky top-0 z-[100] px-6 py-4 flex items-center justify-between bg-white/80 dark:bg-dark/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5">
           <button 
@@ -55,17 +55,17 @@ const CafeInfo: React.FC = () => {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative flex flex-col items-center py-10 rounded-[48px] overflow-hidden bg-primary/5 border border-primary/10"
+            className="relative flex flex-col items-center py-6 rounded-[40px] overflow-hidden bg-primary/5 border border-primary/10"
           >
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(var(--color-primary),0.05),transparent)]" />
             <div className="relative z-10 flex flex-col items-center">
-              <div className="w-24 h-24 bg-white dark:bg-dark rounded-[32px] flex items-center justify-center shadow-2xl shadow-primary/20 mb-4 border border-primary/20">
-                <div className="w-16 h-16 bg-primary rounded-[24px] flex items-center justify-center text-white">
-                  <Coffee size={36} strokeWidth={2.5} />
+              <div className="w-20 h-20 bg-white dark:bg-dark rounded-[28px] flex items-center justify-center shadow-xl shadow-primary/10 mb-3 border border-primary/10">
+                <div className="w-14 h-14 bg-primary rounded-[20px] flex items-center justify-center text-white">
+                  <Coffee size={28} strokeWidth={2.5} />
                 </div>
               </div>
-              <h2 className="text-2xl font-black text-dark dark:text-white">کافه لند</h2>
-              <p className="text-[11px] uppercase tracking-[0.3em] font-black text-primary/60 mt-1.5 ml-1">Smart Menu Experience</p>
+              <h2 className="text-xl font-black text-dark dark:text-white">کافه لند</h2>
+              <p className="text-[10px] uppercase tracking-[0.3em] font-black text-primary/60 mt-1 ml-1">Smart Menu Experience</p>
             </div>
           </motion.div>
 
@@ -171,16 +171,6 @@ const CafeInfo: React.FC = () => {
               </div>
             </div>
           </motion.div>
-
-          {/* Bottom Branding */}
-          <div className="py-10 text-center opacity-10 select-none flex flex-col items-center">
-            <div className="flex justify-center gap-3 mb-3">
-              <div className="w-2 h-2 rounded-full bg-current" />
-              <div className="w-4 h-0.5 rounded-full bg-current" />
-              <div className="w-2 h-2 rounded-full bg-current" />
-            </div>
-            <p className="text-[10px] font-black tracking-[0.4em] uppercase">Caffeland Smart UI v2.0</p>
-          </div>
         </div>
       </div>
     </PageTransition>
