@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Bell, LayoutGrid, Hash, ChevronLeft } from 'lucide-react';
+import { Bell, LayoutGrid, Hash, ChevronLeft, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import CategoryBar from '../components/CategoryBar';
@@ -59,11 +59,16 @@ const Home: React.FC = () => {
               </div>
             </motion.div>
 
-            <div className="relative shrink-0">
-               <button onClick={() => navigate('/messages')} className="p-2.5 bg-white/10 rounded-xl text-white backdrop-blur-md border border-white/5 active:scale-90 transition-transform">
-                 <Bell size={18} />
+            <div className="relative shrink-0 flex gap-2">
+               <button onClick={() => navigate('/cafe-info')} className="p-2.5 bg-white/10 rounded-xl text-white backdrop-blur-md border border-white/5 active:scale-90 transition-transform">
+                 <Info size={18} />
                </button>
-               <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-dark"></span>
+               <div className="relative">
+                 <button onClick={() => navigate('/messages')} className="p-2.5 bg-white/10 rounded-xl text-white backdrop-blur-md border border-white/5 active:scale-90 transition-transform">
+                   <Bell size={18} />
+                 </button>
+                 <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-dark"></span>
+               </div>
             </div>
           </div>
 

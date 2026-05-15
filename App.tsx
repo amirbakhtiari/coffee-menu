@@ -21,6 +21,7 @@ import TierDetail from './pages/TierDetail';
 import Offline from './pages/Offline';
 import GatewayTransition from './pages/GatewayTransition';
 import PaymentResult from './pages/PaymentResult';
+import CafeInfo from './pages/CafeInfo';
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -63,6 +64,7 @@ const AnimatedRoutes = () => {
         <Route path="/tier-detail/:tierId" element={<TierDetail />} />
         <Route path="/gateway-transition" element={<GatewayTransition />} />
         <Route path="/payment-result" element={<PaymentResult />} />
+        <Route path="/cafe-info" element={<CafeInfo />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>
