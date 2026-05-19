@@ -36,7 +36,7 @@ const InstallBanner: React.FC = () => {
             </div>
             
             <div className="flex-1 text-right">
-              <h4 className="text-white text-[13px] font-black">نصب اپلیکیشن کافه لند</h4>
+              <h4 className="text-white text-[13px] font-black">نصب اپلیکیشن کافه آرسیا</h4>
               <p className="text-white/50 text-[10px] font-medium">دسترسی سریع‌تر و آفلاین به منو</p>
             </div>
 

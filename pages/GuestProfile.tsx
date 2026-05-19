@@ -44,7 +44,7 @@ const GuestProfile: React.FC<GuestProfileProps> = ({ onLoginClick }) => {
         </div>
 
         <p className="fixed bottom-10 text-[9px] text-muted font-black uppercase tracking-widest opacity-40">
-          کافه لند - لذت یک قهوه هوشمند
+          کافه آرسیا - لذت یک قهوه هوشمند
         </p>
       </div>
     </PageTransition>
