@@ -44,7 +44,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const removeDefaultPadding = hideBottomNav || location.pathname === '/cart';
 
   return (
-    <div className="flex flex-col min-h-screen max-w-md mx-auto relative bg-lightGray dark:bg-dark text-dark dark:text-white transition-colors overflow-x-hidden">
+    <div className="flex flex-col min-h-screen max-w-md mx-auto relative bg-light-gray dark:bg-dark text-dark dark:text-white transition-colors overflow-x-hidden">
       <InstallBanner />
       
       {/* دکمه شناور ویتر در تمام صفحات به جز موارد استثنا نمایش داده می‌شود */}

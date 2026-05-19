@@ -35,8 +35,8 @@ const Menu: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="px-6 pb-24 min-h-screen bg-lightGray dark:bg-dark flex flex-col transition-colors">
-        <div className="pt-12 pb-4 -mx-6 px-6 mb-2 bg-lightGray dark:bg-dark transition-colors">
+      <div className="px-6 pb-24 min-h-screen bg-light-gray dark:bg-dark flex flex-col transition-colors">
+        <div className="pt-12 pb-4 -mx-6 px-6 mb-2 bg-light-gray dark:bg-dark transition-colors">
           <AppBar 
             title="منوی کامل" 
             subtitle="انتخاب از میان بهترین‌های کافه لند"
@@ -52,7 +52,7 @@ const Menu: React.FC = () => {
           />
         </div>
 
-        <div className="sticky top-0 z-50 bg-lightGray/95 dark:bg-dark/95 backdrop-blur-md -mx-6 mb-4">
+        <div className="sticky top-0 z-50 bg-light-gray/95 dark:bg-dark/95 backdrop-blur-md -mx-6 mb-4">
           <CategoryBar 
             selected={selectedCategory} 
             onSelect={setSelectedCategory} 

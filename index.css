@@ -6,14 +6,16 @@
   --color-primary: #C67C4E;
   --color-secondary: #EDD6C8;
   --color-dark: #1C1C1C;
-  --color-lightGray: #F9F9F9;
+  --color-light-gray: #F9F9F9;
   --color-muted: #9B9B9B;
 }
+
+@variant dark (&:where(.dark, .dark *));
 
 @layer base {
   body {
     font-family: var(--font-sans);
-    @apply bg-lightGray text-dark;
+    @apply bg-light-gray text-dark;
     -webkit-tap-highlight-color: transparent;
   }
 }

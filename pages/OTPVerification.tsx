@@ -35,7 +35,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
 
   return (
     <PageTransition>
-      <div className="px-6 pt-12 min-h-screen bg-lightGray dark:bg-dark flex flex-col items-center gap-12 transition-colors" dir="rtl">
+      <div className="px-6 pt-12 min-h-screen bg-light-gray dark:bg-dark flex flex-col items-center gap-12 transition-colors" dir="rtl">
         <button onClick={onBack} className="w-12 h-12 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-sm dark:shadow-none self-start border border-transparent dark:border-white/5">
           <ChevronRight size={22} className="dark:text-white" />
         </button>

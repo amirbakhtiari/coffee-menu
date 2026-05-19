@@ -25,8 +25,8 @@ const Home: React.FC = () => {
   return (
     <PageTransition>
       <div className="flex flex-col gap-2">
-        <div className="bg-dark rounded-b-[40px] pt-12 pb-12 px-6 flex flex-col gap-4 relative shadow-2xl overflow-hidden">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-primary/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
+        <div className="bg-white dark:bg-dark rounded-b-[40px] pt-12 pb-12 px-6 flex flex-col gap-4 relative shadow-xl dark:shadow-2xl overflow-hidden border-b border-gray-100 dark:border-transparent">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
           
           <div className="flex justify-between items-center gap-2 mb-2 relative z-10">
             <motion.button 
@@ -45,13 +45,13 @@ const Home: React.FC = () => {
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="group flex items-center bg-white/[0.05] backdrop-blur-2xl rounded-[22px] p-1 border border-white/10 shadow-2xl cursor-default min-w-0"
+              className="group flex items-center bg-gray-50 dark:bg-white/[0.05] backdrop-blur-2xl rounded-[22px] p-1 border border-gray-100 dark:border-white/10 shadow-sm dark:shadow-2xl cursor-default min-w-0"
             >
               <div className="flex flex-col items-start px-3 min-w-0">
                 <span className="text-[7px] text-primary font-black uppercase tracking-[1px] mb-0.5 opacity-80 whitespace-nowrap">میز اختصاصی</span>
                 <div className="flex items-center gap-1">
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shrink-0"></span>
-                  <span className="text-[11px] text-white font-black truncate">میز ۱۲</span>
+                  <span className="text-[11px] text-dark dark:text-white font-black truncate">میز ۱۲</span>
                 </div>
               </div>
               <div className="w-9 h-9 bg-gradient-to-br from-primary to-[#E89C6A] rounded-[18px] flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:rotate-12 transition-transform duration-500 shrink-0">
@@ -60,20 +60,20 @@ const Home: React.FC = () => {
             </motion.div>
 
             <div className="relative shrink-0 flex gap-2">
-               <button onClick={() => navigate('/cafe-info')} className="p-2.5 bg-white/10 rounded-xl text-white backdrop-blur-md border border-white/5 active:scale-90 transition-transform">
+               <button onClick={() => navigate('/cafe-info')} className="p-2.5 bg-gray-100 dark:bg-white/10 rounded-xl text-dark dark:text-white backdrop-blur-md border border-gray-200 dark:border-white/5 active:scale-90 transition-transform">
                  <Info size={18} />
                </button>
                <div className="relative">
-                 <button onClick={() => navigate('/messages')} className="p-2.5 bg-white/10 rounded-xl text-white backdrop-blur-md border border-white/5 active:scale-90 transition-transform">
+                 <button onClick={() => navigate('/messages')} className="p-2.5 bg-gray-100 dark:bg-white/10 rounded-xl text-dark dark:text-white backdrop-blur-md border border-gray-200 dark:border-white/5 active:scale-90 transition-transform">
                    <Bell size={18} />
                  </button>
-                 <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-dark"></span>
+                 <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-white dark:border-dark"></span>
                </div>
             </div>
           </div>
 
-          <div className="text-white mb-2 relative z-10 text-right">
-            <h1 className="text-[11px] opacity-60 font-black tracking-[2px] mb-1">کافه لند</h1>
+          <div className="text-dark dark:text-white mb-2 relative z-10 text-right">
+            <h1 className="text-[11px] text-muted font-black tracking-[2px] mb-1">کافه لند</h1>
             <p className="text-2xl font-black leading-tight">وقت یه قهوه خوبه! ☕</p>
           </div>
         </div>
