@@ -8,60 +8,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="کافه لند">
-    <link rel="apple-touch-icon" href="https://picsum.photos/seed/cafe192/192/192">
+    <link rel="apple-touch-icon" href="/icon-192.png">
     
     <link rel="manifest" href="manifest.json" />
     <title>کافه لند</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-      body {
-        font-family: 'Vazirmatn', sans-serif;
-        -webkit-tap-highlight-color: transparent;
-        background-color: #F9F9F9;
-        overflow-x: hidden;
-      }
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-      #root {
-        min-height: 100vh;
-      }
-      @keyframes fade-in {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      .motion-safe\\:animate-fade-in {
-        animation: fade-in 0.5s ease-out forwards;
-      }
-      @keyframes shimmer {
-        100% { transform: translateX(100%); }
-      }
-      .animate-shimmer {
-        animation: shimmer 1.5s infinite;
-      }
-    </style>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              primary: '#C67C4E',
-              secondary: '#EDD6C8',
-              dark: '#1C1C1C',
-              lightGray: '#F9F9F9',
-              muted: '#9B9B9B'
-            }
-          }
-        }
-      }
-    </script>
-  <link rel="stylesheet" href="/index.css">
 </head>
   <body class="bg-lightGray text-dark">
     <div id="root"></div>

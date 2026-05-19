@@ -1,0 +1,44 @@
+@import "vazirmatn/Vazirmatn-font-face.css";
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
+  --color-primary: #C67C4E;
+  --color-secondary: #EDD6C8;
+  --color-dark: #1C1C1C;
+  --color-lightGray: #F9F9F9;
+  --color-muted: #9B9B9B;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    @apply bg-lightGray text-dark;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s infinite;
+}
