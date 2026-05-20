@@ -21,7 +21,7 @@ export const fetchProducts = async (category?: CategoryType, page = 1, pageSize 
       const start = (page - 1) * pageSize;
       const end = start + pageSize;
       
-      resolve(filtered.slice(start, end));
+      resolve(extendedList.slice(start, end));
     }, 1000);
   });
 };

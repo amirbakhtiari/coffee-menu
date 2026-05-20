@@ -73,7 +73,7 @@ const Home: React.FC = () => {
           </div>
 
           <div className="text-dark dark:text-white mb-2 relative z-10 text-right">
-            <h1 className="text-[11px] text-muted font-black tracking-[2px] mb-1">کافه آرسیا</h1>
+            <h1 className="text-[11px] text-muted font-black tracking-[2px] mb-1">کافه لند</h1>
             <p className="text-2xl font-black leading-tight">وقت یه قهوه خوبه! ☕</p>
           </div>
         </div>

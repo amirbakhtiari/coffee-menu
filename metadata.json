@@ -1,5 +1,6 @@
 {
-  "name": "کافه آرسیا - منوی هوشمند",
+  "name": "کافه لند - منوی هوشمند",
   "description": "اپلیکیشن پیشرفته منوی کافه با طراحی مدرن و تجربه کاربری عالی، کاملاً فارسی و بهینه‌سازی شده برای موبایل.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

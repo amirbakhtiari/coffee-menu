@@ -61,7 +61,7 @@ const OfflinePayment: React.FC = () => {
                   </div>
                   <h2 className="text-xl font-black text-dark leading-tight">تمایل به ثبت شماره دارید؟</h2>
                   <p className="text-muted text-[11px] font-medium px-4 opacity-70 leading-relaxed">
-                    با ثبت شماره موبایل، فاکتور برای شما پیامک شده و در قرعه‌کشی‌های کافه آرسیا شرکت داده می‌شوید.
+                    با ثبت شماره موبایل، فاکتور برای شما پیامک شده و در قرعه‌کشی‌های کافه لند شرکت داده می‌شوید.
                   </p>
                 </div>
 

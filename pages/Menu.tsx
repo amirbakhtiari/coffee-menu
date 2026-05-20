@@ -14,7 +14,7 @@ import AppBar from '../components/AppBar';
 
 const Menu: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.HOT_COFFEE);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.DISCOUNTED);
   
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
 
@@ -39,7 +39,7 @@ const Menu: React.FC = () => {
         <div className="pt-12 pb-4 -mx-6 px-6 mb-2 bg-light-gray dark:bg-dark transition-colors">
           <AppBar 
             title="منوی کامل" 
-            subtitle="انتخاب از میان بهترین‌های کافه آرسیا"
+            subtitle="انتخاب از میان بهترین‌های کافه لند"
             onBack={() => navigate('/')}
             rightAction={
               <button 
