@@ -17,6 +17,14 @@ const Home: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isPinned, setIsPinned] = useState(false);
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'صبح بخیر! ☀️';
+    if (hour >= 12 && hour < 17) return 'ظهر بخیر! 🌤️';
+    if (hour >= 17 && hour < 20) return 'عصر بخیر! ☕';
+    return 'شب بخیر! 🌙';
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       // Pin CategoryBar when header has scrolled out of view (typically ~150px)
@@ -65,14 +73,10 @@ const Home: React.FC = () => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               whileTap={{ scale: 0.9 }}
-              className="flex items-center gap-2 bg-primary px-3.5 py-1.5 rounded-full text-white shadow-lg shadow-primary/30 border border-white/10 relative group overflow-hidden shrink-0"
+              className="p-2.5 bg-primary text-white rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/30 border border-white/15 active:scale-90 transition-all flex items-center justify-center shrink-0"
+              title={viewMode === 'grid' ? 'نمایش خطی' : 'نمایش شبکه‌ای'}
             >
-              <div className="bg-white/20 p-1 rounded-full">
-                {viewMode === 'grid' ? <List size={13} strokeWidth={3} /> : <LayoutGrid size={13} strokeWidth={3} />}
-              </div>
-              <span className="text-[10px] font-black tracking-tight whitespace-nowrap">
-                {viewMode === 'grid' ? 'نمایش خطی' : 'نمایش شبکه‌ای'}
-              </span>
+              {viewMode === 'grid' ? <List size={18} strokeWidth={2.5} /> : <LayoutGrid size={18} strokeWidth={2.5} />}
             </motion.button>
 
             <motion.div 
@@ -107,7 +111,7 @@ const Home: React.FC = () => {
 
           <div className="text-dark dark:text-white mb-2 relative z-10 text-right">
             <h1 className="text-[11px] text-muted font-black tracking-[2px] mb-1">کافه لند</h1>
-            <p className="text-2xl font-black leading-tight">وقت یه قهوه خوبه! ☕</p>
+            <p className="text-2xl font-black leading-tight">{getGreeting()} وقت یه قهوه خوبه! ☕</p>
           </div>
         </div>
 
