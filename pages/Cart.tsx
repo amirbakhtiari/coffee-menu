@@ -59,7 +59,7 @@ const Cart: React.FC = () => {
           <AppBar 
             title="سبد سفارش"
             className="mb-2"
-            onBack={() => navigate('/menu')}
+            onBack={() => navigate('/')}
             rightAction={
               items.length > 0 ? (
                 <button 
