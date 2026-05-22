@@ -127,11 +127,6 @@ const Cart: React.FC = () => {
                              <span className="text-[8px] bg-gray-50 dark:bg-white/5 text-muted dark:text-white/40 px-2 py-0.5 rounded-full font-black">{item.selectedOptions.milk}</span>
                            )}
                         </div>
-                        {item.note && (
-                          <div className="mb-2 bg-gray-50 dark:bg-white/5 p-2 rounded-xl border border-dashed border-gray-200 dark:border-white/10">
-                            <p className="text-[9px] text-muted dark:text-white/40 leading-relaxed line-clamp-2">{item.note}</p>
-                          </div>
-                        )}
                       <div className="flex items-center gap-1 text-primary font-black text-sm leading-none">
                         <span>{item.price.toLocaleString()}</span>
                         <span className="text-[10px] italic font-black opacity-50 ml-0.5">T</span>
