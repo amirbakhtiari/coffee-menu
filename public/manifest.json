@@ -1,27 +1,27 @@
 
 {
-  "id": "com.cafeland.app",
+  "id": "ir.arsiacoffee.app",
   "name": "کافه آرسیا - منوی هوشمند",
   "short_name": "کافه آرسیا",
   "description": "تجربه مدرن سفارش آنلاین در کافه آرسیا",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#F9F9F9",
   "theme_color": "#C67C4E",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/app_icon_arsia_192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/app_icon_arsia_512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }

@@ -14,7 +14,7 @@ import PageTransition from '../components/PageTransition';
 const Home: React.FC = () => {
   const navigate = useNavigate();
   // تنظیم دسته پیش فرض روی تخفیف دارها
-  const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.DISCOUNTED);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.HOT_COFFEE);
 
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
 
