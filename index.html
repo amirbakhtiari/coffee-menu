@@ -1,29 +1,29 @@
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#C67C4E" />
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="کافه آرسیا">
-  <link rel="apple-touch-icon" href="/public/app_icon_arsia_192.png">
-
-  <link rel="manifest" href="/public/manifest.json" />
-  <title>کافه آرسیا</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#C67C4E" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="کافه لند">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    
+    <link rel="manifest" href="/manifest.json" />
+    <title>کافه لند</title>
 </head>
-<body class="bg-light-gray text-dark">
-<div id="root"></div>
-<script type="module">
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/public/sw.js')
-              .then(reg => console.log('SW Registered'))
-              .catch(err => console.log('SW registration failed:', err));
-    });
-  }
-</script>
-<script type="module" src="/index.tsx"></script>
+  <body class="bg-light-gray text-dark">
+    <div id="root"></div>
+    <script type="module">
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW Registered'))
+            .catch(err => console.log('SW registration failed:', err));
+        });
+      }
+    </script>
+  <script type="module" src="/index.tsx"></script>
 </body>
 </html>

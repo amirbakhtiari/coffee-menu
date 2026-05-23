@@ -230,7 +230,7 @@ const CafeInfo: React.FC = () => {
           {/* App Version Subtle Indicator */}
           <div className="text-center mt-2 pb-4 select-none">
             <span className="text-[10px] text-muted/40 dark:text-white/10 font-mono tracking-wider">
-              نسخه‌ هوشمند ۲.۴.۰
+              نسخه‌ هوشمند ۱.۰.۱
             </span>
           </div>
         </div>
