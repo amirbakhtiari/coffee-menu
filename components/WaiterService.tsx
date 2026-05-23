@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserCheck, X, Bell, MessageCircleQuestion, Check } from 'lucide-react';
+import { UserCheck, X, ConciergeBell, MessageCircleQuestion, Check } from 'lucide-react';
 
 const WaiterService: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -76,7 +76,7 @@ const WaiterService: React.FC = () => {
                 >
                   <span className="text-[13px] font-black text-dark dark:text-white whitespace-nowrap">درخواست ویتر</span>
                   <div className="shrink-0 w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
-                    <Bell size={18} />
+                    <ConciergeBell size={18} />
                   </div>
                 </motion.button>
                 
@@ -102,24 +102,24 @@ const WaiterService: React.FC = () => {
           <motion.button
             layout
             onClick={() => setIsOpen(!isOpen)}
-            className={`relative w-14 h-14 rounded-[22px] flex items-center justify-center shadow-[0_12px_44px_rgba(0,0,0,0.25)] transition-all duration-500 border border-white/20 dark:border-white/10 ${
+            className={`relative w-11 h-11 rounded-[16px] flex items-center justify-center shadow-[0_10px_35px_rgba(0,0,0,0.2)] transition-all duration-500 border border-white/20 dark:border-white/10 ${
               isCalled 
                 ? 'bg-green-500 text-white' 
-                : 'bg-primary dark:bg-primary text-white shadow-primary/30'
+                : 'bg-primary dark:bg-primary text-white shadow-md shadow-primary/20'
             }`}
             whileTap={{ scale: 0.9 }}
           >
             {/* طراحی مشابه AssistiveTouch: لایه‌های داخلی */}
-            <div className={`absolute inset-0.5 rounded-[20px] border border-white/10 dark:border-white/5 pointer-events-none transition-opacity ${isOpen ? 'opacity-0' : 'opacity-100'}`} />
+            <div className={`absolute inset-0.5 rounded-[14px] border border-white/10 dark:border-white/5 pointer-events-none transition-opacity ${isOpen ? 'opacity-0' : 'opacity-100'}`} />
             
             {isCalled ? (
-              <Check size={28} strokeWidth={3} />
+              <Check size={20} strokeWidth={3} />
             ) : isOpen ? (
-              <X size={26} strokeWidth={2.5} />
+              <X size={18} strokeWidth={2.5} />
             ) : (
               <div className="relative">
-                <Bell size={26} className="opacity-95" strokeWidth={2.2} />
-                <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white rounded-full animate-pulse shadow-sm" />
+                <ConciergeBell size={20} className="opacity-95" strokeWidth={2.2} />
+                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-white rounded-full animate-pulse shadow-sm" />
               </div>
             )}
           </motion.button>

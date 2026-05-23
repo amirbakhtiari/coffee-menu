@@ -107,7 +107,7 @@ const Orders: React.FC = () => {
               <History size={64} className="opacity-10 mb-6" />
               <p className="font-black text-dark/60 dark:text-white/60">هنوز سفارشی ثبت نکرده‌اید</p>
               <button 
-                onClick={() => navigate('/menu')}
+                onClick={() => navigate('/')}
                 className="mt-6 text-primary text-sm font-black underline"
               >
                 مشاهده منو و اولین سفارش

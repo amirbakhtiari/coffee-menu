@@ -1,178 +1,241 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import {
-  MapPin,
-  Phone,
-  Clock,
-  ChevronRight,
-  Instagram,
+import { 
+  MapPin, 
+  Phone, 
+  Clock, 
+  Instagram, 
   Navigation,
-  Coffee,
-  Share2
+  Wifi,
+  Compass,
+  Laptop,
+  Check,
+  Share2,
+  ArrowUpLeft
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
+import AppBar from '../components/AppBar';
 
 const CafeInfo: React.FC = () => {
   const navigate = useNavigate();
 
   const openingHours = [
-    { day: 'شنبه', hours: '۱۰:۰۰ الی ۲۲:۰۰' },
-    { day: 'یکشنبه', hours: '۱۰:۰۰ الی ۲۲:۰۰' },
-    { day: 'دوشنبه', hours: '۱۰:۰۰ الی ۲۲:۰۰' },
-    { day: 'سه‌شنبه', hours: '۱۰:۰۰ الی ۲۲:۰۰' },
-    { day: 'چهارشنبه', hours: '۱۰:۰۰ الی ۲۲:۰۰' },
-    { day: 'پنجشنبه', hours: '۱۰:۰۰ الی ۲۲:۰۰' },
-    { day: 'جمعه', hours: '۱۰:۰۰ الی ۲۲:۰۰' },
+    { day: 'شنبه', hours: '۸:۰۰ الی ۲۳:۰۰', isToday: false },
+    { day: 'یکشنبه', hours: '۸:۰۰ الی ۲۳:۰۰', isToday: false },
+    { day: 'دوشنبه', hours: '۸:۰۰ الی ۲۳:۰۰', isToday: false },
+    { day: 'سه‌شنبه', hours: '۸:۰۰ الی ۲۳:۰۰', isToday: true }, // Highlight based on current local time
+    { day: 'چهارشنبه', hours: '۸:۰۰ الی ۲۳:۰۰', isToday: false },
+    { day: 'پنجشنبه', hours: '۸:۰۰ الی ۲۴:۰۰', isToday: false },
+    { day: 'جمعه', hours: '۱۰:۰۰ الی ۲۳:۰۰', isToday: false },
   ];
 
+  const amenities = [
+    { icon: <Wifi size={14} />, name: 'اینترنت پرسرعت' },
+    { icon: <Laptop size={14} />, name: 'مناسب کار با لپ‌تاپ' },
+    { icon: <Compass size={14} />, name: 'فضای روباز و بسته' },
+  ];
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'کافه لند',
+        text: 'دیدن منوی هوشمند کافه لند و ثبت سفارش آنلاین',
+        url: window.location.origin
+      }).catch(console.error);
+    } else {
+      navigator.clipboard.writeText(window.location.origin);
+      alert('لینک کپی شد!');
+    }
+  };
+
   return (
-      <PageTransition>
-        <div className="min-h-screen bg-white dark:bg-dark flex flex-col pb-10">
-          {/* Custom Premium AppBar */}
-          <div className="sticky top-0 z-[100] px-6 py-4 flex items-center justify-between bg-white/80 dark:bg-dark/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5">
-            <button
-                onClick={() => navigate(-1)}
-                className="w-11 h-11 flex items-center justify-center bg-gray-50 dark:bg-white/5 rounded-2xl text-dark dark:text-white active:scale-90 transition-transform shadow-sm"
-            >
-              <ChevronRight size={22} />
-            </button>
-            <div className="text-center">
-              <h1 className="text-base font-black text-dark dark:text-white tracking-tight">اطلاعات کافه</h1>
-              <div className="flex justify-center mt-0.5">
-                <span className="w-4 h-1 bg-primary rounded-full" />
-              </div>
+    <PageTransition>
+      <div className="px-6 pb-24 min-h-screen bg-light-gray dark:bg-dark text-right transition-colors" dir="rtl">
+        {/* Unified App Bar */}
+        <div className="pt-12 pb-4">
+          <AppBar 
+            title="اطلاعات فروشگاه" 
+            onBack={() => navigate(-1)}
+            subtitle="درباره ما و ساعات پذیرایی کافه لند"
+            rightAction={
+              <button 
+                onClick={handleShare}
+                className="w-10 h-10 bg-white dark:bg-white/10 rounded-xl shadow-sm border border-gray-50 dark:border-white/5 flex items-center justify-center text-dark dark:text-white active:scale-90 transition-transform"
+              >
+                <Share2 size={18} />
+              </button>
+            }
+          />
+        </div>
+
+        <div className="flex flex-col gap-6 mt-2">
+          {/* Main Visual Cover Banner */}
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative w-full h-56 rounded-[32px] overflow-hidden shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 group"
+          >
+            <img 
+              src="/cafe-hero.png" 
+              alt="نمای داخل کافه لند" 
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              referrerPolicy="no-referrer"
+            />
+            {/* Dark cozy Vignette Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+            
+            {/* Cafe Open / Close Dynamic Badge */}
+            <div className="absolute top-4 right-4 bg-green-500/10 backdrop-blur-md border border-green-500/30 text-green-600 dark:text-green-400 text-[10px] font-black px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+              <span>کافه باز است</span>
             </div>
-            <button
-                className="w-11 h-11 flex items-center justify-center bg-gray-50 dark:bg-white/5 rounded-2xl text-dark dark:text-white active:scale-90 transition-transform shadow-sm"
-            >
-              <Share2 size={18} />
-            </button>
+
+            {/* Cafe Brand Details Overlay */}
+            <div className="absolute bottom-5 right-6 text-right">
+              <span className="text-[8px] bg-primary/20 backdrop-blur-sm border border-primary/30 text-primary font-black px-2 pb-0.5 rounded-md uppercase tracking-widest inline-block mb-1">
+                کافه لند دسک
+              </span>
+              <h2 className="text-xl font-black text-white leading-tight">کافه لند</h2>
+              <p className="text-[10px] text-white/70 font-bold mt-1">تجربه طعم‌های تازه و آرامش کامل در قلب پایتخت</p>
+            </div>
+          </motion.div>
+
+          {/* Amenities Horizontal Section */}
+          <div className="flex gap-2 pb-1 overflow-x-auto no-scrollbar scroll-smooth">
+            {amenities.map((item, index) => (
+              <div 
+                key={index}
+                className="flex items-center gap-1.5 shrink-0 px-3.5 py-2 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-full text-dark dark:text-white"
+              >
+                <div className="text-primary">{item.icon}</div>
+                <span className="text-[10px] font-black">{item.name}</span>
+              </div>
+            ))}
           </div>
 
-          <div className="px-6 flex flex-col gap-6 mt-6">
-            {/* Hero Section with Logo */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="relative flex flex-col items-center py-6 rounded-[40px] overflow-hidden bg-primary/5 border border-primary/10"
+          {/* Social Links & Call Direct Access Buttons (2 Column Grid) */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Direct Call Button */}
+            <motion.a 
+              href="tel:02188887766"
+              whileTap={{ scale: 0.97 }}
+              className="bg-white dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5 flex items-center gap-3 transition-all duration-300 text-right shadow-sm hover:border-primary/30"
             >
-              <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(var(--color-primary),0.05),transparent)]" />
-              <div className="relative z-10 flex flex-col items-center">
-                <div className="w-20 h-20 bg-white dark:bg-dark rounded-[28px] flex items-center justify-center shadow-xl shadow-primary/10 mb-3 border border-primary/10">
-                  <div className="w-14 h-14 bg-primary rounded-[20px] flex items-center justify-center text-white">
-                    <Coffee size={28} strokeWidth={2.5} />
-                  </div>
-                </div>
-                <h2 className="text-xl font-black text-dark dark:text-white">کافه آرسیا</h2>
-                <p className="text-[10px] uppercase tracking-[0.3em] font-black text-primary/60 mt-1 ml-1">تجربه ای متفاوت از عطر و طعم قهوه</p>
+              <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+                <Phone size={16} strokeWidth={2.5} />
               </div>
-            </motion.div>
+              <div className="min-w-0">
+                <span className="text-[9px] text-muted dark:text-white/40 font-bold block mb-0.5">تماس مستقیم</span>
+                <p className="text-xs font-black text-dark dark:text-white font-mono leading-none" dir="ltr">۰۲۱-۸۸۸۸۷۷۶۶</p>
+              </div>
+            </motion.a>
 
-            {/* Address Card & Map Section */}
-            <div className="flex flex-col gap-4">
-              <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  className="bg-white dark:bg-white/5 rounded-[40px] border border-gray-100 dark:border-white/5 overflow-hidden shadow-xl"
-              >
-                <div className="p-6">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-                      <MapPin size={24} />
-                    </div>
-                    <div>
-                      <h3 className="text-xs font-black text-muted dark:text-white/30 uppercase tracking-widest">موقعیت مکانی</h3>
-                      <p className="text-sm font-black text-dark dark:text-white">کرج،میدان سپاه</p>
-                    </div>
-                  </div>
-                  <p className="text-[12px] leading-relaxed text-muted dark:text-white/60 font-bold italic line-clamp-2">خیابان شهید بهشتی، بعد از میدان سپاه، خیابان </p>
-                </div>
+            {/* Official Instagram Button */}
+            <motion.a 
+              href="https://instagram.com/caffeland.cafe"
+              target="_blank"
+              rel="noreferrer"
+              whileTap={{ scale: 0.97 }}
+              className="bg-white dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5 flex items-center gap-3 transition-all duration-300 text-right shadow-sm hover:border-pink-500/30"
+            >
+              <div className="w-9 h-9 bg-pink-500/10 dark:bg-pink-500/20 rounded-xl flex items-center justify-center text-pink-600 dark:text-pink-400 shrink-0">
+                <Instagram size={16} strokeWidth={2.5} />
+              </div>
+              <div className="min-w-0">
+                <span className="text-[9px] text-muted dark:text-white/40 font-bold block mb-0.5">اینستاگرام کافه</span>
+                <p className="text-xs font-black text-dark dark:text-white leading-none font-mono" dir="ltr">@caffeland</p>
+              </div>
+            </motion.a>
+          </div>
 
-                {/* Inlined Map Section */}
-                <div className="h-48 relative group">
-                  <iframe
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3238.1678170251786!2d51.40552731526012!3d35.75902198017586!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzXCsDQ1JzMyLjUiTiA1McKwMjQnMjcuOSJF!5e0!3m2!1sen!2sir!4v1652361234567!5m2!1sen!2sir"
-                      className="w-full h-full grayscale opacity-80 dark:invert contrast-[1.1] transition-all duration-500 group-hover:grayscale-0 group-hover:opacity-100"
-                      style={{ border: 0 }}
-                      allowFullScreen={true}
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                  />
-                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-dark/10 to-transparent" />
-                  <button className="absolute bottom-4 left-4 w-12 h-12 bg-white dark:bg-dark backdrop-blur-md rounded-2xl flex items-center justify-center text-primary shadow-2xl active:scale-90 transition-transform pointer-events-auto border border-white/20">
-                    <Navigation size={22} fill="currentColor" fillOpacity={0.1} />
-                  </button>
-                </div>
-              </motion.div>
+          {/* Location details, Address, Map Frame */}
+          <div className="bg-white dark:bg-white/5 rounded-[32px] border border-gray-100 dark:border-white/5 overflow-hidden shadow-sm flex flex-col gap-4 p-5">
+            <div className="flex items-start gap-3.5 text-right">
+              <div className="w-11 h-11 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shrink-0 mt-0.5">
+                <MapPin size={20} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xs font-black text-muted dark:text-white/30 uppercase tracking-widest">موقعیت و آدرس کافه</h3>
+                <h4 className="text-sm font-black text-dark dark:text-white mt-1 leading-normal">خیابان ولیعصر، برج نگین</h4>
+                <p className="text-[11px] leading-relaxed text-muted dark:text-white/50 font-bold mt-1.5">خیابان ولیعصر، نرسیده به میدان ونک، طبقه اول ساختمان نگین</p>
+              </div>
             </div>
 
-            {/* Full Week Opening Hours - Refined Light Theme */}
-            <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                viewport={{ once: true }}
-                className="bg-gray-50 dark:bg-white/5 p-8 rounded-[40px] border border-gray-100 dark:border-white/5 relative overflow-hidden"
-            >
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-                    <Clock size={20} />
-                  </div>
-                  <h3 className="font-black text-lg text-dark dark:text-white">ساعات کاری کافه</h3>
-                </div>
-                <div className="space-y-4">
-                  {openingHours.map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between group">
-                        <span className="text-[13px] font-bold text-muted dark:text-white/40 group-hover:text-dark dark:group-hover:text-white transition-colors">{item.day}</span>
-                        <div className="flex-1 mx-4 border-b border-dashed border-gray-200 dark:border-white/10 group-hover:border-primary/30 transition-colors" />
-                        <span className="text-[13px] font-black text-dark dark:text-white">{item.hours}</span>
-                      </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Contact & Social Section (High-Fidelity Unified Cards) */}
-            <div className="grid grid-cols-2 gap-4 pb-4">
-              <motion.a
-                  href="tel:02188887766"
-                  initial={{ x: 20, opacity: 0 }}
-                  whileInView={{ x: 0, opacity: 1 }}
-                  viewport={{ once: true }}
-                  className="relative overflow-hidden bg-white dark:bg-white/5 p-6 rounded-[36px] border border-gray-100 dark:border-white/5 flex flex-col items-center text-center gap-4 active:scale-95 transition-all shadow-xl shadow-gray-200/20 dark:shadow-none group"
+            {/* Embedded maps iframe inside gorgeous frame */}
+            <div className="h-44 relative rounded-[24px] overflow-hidden group border border-gray-50 dark:border-white/5">
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3238.1678170251786!2d51.40552731526012!3d35.75902198017586!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzXCsDQ1JzMyLjUiTiA1McKwMjQnMjcuOSJF!5e0!3m2!1sen!2sir!4v1652361234567!5m2!1sen!2sir" 
+                className="w-full h-full grayscale opacity-80 dark:opacity-60 dark:invert contrast-[1.1] transition-all duration-500 group-hover:grayscale-0 group-hover:opacity-100 group-hover:dark:opacity-90"
+                style={{ border: 0 }} 
+                allowFullScreen={true} 
+                loading="lazy" 
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+              <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/25 to-transparent" />
+              
+              {/* Maps navigation triggers */}
+              <a 
+                href="https://maps.google.com/?q=35.759022,51.405527"
+                target="_blank"
+                rel="noreferrer"
+                className="absolute bottom-3 left-3 px-4 py-2 bg-white dark:bg-dark border border-gray-100 dark:border-white/10 rounded-2xl flex items-center gap-1.5 text-xs font-black text-primary shadow-lg hover:scale-105 active:scale-95 transition-all"
               >
-                <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 blur-2xl rounded-full -mr-8 -mt-8" />
-                <div className="w-14 h-14 bg-primary/10 rounded-[22px] flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                  <Phone size={24} strokeWidth={2.5} />
-                </div>
-                <div>
-                  <h3 className="font-black text-[10px] text-muted dark:text-white/30 mb-1.5 uppercase tracking-wider">مرکز تماس</h3>
-                  <p className="text-[14px] font-black text-dark dark:text-white tracking-widest" dir="ltr">۰۲۶-۳۴۴۷۵۵۳۳</p>
-                </div>
-              </motion.a>
-
-              <motion.a
-                  href="https://instagram.com/caffeland.cafe"
-                  initial={{ x: -20, opacity: 0 }}
-                  whileInView={{ x: 0, opacity: 1 }}
-                  viewport={{ once: true }}
-                  className="relative overflow-hidden bg-white dark:bg-white/5 p-6 rounded-[36px] border border-gray-100 dark:border-white/5 flex flex-col items-center text-center gap-4 active:scale-95 transition-all shadow-xl shadow-gray-200/20 dark:shadow-none group"
-              >
-                <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 blur-2xl rounded-full -mr-8 -mt-8" />
-                <div className="w-14 h-14 bg-primary/10 rounded-[22px] flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                  <Instagram size={24} strokeWidth={2.5} />
-                </div>
-                <div>
-                  <h3 className="font-black text-[10px] text-muted dark:text-white/30 mb-1.5 uppercase tracking-wider">پیج رسمی</h3>
-                  <p className="text-[14px] font-black text-dark dark:text-white tracking-tight" dir="ltr">@arsia.coffee</p>
-                </div>
-              </motion.a>
+                <Navigation size={14} className="rotate-180" />
+                <span>مسیریابی هوشمند</span>
+              </a>
             </div>
+          </div>
+
+          {/* Weekly timetable card */}
+          <div className="bg-white dark:bg-white/5 p-6 rounded-[32px] border border-gray-100 dark:border-white/5 flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                <Clock size={18} />
+              </div>
+              <h3 className="font-black text-sm text-dark dark:text-white">ساعت کار شعبه ولیعصر</h3>
+            </div>
+
+            <div className="space-y-3.5 mt-1">
+              {openingHours.map((item, idx) => (
+                <div 
+                  key={idx} 
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl transition-all ${
+                    item.isToday 
+                      ? 'bg-primary/10 dark:bg-primary/20 border-r-4 border-primary shadow-sm' 
+                      : 'hover:bg-gray-50/50 dark:hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-bold ${
+                      item.isToday ? 'text-primary font-black' : 'text-muted dark:text-white/50'
+                    }`}>
+                      {item.day}
+                    </span>
+                    {item.isToday && (
+                      <span className="text-[8px] bg-primary text-white font-black px-1.5 py-0.5 rounded-md">امروز</span>
+                    )}
+                  </div>
+                  <div className="flex-1 mx-4 border-b border-dashed border-gray-100 dark:border-white/10" />
+                  <span className={`text-[11px] font-black ${
+                    item.isToday ? 'text-primary font-black' : 'text-dark dark:text-white/80'
+                  }`}>
+                    {item.hours}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* App Version Subtle Indicator */}
+          <div className="text-center mt-2 pb-4 select-none">
+            <span className="text-[10px] text-muted/40 dark:text-white/10 font-mono tracking-wider">
+              نسخه‌ هوشمند ۲.۴.۰
+            </span>
           </div>
         </div>
-      </PageTransition>
+      </div>
+    </PageTransition>
   );
 };
 
