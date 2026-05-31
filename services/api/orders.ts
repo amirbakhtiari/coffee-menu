@@ -1,5 +1,5 @@
 
-import { Order } from '../../types';
+import { Order } from '@/types.ts';
 
 export const fetchOrders = async (): Promise<Order[]> => {
   return new Promise((resolve) => {

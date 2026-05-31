@@ -13,7 +13,7 @@ import PageTransition from '../components/PageTransition';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.DISCOUNTED);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.HOT_COFFEE);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isPinned, setIsPinned] = useState(false);
 
@@ -110,7 +110,7 @@ const Home: React.FC = () => {
           </div>
 
           <div className="text-dark dark:text-white mb-2 relative z-10 text-right">
-            <h1 className="text-[11px] text-muted font-black tracking-[2px] mb-1">کافه لند</h1>
+            <h1 className="text-[11px] text-muted font-black tracking-[2px] mb-1">کافه آرسیا</h1>
             <p className="text-2xl font-black leading-tight">{getGreeting()} وقت یه قهوه خوبه! ☕</p>
           </div>
         </div>
@@ -139,7 +139,7 @@ const Home: React.FC = () => {
         <div className="px-6 pb-24 mt-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-black text-dark dark:text-white">
-              {selectedCategory === CategoryType.DISCOUNTED ? 'پیشنهادهای شگفت‌انگیز لند' : 'آیتم‌های برگزیده'}
+              {selectedCategory === CategoryType.DISCOUNTED ? 'پیشنهادهای شگفت‌انگیز لند' : 'آیتم‌های موجود'}
             </h2>
             <span className="text-[10px] font-black text-muted dark:text-white/40 bg-white dark:bg-white/5 py-1 px-3 rounded-lg shadow-sm border border-gray-100 dark:border-white/5">
               {products.length} محصول

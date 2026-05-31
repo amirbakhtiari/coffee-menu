@@ -39,7 +39,7 @@ const Menu: React.FC = () => {
         <div className="pt-12 pb-4 -mx-6 px-6 mb-2 bg-light-gray dark:bg-dark transition-colors">
           <AppBar 
             title="منوی کامل" 
-            subtitle="انتخاب از میان بهترین‌های کافه لند"
+            subtitle="انتخاب از میان بهترین‌های کافه آرسیا"
             onBack={() => navigate('/')}
             rightAction={
               <button 

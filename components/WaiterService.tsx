@@ -13,7 +13,7 @@ const WaiterService: React.FC = () => {
     
     setTimeout(() => {
       setIsCalled(false);
-    }, 5000);
+    }, 3000);
   };
 
   return (

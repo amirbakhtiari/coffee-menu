@@ -43,7 +43,7 @@ const Offline: React.FC = () => {
       </button>
 
       <p className="fixed bottom-10 text-[10px] text-muted font-black uppercase tracking-widest opacity-30">
-        حالت آفلاین کافه لند
+        حالت آفلاین کافه آرسیا
       </p>
     </div>
   );

@@ -1,11 +1,19 @@
 
 export enum CategoryType {
   DISCOUNTED = 'Discounted',
-  CAPPUCCINO = 'Cappuccino',
+  // CAPPUCCINO = 'Cappuccino',
   LATTE = 'Latte',
   ESPRESSO = 'Espresso',
   MOCHA = 'Mocha',
-  PREVIOUS_ORDERS = 'PreviousOrders'
+  PREVIOUS_ORDERS = 'PreviousOrders',
+  HOT_COFFEE = 'HotCoffee',
+  COLD_COFFEE = 'ColdCoffee',
+  MILKSHAKE = 'MilksHak',
+  HOT_DRINKS = 'HotDrinks',
+  TEA_HERBAL_TEA = 'TeaHerbalTea',
+  COLD_DRINKS = 'ColdDrinks',
+  CAKE = 'Cake',
+  SNACKS = 'Snacks',
 }
 
 export interface ProductOptions {

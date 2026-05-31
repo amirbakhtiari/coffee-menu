@@ -24,7 +24,7 @@ export const showNotification = (title: string, options?: NotificationOptions) =
   navigator.serviceWorker.ready.then((registration) => {
     if (Notification.permission === 'granted') {
       registration.showNotification(title, {
-        body: options?.body || 'پیام جدید از کافه لند',
+        body: options?.body || 'پیام جدید از کافه آرسیا',
         icon: 'https://img.icons8.com/color/192/coffee-beans.png',
         badge: 'https://img.icons8.com/color/96/coffee-beans.png',
         vibrate: [200, 100, 200],
@@ -45,7 +45,7 @@ export const scheduleTestNotification = (delayMs: number = 5000) => {
   console.log(`نوتیفیکیشن برای ${delayMs} میلی‌ثانیه دیگر برنامه‌ریزی شد...`);
   setTimeout(() => {
     showNotification('☕ قهوه شما آماده است!', {
-      body: 'باریستای کافه لند سفارش شما را آماده کرده است. نوش جان!',
+      body: 'باریستای کافه آرسیا سفارش شما را آماده کرده است. نوش جان!',
       tag: 'order-ready',
     });
   }, delayMs);
