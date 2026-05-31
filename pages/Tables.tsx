@@ -810,7 +810,9 @@ export const Tables: React.FC = () => {
                                       key={index}
                                       className={`w-12 h-14 rounded-2xl flex items-center justify-center font-mono text-xl font-extrabold border bg-gray-50 dark:bg-white/[0.02] shadow-sm transition-all duration-300 ${
                                         char 
-                                          ? 'border-emerald-500/40 text-emerald-600 dark:text-emerald-400 scale-[1.03] bg-emerald-500/[0.01]' 
+                                          ? otpCode === '1234'
+                                            ? 'border-emerald-500/40 text-emerald-600 dark:text-emerald-400 scale-[1.03] bg-emerald-500/[0.01]'
+                                            : 'border-rose-300 dark:border-rose-950/40 text-rose-500 scale-[1.03]'
                                           : isFocused 
                                             ? 'border-primary ring-4 ring-primary/10 scale-[1.05] bg-white dark:bg-black/10' 
                                             : 'border-gray-200 dark:border-white/10'
@@ -838,6 +840,26 @@ export const Tables: React.FC = () => {
                                 })}
                               </div>
                             </div>
+
+                            {otpCode.length > 0 && (
+                              <div className="text-center">
+                                {otpCode.length < 4 ? (
+                                  <span className="text-[11px] font-bold text-gray-400">
+                                    {`وارد شدن ${otpCode.length} رقم از ۴ رقم...`}
+                                  </span>
+                                ) : (
+                                  <span className={`text-[11px] font-extrabold pb-0.5 ${
+                                    otpCode === '1234' 
+                                      ? 'text-emerald-500 dark:text-emerald-400' 
+                                      : 'text-rose-500 dark:text-rose-400'
+                                  }`}>
+                                    {otpCode === '1234' 
+                                      ? '✓ کد تایید صحیح است.' 
+                                      : 'کد تایید وارد شده صحیح نیست. کد آزمایشی ۱۲۳۴ است.'}
+                                  </span>
+                                )}
+                              </div>
+                            )}
 
                             <div className="flex items-center justify-between text-[11px] font-bold text-gray-500 dark:text-gray-400">
                               <span className="bg-orange-500/5 text-primary tracking-wide px-2 py-1 rounded-lg">کد تستی فعال‌سازی: ١٢٣٤</span>

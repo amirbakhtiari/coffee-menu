@@ -2,13 +2,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronRight, Minus, Plus, Coffee, Droplets, Milk, Check, Tag } from 'lucide-react';
-import { useProduct } from '../hooks/api/useProductsApi';
+import { useProduct, useProducts } from '../hooks/api/useProductsApi';
 import { Product, ProductOptions } from '../types';
 import { useCartStore } from '../store/useCartStore';
 import Button from '../components/Button';
 import PageTransition from '../components/PageTransition';
 import { motion } from 'framer-motion';
 import AppBar from '../components/AppBar';
+import ProductCard from '../components/ProductCard';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +19,17 @@ const ProductDetail: React.FC = () => {
   const [imageError, setImageError] = useState(false);
   
   const { data: product, isLoading: loading } = useProduct(id);
+  const { products } = useProducts(product?.category);
+
+  const relatedProducts = useMemo(() => {
+    if (!products || !product) return [];
+    return products.filter(p => p.id !== product.id);
+  }, [products, product]);
+
+  // اسکرول به بالای صفحه هنگام تغییر محصول
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   const [size, setSize] = useState<ProductOptions['size']>('M');
   const [sugar, setSugar] = useState<ProductOptions['sugar']>('50%');
@@ -183,6 +195,25 @@ const ProductDetail: React.FC = () => {
               <h2 className="font-black text-sm mb-3 text-dark dark:text-white">درباره این قهوه</h2>
               <p className="text-muted dark:text-white/60 text-[13px] leading-relaxed text-justify opacity-80 font-medium">{product.description}</p>
             </div>
+
+            {relatedProducts.length > 0 && (
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-between items-center px-1">
+                  <h3 className="font-black text-[15px] text-dark dark:text-white flex items-center gap-2">
+                    <Coffee size={18} className="text-primary" />
+                    <span>محصولات مرتبط</span>
+                  </h3>
+                  <span className="text-[10px] text-primary/75 font-bold animate-pulse">اسکرول کنید ←</span>
+                </div>
+                <div className="flex gap-4 overflow-x-auto pb-3 -mx-6 px-6 scrollbar-none snap-x snap-mandatory scroll-smooth" style={{ WebkitOverflowScrolling: 'touch' }}>
+                  {relatedProducts.map((p) => (
+                    <div key={p.id} className="w-36 shrink-0 snap-start">
+                      <ProductCard product={p} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="flex justify-between items-center bg-dark rounded-[36px] p-5 shadow-2xl mb-8">
               <div className="flex items-center gap-4 bg-white/5 p-1 rounded-2xl">
