@@ -1,9 +1,9 @@
 
 {
   "id": "com.cafeland.app",
-  "name": "کافه آرسیا - منوی هوشمند",
-  "short_name": "کافه آرسیا",
-  "description": "تجربه مدرن سفارش آنلاین در کافه آرسیا",
+  "name": "کافه لند - منوی هوشمند",
+  "short_name": "کافه لند",
+  "description": "تجربه مدرن سفارش آنلاین در کافه لند",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

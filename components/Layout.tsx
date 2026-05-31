@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import InstallBanner from './InstallBanner';
 import WaiterService from './WaiterService';
+import ToastNotification from './Notification';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -26,6 +27,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     location.pathname === '/gateway-transition' ||
     location.pathname === '/payment-result' ||
     location.pathname === '/cafe-info' ||
+    location.pathname === '/tables' ||
     location.pathname === '/success';
 
   // دکمه ویتر را در صفحات خاص مخفی می‌کنیم
@@ -38,6 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     location.pathname === '/gateway-transition' ||
     location.pathname === '/payment-result' ||
     location.pathname === '/cafe-info' ||
+    location.pathname === '/tables' ||
     location.pathname === '/success';
 
   // برای صفحاتی که فوتر اختصاصی دارند یا تمام‌صفحه هستند، پدینگ پایین پیش‌فرض را حذف می‌کنیم
@@ -46,6 +49,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="flex flex-col min-h-screen max-w-md mx-auto relative bg-light-gray dark:bg-dark text-dark dark:text-white transition-colors overflow-x-clip">
       <InstallBanner />
+      {/* <ToastNotification /> */}
       
       {/* دکمه شناور ویتر در تمام صفحات به جز موارد استثنا نمایش داده می‌شود */}
       {!hideWaiter && <WaiterService />}

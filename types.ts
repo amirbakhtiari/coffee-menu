@@ -1,19 +1,11 @@
 
 export enum CategoryType {
   DISCOUNTED = 'Discounted',
-  // CAPPUCCINO = 'Cappuccino',
+  CAPPUCCINO = 'Cappuccino',
   LATTE = 'Latte',
   ESPRESSO = 'Espresso',
   MOCHA = 'Mocha',
-  PREVIOUS_ORDERS = 'PreviousOrders',
-  HOT_COFFEE = 'HotCoffee',
-  COLD_COFFEE = 'ColdCoffee',
-  MILKSHAKE = 'MilksHak',
-  HOT_DRINKS = 'HotDrinks',
-  TEA_HERBAL_TEA = 'TeaHerbalTea',
-  COLD_DRINKS = 'ColdDrinks',
-  CAKE = 'Cake',
-  SNACKS = 'Snacks',
+  PREVIOUS_ORDERS = 'PreviousOrders'
 }
 
 export interface ProductOptions {
@@ -78,3 +70,15 @@ export interface Order {
     total: number;
   };
 }
+
+export interface Table {
+  id: number;
+  number: string;
+  capacity: number;
+  zone: 'سالن اصلی' | 'تراس' | 'بخش VIP';
+  isReserved: boolean;
+  reservedBy?: string;
+  reserveTime?: string;
+  features: string[];
+}
+

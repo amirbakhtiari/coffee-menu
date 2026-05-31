@@ -10,12 +10,19 @@ import { useProducts } from '../hooks/api/useProductsApi';
 import { useCategories } from '../hooks/api/useCategoriesApi';
 import { CategoryType } from '../types';
 import PageTransition from '../components/PageTransition';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { useSwipeGesture } from '../hooks/useSwipeGesture';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.HOT_COFFEE);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.DISCOUNTED);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isPinned, setIsPinned] = useState(false);
+
+  useEffect(() => {
+    // نمایش نوتیفیکیشن خوش‌آمدگویی تستی برای صحت عملکرد سیستم
+    useNotificationStore.getState().info('سلام! به کافه لند خوش آمدید ☕', 4000);
+  }, []);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -42,6 +49,36 @@ const Home: React.FC = () => {
   }, []);
 
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+
+  // Scroll to top when category changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [selectedCategory]);
+
+  // Swipe to change categories in RTL:
+  // Swipe Left -> Next Category (Index + 1)
+  // Swipe Right -> Previous Category (Index - 1)
+  const handleSwipeLeft = () => {
+    if (!categories || categories.length === 0) return;
+    const currentIndex = categories.findIndex(c => c.id === selectedCategory);
+    if (currentIndex !== -1 && currentIndex < categories.length - 1) {
+      setSelectedCategory(categories[currentIndex + 1].id);
+    }
+  };
+
+  const handleSwipeRight = () => {
+    if (!categories || categories.length === 0) return;
+    const currentIndex = categories.findIndex(c => c.id === selectedCategory);
+    if (currentIndex > 0) {
+      setSelectedCategory(categories[currentIndex - 1].id);
+    }
+  };
+
+  const swipeHandlers = useSwipeGesture({
+    onSwipeLeft: handleSwipeLeft,
+    onSwipeRight: handleSwipeRight,
+    threshold: 50,
+  });
 
   const { products, loading, hasMore, fetchMoreProducts, isFetchingNextPage } = useProducts(selectedCategory);
 
@@ -82,7 +119,10 @@ const Home: React.FC = () => {
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="group flex items-center bg-gray-50 dark:bg-white/[0.05] backdrop-blur-2xl rounded-[22px] p-1 border border-gray-100 dark:border-white/10 shadow-sm dark:shadow-2xl cursor-default min-w-0"
+              whileTap={{ scale: 0.96 }}
+              onClick={() => navigate('/tables')}
+              className="group flex items-center bg-gray-50 dark:bg-white/[0.05] hover:bg-gray-100/60 dark:hover:bg-white/[0.08] backdrop-blur-2xl rounded-[22px] p-1 border border-gray-100 dark:border-white/10 shadow-sm dark:shadow-2xl cursor-pointer active:scale-95 transition-all duration-200 min-w-0"
+              title="مشاهده وضعیت میزها"
             >
               <div className="flex flex-col items-start px-3 min-w-0">
                 <span className="text-[7px] text-primary font-black uppercase tracking-[1px] mb-0.5 opacity-80 whitespace-nowrap">میز اختصاصی</span>
@@ -110,7 +150,7 @@ const Home: React.FC = () => {
           </div>
 
           <div className="text-dark dark:text-white mb-2 relative z-10 text-right">
-            <h1 className="text-[11px] text-muted font-black tracking-[2px] mb-1">کافه آرسیا</h1>
+            <h1 className="text-[11px] text-muted font-black tracking-[2px] mb-1">کافه لند</h1>
             <p className="text-2xl font-black leading-tight">{getGreeting()} وقت یه قهوه خوبه! ☕</p>
           </div>
         </div>
@@ -136,10 +176,10 @@ const Home: React.FC = () => {
         </div>
 
         {/* Full Menu Item Grid / List Visualizer */}
-        <div className="px-6 pb-24 mt-4">
+        <div className="px-6 pb-4 mt-4 select-none" onTouchStart={swipeHandlers.onTouchStart} onTouchEnd={swipeHandlers.onTouchEnd}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-black text-dark dark:text-white">
-              {selectedCategory === CategoryType.DISCOUNTED ? 'پیشنهادهای شگفت‌انگیز لند' : 'آیتم‌های موجود'}
+              {selectedCategory === CategoryType.DISCOUNTED ? 'پیشنهادهای شگفت‌انگیز لند' : 'آیتم‌های برگزیده'}
             </h2>
             <span className="text-[10px] font-black text-muted dark:text-white/40 bg-white dark:bg-white/5 py-1 px-3 rounded-lg shadow-sm border border-gray-100 dark:border-white/5">
               {products.length} محصول
@@ -182,7 +222,7 @@ const Home: React.FC = () => {
               )}
 
               {!hasMore && products.length > 0 && (
-                <div className="col-span-full py-10 flex flex-col items-center gap-2 opacity-30 select-none text-right">
+                <div className="col-span-full pt-8 pb-2 flex flex-col items-center gap-2 opacity-30 select-none text-right">
                   <div className="w-10 h-px bg-current" />
                   <span className="text-[10px] font-black uppercase tracking-widest">پایان منو</span>
                 </div>

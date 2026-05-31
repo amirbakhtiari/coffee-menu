@@ -22,6 +22,7 @@ import Offline from './pages/Offline';
 import GatewayTransition from './pages/GatewayTransition';
 import PaymentResult from './pages/PaymentResult';
 import CafeInfo from './pages/CafeInfo';
+import Tables from './pages/Tables';
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -65,6 +66,7 @@ const AnimatedRoutes = () => {
         <Route path="/gateway-transition" element={<GatewayTransition />} />
         <Route path="/payment-result" element={<PaymentResult />} />
         <Route path="/cafe-info" element={<CafeInfo />} />
+        <Route path="/tables" element={<Tables />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>

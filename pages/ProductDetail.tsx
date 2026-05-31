@@ -125,7 +125,7 @@ const ProductDetail: React.FC = () => {
               <p className="text-muted dark:text-white/40 text-[11px] mt-1 font-medium">{product.subName}</p>
             </div>
 
-            {/*<div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-8">
               <section>
                 <div className="flex items-center gap-2 mb-4">
                   <Coffee size={18} className="text-primary" />
@@ -177,10 +177,10 @@ const ProductDetail: React.FC = () => {
                   ))}
                 </div>
               </section>
-            </div>*/}
+            </div>
 
             <div>
-              <h2 className="font-black text-sm mb-3 text-dark dark:text-white">درباره این آیتم</h2>
+              <h2 className="font-black text-sm mb-3 text-dark dark:text-white">درباره این قهوه</h2>
               <p className="text-muted dark:text-white/60 text-[13px] leading-relaxed text-justify opacity-80 font-medium">{product.description}</p>
             </div>
 

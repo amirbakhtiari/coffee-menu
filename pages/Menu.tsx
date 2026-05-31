@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LayoutGrid, List } from 'lucide-react';
 import CategoryBar from '../components/CategoryBar';
@@ -9,6 +9,7 @@ import { useCategories } from '../hooks/api/useCategoriesApi';
 import { CategoryType } from '../types';
 import PageTransition from '../components/PageTransition';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSwipeGesture } from '../hooks/useSwipeGesture';
 
 import AppBar from '../components/AppBar';
 
@@ -17,6 +18,36 @@ const Menu: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.DISCOUNTED);
   
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+
+  // Scroll to top when category changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [selectedCategory]);
+
+  // Swipe to change categories in RTL:
+  // Swipe Left -> Next Category (Index + 1)
+  // Swipe Right -> Previous Category (Index - 1)
+  const handleSwipeLeft = () => {
+    if (!categories || categories.length === 0) return;
+    const currentIndex = categories.findIndex(c => c.id === selectedCategory);
+    if (currentIndex !== -1 && currentIndex < categories.length - 1) {
+      setSelectedCategory(categories[currentIndex + 1].id);
+    }
+  };
+
+  const handleSwipeRight = () => {
+    if (!categories || categories.length === 0) return;
+    const currentIndex = categories.findIndex(c => c.id === selectedCategory);
+    if (currentIndex > 0) {
+      setSelectedCategory(categories[currentIndex - 1].id);
+    }
+  };
+
+  const swipeHandlers = useSwipeGesture({
+    onSwipeLeft: handleSwipeLeft,
+    onSwipeRight: handleSwipeRight,
+    threshold: 50,
+  });
 
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { products, loading, hasMore, fetchMoreProducts, isFetchingNextPage } = useProducts(selectedCategory);
@@ -35,11 +66,11 @@ const Menu: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="px-6 pb-24 min-h-screen bg-light-gray dark:bg-dark flex flex-col transition-colors">
+      <div className="px-6 pb-4 min-h-screen bg-light-gray dark:bg-dark flex flex-col transition-colors">
         <div className="pt-12 pb-4 -mx-6 px-6 mb-2 bg-light-gray dark:bg-dark transition-colors">
           <AppBar 
             title="منوی کامل" 
-            subtitle="انتخاب از میان بهترین‌های کافه آرسیا"
+            subtitle="انتخاب از میان بهترین‌های کافه لند"
             onBack={() => navigate('/')}
             rightAction={
               <button 
@@ -61,49 +92,51 @@ const Menu: React.FC = () => {
           />
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div 
-            key={selectedCategory}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className={viewMode === 'grid' ? "grid grid-cols-2 gap-4" : "flex flex-col gap-4"}
-          >
-            {products.map((product, index) => (
-              <motion.div 
-                key={product.id}
-                ref={index === products.length - 1 ? lastProductElementRef : undefined}
-                initial={{ opacity: 0, y: 20 }} 
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <ProductCard product={product} variant={viewMode} />
-              </motion.div>
-            ))}
+        <div className="flex-1 select-none" onTouchStart={swipeHandlers.onTouchStart} onTouchEnd={swipeHandlers.onTouchEnd}>
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={selectedCategory}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className={viewMode === 'grid' ? "grid grid-cols-2 gap-4" : "flex flex-col gap-4"}
+            >
+              {products.map((product, index) => (
+                <motion.div 
+                  key={product.id}
+                  ref={index === products.length - 1 ? lastProductElementRef : undefined}
+                  initial={{ opacity: 0, y: 20 }} 
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ProductCard product={product} variant={viewMode} />
+                </motion.div>
+              ))}
 
-            {(loading || isFetchingNextPage) && (
-              <>
-                {[1, 2, 3, 4].map(i => (
-                  <div key={`loading-${i}`} className={viewMode === 'grid' ? "bg-white dark:bg-black/20 p-3.5 rounded-[32px] flex flex-col gap-2 border border-gray-100 dark:border-white/5 shadow-sm animate-pulse" : "bg-white dark:bg-black/20 p-3.5 rounded-[24px] flex flex-row-reverse gap-4 border border-gray-100 dark:border-white/5 shadow-sm animate-pulse h-28"}>
-                    <div className={viewMode === 'grid' ? "aspect-square w-full rounded-[22px] bg-gray-100 dark:bg-white/5" : "w-24 shrink-0 rounded-[18px] bg-gray-100 dark:bg-white/5"}></div>
-                    <div className="flex-1 flex flex-col justify-center gap-2">
-                      <div className="h-3 w-3/4 rounded-full bg-gray-100 dark:bg-white/5"></div>
-                      <div className="h-2 w-1/2 rounded-full bg-gray-50 dark:bg-white/5"></div>
+              {(loading || isFetchingNextPage) && (
+                <>
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={`loading-${i}`} className={viewMode === 'grid' ? "bg-white dark:bg-black/20 p-3.5 rounded-[32px] flex flex-col gap-2 border border-gray-100 dark:border-white/5 shadow-sm animate-pulse" : "bg-white dark:bg-black/20 p-3.5 rounded-[24px] flex flex-row-reverse gap-4 border border-gray-100 dark:border-white/5 shadow-sm animate-pulse h-28"}>
+                      <div className={viewMode === 'grid' ? "aspect-square w-full rounded-[22px] bg-gray-100 dark:bg-white/5" : "w-24 shrink-0 rounded-[18px] bg-gray-100 dark:bg-white/5"}></div>
+                      <div className="flex-1 flex flex-col justify-center gap-2">
+                        <div className="h-3 w-3/4 rounded-full bg-gray-100 dark:bg-white/5"></div>
+                        <div className="h-2 w-1/2 rounded-full bg-gray-50 dark:bg-white/5"></div>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </>
-            )}
+                  ))}
+                </>
+              )}
 
-            {!hasMore && products.length > 0 && (
-              <div className="col-span-full py-10 flex flex-col items-center gap-2 opacity-30 select-none">
-                <div className="w-10 h-px bg-current" />
-                <span className="text-[10px] font-black uppercase tracking-widest">پایان منو</span>
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+              {!hasMore && products.length > 0 && (
+                <div className="col-span-full pt-8 pb-2 flex flex-col items-center gap-2 opacity-30 select-none">
+                  <div className="w-10 h-px bg-current" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">پایان منو</span>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
         
         {!loading && products.length === 0 && (
           <div className="text-center py-20 text-muted italic text-sm font-medium">محصولی در این دسته‌بندی یافت نشد.</div>

@@ -12,12 +12,14 @@ import PhoneLogin from './PhoneLogin';
 import OTPVerification from './OTPVerification';
 import { useUserProfileApi } from '../hooks/api/useUserApi';
 import { useAuthApi } from '../hooks/api/useAuthApi';
+import { useNotificationStore } from '../store/useNotificationStore';
 
 type AuthStep = 'guest' | 'phone' | 'otp';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const { warning } = useNotificationStore();
   
   const { profile: userProfile, isLoading: profileLoading } = useUserProfileApi();
   const { requestOtp, isRequestingOtp, verifyOtp, isVerifyingOtp, verifyOtpError } = useAuthApi();
@@ -46,7 +48,7 @@ const Profile: React.FC = () => {
 
   const handleTestNotification = async () => {
     if (isIOS && !isStandalone) {
-      alert('در آیفون، نوتیفیکیشن فقط بعد از نصب برنامه فعال می‌شود.');
+      warning('در آیفون، نوتیفیکیشن فقط بعد از نصب برنامه فعال می‌شود.');
       return;
     }
     const granted = await requestNotificationPermission();

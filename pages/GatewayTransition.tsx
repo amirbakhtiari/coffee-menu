@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CreditCard } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
@@ -8,24 +8,56 @@ import { useCartStore } from '../store/useCartStore';
 
 const GatewayTransition: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const totalAmount = useCartStore(state => state.totalAmount);
   const clearCart = useCartStore(state => state.clearCart);
 
+  const type = searchParams.get('type');
+  const tableId = searchParams.get('tableId');
+  const phone = searchParams.get('phone') || '';
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Simulate success
-      const currentCount = parseInt(localStorage.getItem('orderCount') || '2');
-      localStorage.setItem('orderCount', (currentCount + 1).toString());
-      clearCart();
-      navigate('/payment-result?status=success');
-    }, 4000);
+      if (type === 'table' && tableId) {
+        // Update table reservation status in mock storage
+        const saved = localStorage.getItem('cafe_tables_status');
+        if (saved) {
+          try {
+            const list = JSON.parse(saved);
+            const updated = list.map((t: any) => {
+              if (t.id === parseInt(tableId)) {
+                // Short Persian-formatted current time (like 20:15)
+                const PersianTime = new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+                return {
+                  ...t,
+                  isReserved: true,
+                  reservedBy: `شما (۰${phone.slice(-10)})`,
+                  reserveTime: `بیعانه ساعت ${PersianTime}`
+                };
+              }
+              return t;
+            });
+            localStorage.setItem('cafe_tables_status', JSON.stringify(updated));
+          } catch (e) {
+            console.error('Error updating tables storage', e);
+          }
+        }
+        navigate(`/payment-result?status=success&type=table&tableId=${tableId}`);
+      } else {
+        // Simulate normal food order success
+        const currentCount = parseInt(localStorage.getItem('orderCount') || '2');
+        localStorage.setItem('orderCount', (currentCount + 1).toString());
+        clearCart();
+        navigate('/payment-result?status=success');
+      }
+    }, 3500);
 
     return () => clearTimeout(timer);
-  }, [navigate, clearCart]);
+  }, [navigate, clearCart, type, tableId, phone]);
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-white dark:bg-dark flex flex-col items-center justify-center text-center gap-10 px-8">
+      <div className="min-h-screen bg-white dark:bg-dark flex flex-col items-center justify-center text-center gap-10 px-8" dir="rtl">
         <div className="relative">
           <motion.div 
             animate={{ rotate: 360 }}
@@ -40,7 +72,7 @@ const GatewayTransition: React.FC = () => {
         <div className="space-y-4">
           <h3 className="text-2xl font-black text-dark dark:text-white">در حال انتقال به درگاه بانکی</h3>
           <p className="text-sm text-muted dark:text-white/40 font-bold">
-            مبلغ قابل پرداخت: <span className="text-dark dark:text-white">{totalAmount().toLocaleString()} T</span>
+            مبلغ قابل پرداخت: <span className="text-dark dark:text-white font-mono">{type === 'table' ? '۵۰,۰۰۰' : totalAmount().toLocaleString()} تومان</span>
           </p>
         </div>
 
