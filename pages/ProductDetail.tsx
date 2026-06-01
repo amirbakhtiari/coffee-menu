@@ -2,60 +2,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronRight, Minus, Plus, Coffee, Droplets, Milk, Check, Tag } from 'lucide-react';
-import { useProduct, useProducts } from '../hooks/api/useProductsApi';
+import { useProduct } from '../hooks/api/useProductsApi';
 import { Product, ProductOptions } from '../types';
 import { useCartStore } from '../store/useCartStore';
 import Button from '../components/Button';
 import PageTransition from '../components/PageTransition';
 import { motion } from 'framer-motion';
 import AppBar from '../components/AppBar';
-
-interface RelatedProductCardProps {
-  product: Product;
-}
-
-const RelatedProductCard: React.FC<RelatedProductCardProps> = ({ product }) => {
-  const [imageError, setImageError] = useState(!product.image);
-  const navigate = useNavigate();
-
-  return (
-    <div 
-      onClick={() => navigate(`/product/${product.id}`)}
-      className="w-28 shrink-0 bg-gray-50/50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 rounded-2xl p-2 cursor-pointer active:scale-95 hover:border-primary/20 dark:hover:border-primary/20 transition-all text-right select-none snap-start group"
-    >
-      <div className="relative aspect-square overflow-hidden rounded-xl bg-secondary/10 flex items-center justify-center">
-        {product.image && !imageError ? (
-          <img 
-            src={product.image} 
-            alt={product.name} 
-            onError={() => setImageError(true)}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-primary/30">
-            <Coffee size={20} strokeWidth={1} />
-          </div>
-        )}
-        
-        {product.discountPercent && (
-          <span className="absolute top-1 right-1 bg-red-500 text-white text-[8px] font-black px-1 rounded-full shadow-sm">
-            {product.discountPercent}%
-          </span>
-        )}
-      </div>
-      
-      <div className="mt-1 px-0.5">
-        <h4 className="font-extrabold text-dark dark:text-white text-[10px] leading-tight truncate">{product.name}</h4>
-        <p className="text-muted text-[8px] truncate opacity-60 m-0">{product.subName}</p>
-        
-        <div className="flex items-center justify-end gap-0.5 mt-1">
-          <span className="text-primary font-black text-[11px]">{product.price.toLocaleString()}</span>
-          <span className="text-[7.5px] text-primary/50 font-black italic">T</span>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { RelatedProducts } from '../components/RelatedProducts';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -65,12 +19,6 @@ const ProductDetail: React.FC = () => {
   const [imageError, setImageError] = useState(false);
   
   const { data: product, isLoading: loading } = useProduct(id);
-  const { products } = useProducts(product?.category);
-
-  const relatedProducts = useMemo(() => {
-    if (!products || !product) return [];
-    return products.filter(p => p.id !== product.id);
-  }, [products, product]);
 
   // اسکرول به بالای صفحه هنگام تغییر محصول
   useEffect(() => {
@@ -242,21 +190,8 @@ const ProductDetail: React.FC = () => {
               <p className="text-muted dark:text-white/60 text-[13px] leading-relaxed text-justify opacity-80 font-medium">{product.description}</p>
             </div>
 
-            {relatedProducts.length > 0 && (
-              <div className="flex flex-col gap-3">
-                <div className="flex justify-between items-center px-1">
-                  <h3 className="font-extrabold text-[13px] text-dark dark:text-white flex items-center gap-2">
-                    <Coffee size={16} className="text-primary" />
-                    <span>محصولات مرتبط</span>
-                  </h3>
-                  <span className="text-[9px] text-primary/75 font-bold animate-pulse">اسکرول کنید ←</span>
-                </div>
-                <div className="flex gap-3 overflow-x-auto pb-2 -mx-6 px-6 scrollbar-none snap-x snap-mandatory scroll-smooth" style={{ WebkitOverflowScrolling: 'touch' }}>
-                  {relatedProducts.map((p) => (
-                    <RelatedProductCard key={p.id} product={p} />
-                  ))}
-                </div>
-              </div>
+            {product && (
+              <RelatedProducts productId={product.id} category={product.category} />
             )}
 
             <div className="flex justify-between items-center bg-dark rounded-[36px] p-5 shadow-2xl mb-8">

@@ -42,3 +42,18 @@ export const fetchProductById = async (id: string): Promise<Product> => {
     }, 500);
   });
 };
+
+export const fetchRelatedProducts = async (productId: string, category?: CategoryType, limit = 5): Promise<Product[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const originalId = productId.includes('-page-') ? productId.split('-page-')[0] : productId;
+      let filtered = PRODUCTS.filter(p => p.id !== originalId);
+      
+      if (category && category !== CategoryType.PREVIOUS_ORDERS) {
+        filtered = filtered.filter(p => p.category === category);
+      }
+      
+      resolve(filtered.slice(0, limit));
+    }, 600);
+  });
+};
