@@ -9,7 +9,53 @@ import Button from '../components/Button';
 import PageTransition from '../components/PageTransition';
 import { motion } from 'framer-motion';
 import AppBar from '../components/AppBar';
-import ProductCard from '../components/ProductCard';
+
+interface RelatedProductCardProps {
+  product: Product;
+}
+
+const RelatedProductCard: React.FC<RelatedProductCardProps> = ({ product }) => {
+  const [imageError, setImageError] = useState(!product.image);
+  const navigate = useNavigate();
+
+  return (
+    <div 
+      onClick={() => navigate(`/product/${product.id}`)}
+      className="w-28 shrink-0 bg-gray-50/50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 rounded-2xl p-2 cursor-pointer active:scale-95 hover:border-primary/20 dark:hover:border-primary/20 transition-all text-right select-none snap-start group"
+    >
+      <div className="relative aspect-square overflow-hidden rounded-xl bg-secondary/10 flex items-center justify-center">
+        {product.image && !imageError ? (
+          <img 
+            src={product.image} 
+            alt={product.name} 
+            onError={() => setImageError(true)}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-primary/30">
+            <Coffee size={20} strokeWidth={1} />
+          </div>
+        )}
+        
+        {product.discountPercent && (
+          <span className="absolute top-1 right-1 bg-red-500 text-white text-[8px] font-black px-1 rounded-full shadow-sm">
+            {product.discountPercent}%
+          </span>
+        )}
+      </div>
+      
+      <div className="mt-1 px-0.5">
+        <h4 className="font-extrabold text-dark dark:text-white text-[10px] leading-tight truncate">{product.name}</h4>
+        <p className="text-muted text-[8px] truncate opacity-60 m-0">{product.subName}</p>
+        
+        <div className="flex items-center justify-end gap-0.5 mt-1">
+          <span className="text-primary font-black text-[11px]">{product.price.toLocaleString()}</span>
+          <span className="text-[7.5px] text-primary/50 font-black italic">T</span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -197,19 +243,17 @@ const ProductDetail: React.FC = () => {
             </div>
 
             {relatedProducts.length > 0 && (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3">
                 <div className="flex justify-between items-center px-1">
-                  <h3 className="font-black text-[15px] text-dark dark:text-white flex items-center gap-2">
-                    <Coffee size={18} className="text-primary" />
+                  <h3 className="font-extrabold text-[13px] text-dark dark:text-white flex items-center gap-2">
+                    <Coffee size={16} className="text-primary" />
                     <span>محصولات مرتبط</span>
                   </h3>
-                  <span className="text-[10px] text-primary/75 font-bold animate-pulse">اسکرول کنید ←</span>
+                  <span className="text-[9px] text-primary/75 font-bold animate-pulse">اسکرول کنید ←</span>
                 </div>
-                <div className="flex gap-4 overflow-x-auto pb-3 -mx-6 px-6 scrollbar-none snap-x snap-mandatory scroll-smooth" style={{ WebkitOverflowScrolling: 'touch' }}>
+                <div className="flex gap-3 overflow-x-auto pb-2 -mx-6 px-6 scrollbar-none snap-x snap-mandatory scroll-smooth" style={{ WebkitOverflowScrolling: 'touch' }}>
                   {relatedProducts.map((p) => (
-                    <div key={p.id} className="w-36 shrink-0 snap-start">
-                      <ProductCard product={p} />
-                    </div>
+                    <RelatedProductCard key={p.id} product={p} />
                   ))}
                 </div>
               </div>
