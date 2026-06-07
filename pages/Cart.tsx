@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useCartStore } from '../store/useCartStore';
 import { useCafeStore } from '../store/useCafeStore';
+import { useCafeStatus } from '../hooks/api/useCafeApi';
 import { Trash2, Plus, Minus, ChevronRight, ShoppingBag, AlertCircle, Coffee, StickyNote, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,7 +30,8 @@ const Cart: React.FC = () => {
   const [editingNote, setEditingNote] = useState<{ cartId: string; note: string } | null>(null);
   const [noteInput, setNoteInput] = useState('');
 
-  const isClosed = useCafeStore(state => state.isCafeClosed());
+  const { data: cafeStatus } = useCafeStatus();
+  const isClosed = cafeStatus?.isClosed || false;
   const setModalOpen = useCafeStore(state => state.setModalOpen);
 
   const handleOpenNoteModal = (cartId: string, currentNote?: string) => {

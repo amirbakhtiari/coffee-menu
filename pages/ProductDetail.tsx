@@ -6,6 +6,7 @@ import { useProduct } from '../hooks/api/useProductsApi';
 import { Product, ProductOptions } from '../types';
 import { useCartStore } from '../store/useCartStore';
 import { useCafeStore } from '../store/useCafeStore';
+import { useCafeStatus } from '../hooks/api/useCafeApi';
 import Button from '../components/Button';
 import PageTransition from '../components/PageTransition';
 import { motion } from 'framer-motion';
@@ -19,7 +20,8 @@ const ProductDetail: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const [imageError, setImageError] = useState(false);
   
-  const isClosed = useCafeStore(state => state.isCafeClosed());
+  const { data: cafeStatus } = useCafeStatus();
+  const isClosed = cafeStatus?.isClosed || false;
   const setModalOpen = useCafeStore(state => state.setModalOpen);
   
   const { data: product, isLoading: loading } = useProduct(id);

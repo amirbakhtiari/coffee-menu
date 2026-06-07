@@ -12,7 +12,7 @@ import { CategoryType } from '../types';
 import PageTransition from '../components/PageTransition';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useSwipeGesture } from '../hooks/useSwipeGesture';
-import { useCafeStore } from '../store/useCafeStore';
+import { useCafeStatus, useUpdateCafeOverride } from '../hooks/api/useCafeApi';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -20,8 +20,9 @@ const Home: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isPinned, setIsPinned] = useState(false);
   
-  const { isCafeClosed, setClosedOverride } = useCafeStore();
-  const isClosed = isCafeClosed();
+  const { data: cafeStatus } = useCafeStatus();
+  const updateCafeOverride = useUpdateCafeOverride();
+  const isClosed = cafeStatus?.isClosed || false;
 
   useEffect(() => {
     // نمایش نوتیفیکیشن خوش‌آمدگویی تستی برای صحت عملکرد سیستم
@@ -172,7 +173,7 @@ const Home: React.FC = () => {
 
             <button
               onClick={() => {
-                setClosedOverride(!isClosed);
+                updateCafeOverride.mutate(!isClosed);
               }}
               className={`text-[9px] font-black px-2.5 py-1.5 rounded-xl border transition-all ${
                 isClosed

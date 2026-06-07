@@ -17,12 +17,14 @@ import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
 import AppBar from '../components/AppBar';
 import { useNotificationStore } from '../store/useNotificationStore';
-import { useCafeStore } from '../store/useCafeStore';
+import { useCafeStatus } from '../hooks/api/useCafeApi';
 
 const CafeInfo: React.FC = () => {
   const navigate = useNavigate();
   const { success } = useNotificationStore();
-  const isClosed = useCafeStore(state => state.isCafeClosed());
+  
+  const { data: cafeStatus } = useCafeStatus();
+  const isClosed = cafeStatus?.isClosed || false;
 
   const openingHours = [
     { day: 'شنبه', hours: '۸:۰۰ الی ۲۳:۰۰', isToday: false },

@@ -5,6 +5,7 @@ import { Product } from '../types';
 import { Link } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
 import { useCafeStore } from '../store/useCafeStore';
+import { useCafeStatus } from '../hooks/api/useCafeApi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ProductCardProps {
@@ -17,7 +18,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid' }) 
   const quantity = useCartStore(state => state.getItemQuantity(product.id));
   const [imageError, setImageError] = useState(!product.image);
 
-  const isClosed = useCafeStore(state => state.isCafeClosed());
+  const { data: cafeStatus } = useCafeStatus();
+  const isClosed = cafeStatus?.isClosed || false;
   const setModalOpen = useCafeStore(state => state.setModalOpen);
 
   const handleIncrement = (e: React.MouseEvent) => {

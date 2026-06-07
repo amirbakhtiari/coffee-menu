@@ -7,6 +7,7 @@ import WaiterService from './WaiterService';
 import ToastNotification from './Notification';
 import { CafeClosedModal } from './CafeClosedModal';
 import { useCafeStore } from '../store/useCafeStore';
+import { useCafeStatus } from '../hooks/api/useCafeApi';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,14 +15,15 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
-  const { isCafeClosed, setModalOpen } = useCafeStore();
+  const { setModalOpen } = useCafeStore();
+  const { data: cafeStatus } = useCafeStatus();
 
   useEffect(() => {
     // اگر کافه به صورت خودکار یا دستی بسته باشد، مدال را نشان می‌دهیم
-    if (isCafeClosed()) {
+    if (cafeStatus?.isClosed) {
       setModalOpen(true);
     }
-  }, [setModalOpen]);
+  }, [cafeStatus?.isClosed, setModalOpen]);
   
   // منوی پایین را در صفحات خاص مخفی می‌کنیم
   const hideBottomNav = 

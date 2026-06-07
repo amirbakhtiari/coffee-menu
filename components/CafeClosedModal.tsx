@@ -1,12 +1,14 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, CalendarRange, ArrowLeft, Coffee, Flame, AlertCircle } from 'lucide-react';
+import { Clock, ArrowLeft, Coffee } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCafeStore } from '../store/useCafeStore';
+import { useCafeStatus } from '../hooks/api/useCafeApi';
 
 export const CafeClosedModal: React.FC = () => {
   const navigate = useNavigate();
-  const { isModalOpen, setModalOpen, getWorkingHoursText } = useCafeStore();
+  const { isModalOpen, setModalOpen } = useCafeStore();
+  const { data: cafeStatus } = useCafeStatus();
 
   if (!isModalOpen) return null;
 
@@ -59,7 +61,7 @@ export const CafeClosedModal: React.FC = () => {
                 <span className="text-xs font-extrabold">برنامه زمان‌بندی امروز کافه</span>
               </div>
               <div className="text-[11px] font-bold text-gray-500 dark:text-white/40 pr-6">
-                {getWorkingHoursText()}
+                {cafeStatus?.workingHoursText || 'شنبه تا چهارشنبه: ۸:۰۰ الی ۲۳:۰۰'}
               </div>
               <div className="flex items-center gap-1.5 text-[9px] text-emerald-600 dark:text-emerald-400 font-extrabold pr-6">
                 <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>

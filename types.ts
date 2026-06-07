@@ -82,3 +82,9 @@ export interface Table {
   features: string[];
 }
 
+export interface CafeStatus {
+  isClosed: boolean;
+  workingHoursText: string;
+  isClosedOverride: boolean | null;
+}
+
