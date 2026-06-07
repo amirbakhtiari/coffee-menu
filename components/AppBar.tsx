@@ -30,8 +30,9 @@ const AppBar: React.FC<AppBarProps> = ({
   };
 
   return (
-    <header className={`flex items-center justify-between shrink-0 h-10 ${className}`}>
-      <div className="flex items-center gap-3">
+    <header className={`relative flex items-center justify-between shrink-0 h-12 w-full ${className}`}>
+      {/* Right side alignment (Back button in RTL) */}
+      <div className="flex items-center justify-start min-w-[48px] z-10">
         {showBack && (
           <button 
             onClick={handleBack}
@@ -40,13 +41,16 @@ const AppBar: React.FC<AppBarProps> = ({
             <ChevronRight size={20} />
           </button>
         )}
-        <div className="text-right flex flex-col justify-center">
-          <h1 className="text-lg font-black text-dark dark:text-white leading-tight">{title}</h1>
-          {subtitle && <p className="text-[9px] text-muted dark:text-white/40 font-bold mt-0.5 leading-none">{subtitle}</p>}
-        </div>
+      </div>
+
+      {/* Absolutely Centered Title and Subtitle */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-14 z-0">
+        <h1 className="text-[15px] font-black text-dark dark:text-white leading-tight pointer-events-auto">{title}</h1>
+        {subtitle && <p className="text-[9px] text-muted dark:text-white/40 font-bold mt-0.5 leading-none pointer-events-auto">{subtitle}</p>}
       </div>
       
-      <div className="flex items-center min-w-[40px] justify-end">
+      {/* Left side alignment (Right Action in RTL) */}
+      <div className="flex items-center justify-end min-w-[48px] z-10">
         {rightAction}
       </div>
     </header>

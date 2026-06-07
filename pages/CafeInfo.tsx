@@ -17,10 +17,12 @@ import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
 import AppBar from '../components/AppBar';
 import { useNotificationStore } from '../store/useNotificationStore';
+import { useCafeStore } from '../store/useCafeStore';
 
 const CafeInfo: React.FC = () => {
   const navigate = useNavigate();
   const { success } = useNotificationStore();
+  const isClosed = useCafeStore(state => state.isCafeClosed());
 
   const openingHours = [
     { day: 'شنبه', hours: '۸:۰۰ الی ۲۳:۰۰', isToday: false },
@@ -88,10 +90,17 @@ const CafeInfo: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
             
             {/* Cafe Open / Close Dynamic Badge */}
-            <div className="absolute top-4 right-4 bg-green-500/10 backdrop-blur-md border border-green-500/30 text-green-600 dark:text-green-400 text-[10px] font-black px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-              <span>کافه باز است</span>
-            </div>
+            {isClosed ? (
+              <div className="absolute top-4 right-4 bg-amber-500/10 backdrop-blur-md border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] font-black px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+                <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
+                <span>کافه بسته است</span>
+              </div>
+            ) : (
+              <div className="absolute top-4 right-4 bg-green-500/10 backdrop-blur-md border border-green-500/30 text-green-600 dark:text-green-400 text-[10px] font-black px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                <span>کافه باز است</span>
+              </div>
+            )}
 
             {/* Cafe Brand Details Overlay */}
             <div className="absolute bottom-5 right-6 text-right">

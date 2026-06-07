@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import InstallBanner from './InstallBanner';
 import WaiterService from './WaiterService';
 import ToastNotification from './Notification';
+import { CafeClosedModal } from './CafeClosedModal';
+import { useCafeStore } from '../store/useCafeStore';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -12,6 +14,14 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
+  const { isCafeClosed, setModalOpen } = useCafeStore();
+
+  useEffect(() => {
+    // اگر کافه به صورت خودکار یا دستی بسته باشد، مدال را نشان می‌دهیم
+    if (isCafeClosed()) {
+      setModalOpen(true);
+    }
+  }, [setModalOpen]);
   
   // منوی پایین را در صفحات خاص مخفی می‌کنیم
   const hideBottomNav = 
@@ -32,6 +42,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // دکمه ویتر را در صفحات خاص مخفی می‌کنیم
   const hideWaiter = 
+    location.pathname.startsWith('/product/') ||
     location.pathname === '/cart' ||
     location.pathname === '/profile' ||
     location.pathname === '/guest-profile' ||
@@ -50,6 +61,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="flex flex-col min-h-screen max-w-md mx-auto relative bg-light-gray dark:bg-dark text-dark dark:text-white transition-colors overflow-x-clip">
       <InstallBanner />
       {/* <ToastNotification /> */}
+      <CafeClosedModal />
       
       {/* دکمه شناور ویتر در تمام صفحات به جز موارد استثنا نمایش داده می‌شود */}
       {!hideWaiter && <WaiterService />}

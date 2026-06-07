@@ -4,6 +4,7 @@ import { Plus, Minus, Tag, Coffee } from 'lucide-react';
 import { Product } from '../types';
 import { Link } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
+import { useCafeStore } from '../store/useCafeStore';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ProductCardProps {
@@ -16,9 +17,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid' }) 
   const quantity = useCartStore(state => state.getItemQuantity(product.id));
   const [imageError, setImageError] = useState(!product.image);
 
+  const isClosed = useCafeStore(state => state.isCafeClosed());
+  const setModalOpen = useCafeStore(state => state.setModalOpen);
+
   const handleIncrement = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isClosed) {
+      setModalOpen(true);
+      return;
+    }
     updateProductQuantity(product, 1);
   };
 

@@ -23,9 +23,11 @@ import {
   Check
 } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
+import AppBar from '../components/AppBar';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useTables, useToggleTable, useResetTables } from '../hooks/api/useTablesApi';
 import { Table } from '../types';
+
 
 const toEnglishDigits = (str: string): string => {
   const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
@@ -37,6 +39,80 @@ const toEnglishDigits = (str: string): string => {
     if (aIdx > -1) return String(aIdx);
     return char;
   }).join('');
+};
+
+const TableBlueprint: React.FC<{ capacity: number; isReserved: boolean; zone: any }> = ({ capacity, isReserved, zone }) => {
+  const isVip = zone === 'بخش VIP';
+  
+  const renderChairs = () => {
+    const chairs = [];
+    const radius = 22;
+    const count = Math.min(Math.max(capacity, 2), 8);
+    
+    for (let i = 0; i < count; i++) {
+      const angle = (i * 2 * Math.PI) / count;
+      const cx = 35 + radius * Math.cos(angle);
+      const cy = 35 + radius * Math.sin(angle);
+      
+      chairs.push(
+        <circle
+          key={i}
+          cx={cx}
+          cy={cy}
+          r="4.5"
+          className={`transition-all duration-500 fill-current ${
+            isReserved 
+              ? 'text-rose-450 dark:text-rose-500/90' 
+              : isVip
+                ? 'text-amber-400 dark:text-amber-500/95 animate-pulse'
+                : 'text-emerald-400 dark:text-emerald-500/90'
+          }`}
+        />
+      );
+    }
+    return chairs;
+  };
+
+  return (
+    <div className={`w-15 h-15 relative flex items-center justify-center rounded-2xl border transition-all duration-350 shrink-0 ${
+      isReserved 
+        ? 'bg-rose-500/5 border-rose-200/40 dark:border-rose-950/20' 
+        : isVip
+          ? 'bg-amber-500/5 border-amber-200/40 dark:border-amber-950/20 shadow-sm shadow-amber-500/5'
+          : 'bg-emerald-500/5 border-emerald-200/40 dark:border-emerald-950/20'
+    }`}>
+      <svg className="w-[62px] h-[62px]" viewBox="0 0 70 70">
+        {renderChairs()}
+        
+        <circle
+          cx="35"
+          cy="35"
+          r="13.5"
+          className={`transition-all duration-500 fill-current ${
+            isReserved 
+              ? 'text-rose-50 dark:text-rose-950/70 stroke-rose-300 dark:stroke-rose-800' 
+              : isVip
+                ? 'text-amber-50/50 dark:text-amber-950/70 stroke-amber-300 dark:stroke-amber-800'
+                : 'text-emerald-50 dark:text-emerald-950/70 stroke-emerald-300 dark:stroke-emerald-800'
+          }`}
+          strokeWidth="1.5"
+        />
+        
+        <circle
+          cx="35"
+          cy="35"
+          r="8"
+          className={`fill-current ${
+            isReserved 
+              ? 'text-rose-100/70 dark:text-rose-900/40' 
+              : isVip
+                ? 'text-amber-100/70 dark:text-amber-900/40'
+                : 'text-emerald-100/70 dark:text-emerald-900/40'
+          }`}
+        />
+      </svg>
+    </div>
+  );
 };
 
 export const Tables: React.FC = () => {
@@ -205,31 +281,28 @@ export const Tables: React.FC = () => {
     <PageTransition>
       <div className="px-5 pb-8 min-h-screen bg-light-gray dark:bg-dark text-dark dark:text-white flex flex-col transition-colors" dir="rtl">
         {/* Top Sticky Header */}
-        <div className="pt-12 pb-4 -mx-5 px-5 bg-light-gray/80 dark:bg-dark/80 backdrop-blur-md sticky top-0 z-40 transition-colors flex items-center justify-between border-b border-gray-100/50 dark:border-white/5">
-          <div className="flex items-center gap-2">
-            <button 
-              id="back-to-home"
-              onClick={() => navigate('/')} 
-              className="p-2.5 bg-white dark:bg-white/10 rounded-2xl text-dark dark:text-white border border-gray-200/50 dark:border-white/5 active:scale-95 transition-all shadow-sm flex items-center justify-center cursor-pointer font-bold"
-            >
-              <ChevronRight size={18} />
-            </button>
-            <h1 className="text-sm font-black tracking-tight text-dark dark:text-white">وضعیت سرویس‌دهی میزها</h1>
-          </div>
-          
-          <button 
-            id="reset-tables"
-            disabled={resetTablesMutation.isPending || isLoading}
-            onClick={handleResetTables} 
-            className="p-2.5 bg-white dark:bg-white/10 text-gray-500 dark:text-gray-400 rounded-2xl active:rotate-180 transition-all duration-500 border border-gray-100 dark:border-white/5 shadow-sm disabled:opacity-50"
-            title="بازنشانی جدول‌ها"
-          >
-            {resetTablesMutation.isPending ? (
-              <Loader2 size={15} className="animate-spin text-primary" />
-            ) : (
-              <RefreshCw size={15} />
-            )}
-          </button>
+        <div className="pt-6 pb-3 -mx-5 px-5 bg-white/95 dark:bg-dark/95 backdrop-blur-md sticky top-0 z-40 transition-colors border-b border-gray-100 dark:border-white/5 shadow-sm">
+          <AppBar 
+            title="وضعیت میزها"
+            subtitle="سرویس‌دهی و رزرو آنلاین میزهای کافه"
+            onBack={() => navigate('/')}
+            className="mb-0"
+            rightAction={
+              <button 
+                id="reset-tables"
+                disabled={resetTablesMutation.isPending || isLoading}
+                onClick={handleResetTables} 
+                className="w-10 h-10 flex items-center justify-center bg-white dark:bg-white/10 text-gray-500 dark:text-gray-400 rounded-xl border border-gray-100 dark:border-white/5 active:rotate-180 transition-all duration-500 shadow-sm disabled:opacity-50 cursor-pointer"
+                title="بازنشانی جدول‌ها"
+              >
+                {resetTablesMutation.isPending ? (
+                  <Loader2 size={16} className="animate-spin text-primary" />
+                ) : (
+                  <RefreshCw size={16} />
+                )}
+              </button>
+            }
+          />
         </div>
 
         {/* Loading State Skeleton */}
@@ -276,64 +349,83 @@ export const Tables: React.FC = () => {
         {/* Real Dynamic UI content */}
         {!isLoading && !isError && (
           <>
-            {/* Bento Circle Stats Card */}
-            <div className="mt-4 bg-white dark:bg-black/25 rounded-3xl p-5 border border-gray-100 dark:border-white/5 shadow-sm flex items-center gap-6 justify-between overflow-hidden relative">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full translate-x-12 -translate-y-12 blur-2xl" />
+            {/* Bento Dynamic Dashboard Stats Panel */}
+            <div className="mt-4 bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 rounded-[32px] p-5 shadow-xl shadow-gray-100/30 dark:shadow-none relative overflow-hidden transition-all duration-300">
+              {/* Soft glowing ambient light */}
+              <div className="absolute top-0 left-0 w-36 h-36 bg-gradient-to-tr from-primary/10 to-emerald-500/5 dark:from-primary/10 dark:to-transparent rounded-full -translate-x-12 -translate-y-12 blur-3xl pointer-events-none" />
               
-              <div className="flex flex-col gap-2.5 flex-1 z-10">
-                <div className="flex items-center gap-1.5">
-                  <Sparkle size={14} className="text-primary fill-primary/30" />
-                  <span className="text-[10px] font-bold text-muted dark:text-white/40 uppercase tracking-wider">سنسورهای وضعیت سالن زنده</span>
+              {/* Live Signal Line header */}
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-white/[0.06] mb-4 relative z-10">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <span className="text-[11px] font-black text-dark dark:text-white">وضعیت زنده سالن کافه</span>
                 </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-[12px]">
-                    <span className="text-gray-500 dark:text-gray-400 font-medium">کل ظرفیت پذیرایی میزها:</span>
-                    <span className="font-extrabold text-xs">{totalCount} میز مستقل</span>
-                  </div>
-                  <div className="flex items-center justify-between text-[12px]">
-                    <span className="flex items-center gap-1.5 text-teal-600 dark:text-emerald-400 font-bold">
-                      <span className="w-1.5 h-1.5 bg-teal-500 dark:bg-emerald-500 rounded-full animate-pulse"></span>
-                      آماده پذیرایی (آزاد):
-                    </span>
-                    <span className="font-black text-xs text-teal-650 dark:text-emerald-400">{freeCount} میز</span>
-                  </div>
-                  <div className="flex items-center justify-between text-[12px]">
-                    <span className="flex items-center gap-1.5 text-rose-500 dark:text-rose-400 font-bold">
-                      <span className="w-1.5 h-1.5 bg-rose-450 dark:bg-rose-500 rounded-full"></span>
-                      مشغول سرویس‌دهی:
-                    </span>
-                    <span className="font-black text-xs text-rose-500 dark:text-rose-400">{reservedCount} میز</span>
-                  </div>
+                <div className="flex items-center gap-1 text-[9px] text-gray-400 dark:text-white/40 font-bold bg-gray-50 dark:bg-white/5 px-2 py-0.5 rounded-lg border border-gray-100 dark:border-white/5">
+                  <Sparkle size={10} className="text-primary" />
+                  <span>بروزرسانی خودکار</span>
                 </div>
               </div>
 
-              {/* Radial Progress Graphic */}
-              <div className="relative flex items-center justify-center shrink-0 z-10">
-                <svg className="w-24 h-24 transform -rotate-90">
-                  <circle
-                    cx="48"
-                    cy="48"
-                    r="38"
-                    className="stroke-gray-100 dark:stroke-white/5"
-                    strokeWidth="7"
-                    fill="transparent"
-                  />
-                  <circle
-                    cx="48"
-                    cy="48"
-                    r="38"
-                    strokeWidth="7"
-                    fill="transparent"
-                    strokeDasharray={2 * Math.PI * 38}
-                    strokeDashoffset={2 * Math.PI * 38 * (1 - Math.min(Math.max(totalCount > 0 ? reservedCount / totalCount : 0, 0), 1))}
-                    strokeLinecap="round"
-                    className="transition-all duration-700 ease-out stroke-teal-500 dark:stroke-emerald-400"
-                  />
-                </svg>
-                <div className="absolute flex flex-col items-center">
-                  <span className="text-[16px] font-black">{totalCount > 0 ? Math.round((reservedCount / totalCount) * 100) : 0}%</span>
-                  <span className="text-[8px] font-bold opacity-40">تکمیل</span>
+              <div className="flex items-center justify-between gap-5 relative z-10">
+                {/* Visual statistics grid / 3 Bento Pillars */}
+                <div className="flex-1 grid grid-cols-3 gap-2">
+                  <div className="bg-gray-50/60 dark:bg-white/[0.012] border border-gray-100/70 dark:border-white/[0.04] p-2.5 rounded-2xl flex flex-col items-center justify-center text-center transition-colors">
+                    <span className="text-[9px] font-bold text-gray-400 dark:text-white/35 mb-1">کل میزها</span>
+                    <span className="text-lg font-black text-dark dark:text-white font-mono leading-none">{totalCount}</span>
+                    <span className="text-[7.5px] font-bold text-gray-400/80 mr-0.5 mt-1">میز</span>
+                  </div>
+
+                  <div className="bg-emerald-50/30 dark:bg-emerald-500/[0.02] border border-emerald-100/40 dark:border-emerald-500/10 p-2.5 rounded-2xl flex flex-col items-center justify-center text-center transition-colors">
+                    <span className="text-[9px] font-bold text-emerald-600/80 dark:text-emerald-400/70 mb-1">آزاد</span>
+                    <span className="text-lg font-black text-emerald-555 dark:text-emerald-400 font-mono leading-none">{freeCount}</span>
+                    <span className="text-[7.5px] font-bold text-emerald-500/80 mr-0.5 mt-1"> آماده</span>
+                  </div>
+
+                  <div className="bg-rose-50/30 dark:bg-rose-500/[0.02] border border-rose-100/40 dark:border-rose-500/10 p-2.5 rounded-2xl flex flex-col items-center justify-center text-center transition-colors">
+                    <span className="text-[9px] font-bold text-rose-600/80 dark:text-rose-400/70 mb-1">سرویس‌دهی</span>
+                    <span className="text-lg font-black text-rose-500 dark:text-rose-400 font-mono leading-none">{reservedCount}</span>
+                    <span className="text-[7.5px] font-bold text-rose-500/80 mr-0.5 mt-1">مشغول</span>
+                  </div>
+                </div>
+
+                {/* Progress Wheel Gauge - redesigned with modern futuristic colors and elegant rings */}
+                <div className="relative flex items-center justify-center shrink-0 w-22 h-22">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    {/* Background track circle */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      className="stroke-gray-100 dark:stroke-white/[0.05]"
+                      strokeWidth="8"
+                      fill="transparent"
+                    />
+                    {/* Foreground progress circle with dynamic colors */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      strokeWidth="8"
+                      fill="transparent"
+                      strokeDasharray={2 * Math.PI * 40}
+                      strokeDashoffset={2 * Math.PI * 40 * (1 - Math.min(Math.max(totalCount > 0 ? reservedCount / totalCount : 0, 0), 1))}
+                      strokeLinecap="round"
+                      className={`transition-all duration-700 ease-out ${
+                        (reservedCount / (totalCount || 1)) > 0.8
+                          ? 'stroke-rose-500' 
+                          : 'stroke-primary'
+                      }`}
+                    />
+                  </svg>
+                  <div className="absolute flex flex-col items-center justify-center">
+                    <span className="text-sm font-black font-mono leading-none text-dark dark:text-white">
+                      {totalCount > 0 ? Math.round((reservedCount / totalCount) * 100) : 0}%
+                    </span>
+                    <span className="text-[8px] font-extrabold text-gray-400 dark:text-white/40 mt-1">تکمیل</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -374,6 +466,8 @@ export const Tables: React.FC = () => {
                 <AnimatePresence mode="popLayout">
                   {filteredTables.map(table => {
                     const isTableMutating = toggleTableMutation.isPending && toggleTableMutation.variables === table.id;
+                    const isVip = table.zone === 'بخش VIP';
+                    
                     return (
                       <motion.div
                         key={table.id}
@@ -383,53 +477,79 @@ export const Tables: React.FC = () => {
                         animate={{ opacity: isTableMutating ? 0.75 : 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
                         transition={{ type: 'spring', damping: 20, stiffness: 280 }}
-                        className={`bg-white dark:bg-black/20 rounded-[28px] p-4 border cursor-pointer select-none transition-all flex flex-col h-[135px] relative overflow-hidden group ${
+                        className={`bg-white dark:bg-white/[0.02] rounded-[30px] p-4 border cursor-pointer select-none transition-all duration-300 flex flex-col justify-between min-h-[160px] relative overflow-hidden group ${
                           table.isReserved 
-                            ? 'border-rose-100/70 dark:border-rose-950/20 opacity-90 hover:opacity-100 hover:border-rose-400/40 dark:hover:border-rose-800/40 bg-gradient-to-br from-white to-rose-50/[0.15] dark:from-black/20 dark:to-rose-950/[0.05]' 
-                            : 'border-emerald-100/70 dark:border-emerald-950/20 hover:border-emerald-400/40 dark:hover:border-emerald-800/40 bg-gradient-to-br from-white to-emerald-50/[0.15] dark:from-black/20 dark:to-emerald-950/[0.05]'
+                            ? 'border-rose-100/70 dark:border-rose-950/25 hover:border-rose-300/60 dark:hover:border-rose-800/40 hover:shadow-lg hover:shadow-rose-500/[0.02]' 
+                            : isVip
+                              ? 'border-amber-100/70 dark:border-amber-950/25 hover:border-amber-300/60 dark:hover:border-amber-800/40 hover:shadow-lg hover:shadow-amber-500/[0.02]'
+                              : 'border-emerald-100/70 dark:border-emerald-950/25 hover:border-emerald-300/60 dark:hover:border-emerald-800/40 hover:shadow-lg hover:shadow-emerald-500/[0.02]'
                         }`}
                       >
                         {/* Soft glowing ambient circle behind table card */}
-                        <div className={`absolute top-0 left-0 w-24 h-24 rounded-full filter blur-xl opacity-5 transition-all -translate-x-12 -translate-y-12 ${
-                          table.isReserved ? 'bg-rose-500' : 'bg-emerald-500'
+                        <div className={`absolute top-0 right-0 w-24 h-24 rounded-full filter blur-2xl opacity-[0.04] transition-all translate-x-4 -translate-y-4 pointer-events-none ${
+                          table.isReserved 
+                            ? 'bg-rose-500' 
+                            : isVip
+                              ? 'bg-amber-500'
+                              : 'bg-emerald-500'
                         }`} />
 
-                        <div className="flex items-center justify-between mb-2 z-10">
-                          <span className="text-[10px] font-bold text-gray-400 dark:text-white/30">{table.zone}</span>
+                        {/* Top Header of Card */}
+                        <div className="flex items-center justify-between z-10 mb-2">
+                          <span className={`text-[9.5px] font-black tracking-wide px-2 py-0.5 rounded-lg ${
+                            isVip
+                              ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                              : 'bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-white/40'
+                          }`}>
+                            {isVip ? '✨ VIP' : table.zone}
+                          </span>
+                          
                           {isTableMutating ? (
                             <span className="inline-flex items-center text-primary animate-spin">
-                              <Loader2 size={10} />
+                              <Loader2 size={11} />
                             </span>
                           ) : (
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-black border ${
+                            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-xl text-[9px] font-black ${
                               table.isReserved 
-                                ? 'bg-rose-50/50 dark:bg-rose-950/20 text-[#E11D48] dark:text-rose-400 border-rose-100/30' 
-                                : 'bg-emerald-50/50 dark:bg-emerald-950/20 text-[#0D9488] dark:text-emerald-400 border-emerald-100/30'
+                                ? 'bg-rose-500/10 text-rose-500 dark:text-rose-455' 
+                                : 'bg-emerald-500/10 text-emerald-555 dark:text-emerald-400'
                             }`}>
-                              <CircleDot size={7} className={`fill-current ${table.isReserved ? 'text-rose-500' : 'text-emerald-500 animate-pulse'}`} />
-                              {table.isReserved ? 'رزرو مـشغول' : 'آزاد'}
+                              <CircleDot size={7} className={`fill-current ${table.isReserved ? 'text-rose-500' : 'text-emerald-400 animate-pulse'}`} />
+                              {table.isReserved ? 'رزرو' : 'آزاد'}
                             </span>
                           )}
                         </div>
 
-                        <div className="flex-grow flex flex-col justify-center z-10">
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-black font-mono text-dark dark:text-white group-hover:scale-105 transform origin-right transition-transform duration-350">#{table.number}</span>
-                            <span className="text-[10px] text-muted dark:text-white/30 font-bold mr-1">میز</span>
+                        {/* Middle Content: Big number and visual Table top-view */}
+                        <div className="flex items-center justify-between gap-2 z-10 my-1">
+                          <div className="flex flex-col">
+                            <span className="text-[9.5px] text-gray-400 dark:text-white/30 font-bold">شماره میز</span>
+                            <div className="flex items-baseline gap-0.5">
+                              <span className="text-3xl font-black font-mono text-dark dark:text-white leading-none">
+                                {table.number}
+                              </span>
+                            </div>
                           </div>
+                          
+                          {/* Live architectural layout view of the specific table based on capacity */}
+                          <TableBlueprint capacity={table.capacity} isReserved={table.isReserved} zone={table.zone} />
                         </div>
 
-                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100 dark:border-white/5 text-[10px] text-gray-400 dark:text-gray-400 font-medium z-10">
-                          <span className="flex items-center gap-0.5 font-extrabold text-[#374151] dark:text-[#E4E4E7]">
-                            <Users size={11} className="opacity-70" dir="ltr" />
+                        {/* Card Footer: Capacity and state detail */}
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-white/5 text-[10px] font-medium z-10 mt-1">
+                          <span className="flex items-center gap-1 font-extrabold text-[#374151] dark:text-[#E4E4E7]">
+                            <Users size={11} className="opacity-70 text-gray-400 dark:text-white/40" />
                             {table.capacity} نفره
                           </span>
+                          
                           {table.isReserved ? (
-                            <span className="text-rose-600 dark:text-rose-400 font-black text-[9px] opacity-90 truncate max-w-[85px]">
-                              {table.reservedBy === 'شما (منوی هوشمند)' ? 'میز شما' : table.reservedBy || 'مشتری حضوری'}
+                            <span className="text-rose-500 dark:text-rose-400 font-extrabold text-[9px] bg-rose-500/5 px-2 py-0.5 rounded-md">
+                              {table.reservedBy === 'شما (منوی هوشمند)' || table.reservedBy?.includes?.('شما') ? 'میز شما' : 'رزرو شده'}
                             </span>
                           ) : (
-                            <span className="text-teal-650 dark:text-emerald-400 font-black text-[9px]">آماده سفارش</span>
+                            <span className="text-emerald-500 dark:text-emerald-400 font-extrabold text-[9px] bg-emerald-500/5 px-1.5 py-0.5 rounded-md">
+                              آماده سرویس
+                            </span>
                           )}
                         </div>
                       </motion.div>
@@ -506,24 +626,49 @@ export const Tables: React.FC = () => {
                                 </div>
                               </div>
 
-                              <div className="space-y-2">
-                                <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 block pb-1">شماره تلفن همراه شما:</span>
-                                <div className="relative flex items-center">
-                                  <SmartphoneIcon className="absolute right-4 text-gray-400" size={18} />
+                              <div className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-[11px] font-black text-gray-500 dark:text-gray-400">شماره موبایل:</span>
+                                </div>
+
+                                <div className="relative">
                                   <input
                                     type="tel"
-                                    maxLength={15}
+                                    maxLength={11}
                                     value={notifyPhone}
                                     onChange={(e) => {
                                       const converted = toEnglishDigits(e.target.value);
-                                      const filtered = converted.replace(/[^0-9+\s-]/g, '');
+                                      const filtered = converted.replace(/[^0-9]/g, '');
                                       setNotifyPhone(filtered);
                                     }}
-                                    placeholder="۰۹---------"
-                                    className="w-full py-4 pr-12 pl-14 text-center font-mono text-base tracking-widest bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 rounded-2xl text-dark dark:text-white focus:outline-none focus:border-primary/50 transition-colors"
+                                    placeholder="مثلاً ۰۹۱۲۳۴۵۶۷۸۹"
+                                    className={`w-full py-4 text-center font-mono text-[17px] tracking-widest bg-gray-50 dark:bg-white/[0.03] border rounded-2xl text-dark dark:text-white focus:outline-none focus:ring-4 transition-all ${
+                                      notifyPhone.length === 0
+                                        ? 'border-gray-100 dark:border-white/5 focus:border-primary/50 focus:ring-primary/10'
+                                        : (() => {
+                                            const clean = toEnglishDigits(notifyPhone).replace(/\D/g, '');
+                                            let pt = clean;
+                                            if (clean.length === 10 && clean.startsWith('9')) pt = '0' + clean;
+                                            return /^09\d{9}$/.test(pt)
+                                              ? 'border-emerald-500/40 dark:border-emerald-500/40 focus:border-emerald-500 focus:ring-emerald-500/10'
+                                              : 'border-rose-300 dark:border-rose-950/40 focus:border-rose-500 focus:ring-rose-500/10';
+                                          })()
+                                    }`}
                                   />
-                                  <span className="absolute left-4 font-mono text-xs text-gray-405 font-bold border-r border-gray-200 dark:border-white/10 pl-1 pr-3" dir="ltr">+98</span>
                                 </div>
+
+                                {notifyPhone.length > 0 && !/^09\d{9}$/.test(
+                                  (() => {
+                                    const clean = toEnglishDigits(notifyPhone).replace(/\D/g, '');
+                                    let pt = clean;
+                                    if (clean.length === 10 && clean.startsWith('9')) pt = '0' + clean;
+                                    return pt;
+                                  })()
+                                ) && (
+                                  <p className="text-rose-500 text-[11px] font-bold text-center mt-1">
+                                    شماره موبایل وارد شده معتبر نیست. نمونه معتبر: ۰۹۱۲۳۴۵۶۷۸۹
+                                  </p>
+                                )}
                               </div>
 
                               <button

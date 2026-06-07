@@ -12,12 +12,16 @@ import { CategoryType } from '../types';
 import PageTransition from '../components/PageTransition';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useSwipeGesture } from '../hooks/useSwipeGesture';
+import { useCafeStore } from '../store/useCafeStore';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>(CategoryType.DISCOUNTED);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isPinned, setIsPinned] = useState(false);
+  
+  const { isCafeClosed, setClosedOverride } = useCafeStore();
+  const isClosed = isCafeClosed();
 
   useEffect(() => {
     // نمایش نوتیفیکیشن خوش‌آمدگویی تستی برای صحت عملکرد سیستم
@@ -152,6 +156,32 @@ const Home: React.FC = () => {
           <div className="text-dark dark:text-white mb-2 relative z-10 text-right">
             <h1 className="text-[11px] text-muted font-black tracking-[2px] mb-1">کافه لند</h1>
             <p className="text-2xl font-black leading-tight">{getGreeting()} وقت یه قهوه خوبه! ☕</p>
+          </div>
+
+          {/* نوار وضعیت تعاملی کافه جهت اطلاع و همچنین شبیه‌سازی تست */}
+          <div className="relative z-10 flex items-center justify-between mt-1 pt-3 border-t border-gray-100/40 dark:border-white/5" dir="rtl">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isClosed ? 'bg-amber-400' : 'bg-emerald-400'}`}></span>
+                <span className={`relative inline-flex rounded-full h-2 w-2 ${isClosed ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
+              </span>
+              <span className="text-[11px] font-black text-dark dark:text-white">
+                {isClosed ? 'کافه در حال حاضر بسته است 🌙' : 'کافه پذیرای سفارشات شماست ☕'}
+              </span>
+            </div>
+
+            <button
+              onClick={() => {
+                setClosedOverride(!isClosed);
+              }}
+              className={`text-[9px] font-black px-2.5 py-1.5 rounded-xl border transition-all ${
+                isClosed
+                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
+                  : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 hover:bg-amber-500/20'
+              }`}
+            >
+              {isClosed ? 'شبیه‌سازی باز بودن' : 'شبیه‌سازی بسته شدن'}
+            </button>
           </div>
         </div>
 

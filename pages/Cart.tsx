@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useCartStore } from '../store/useCartStore';
+import { useCafeStore } from '../store/useCafeStore';
 import { Trash2, Plus, Minus, ChevronRight, ShoppingBag, AlertCircle, Coffee, StickyNote, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,6 +28,9 @@ const Cart: React.FC = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [editingNote, setEditingNote] = useState<{ cartId: string; note: string } | null>(null);
   const [noteInput, setNoteInput] = useState('');
+
+  const isClosed = useCafeStore(state => state.isCafeClosed());
+  const setModalOpen = useCafeStore(state => state.setModalOpen);
 
   const handleOpenNoteModal = (cartId: string, currentNote?: string) => {
     setEditingNote({ cartId, note: currentNote || '' });
@@ -64,7 +68,7 @@ const Cart: React.FC = () => {
               items.length > 0 ? (
                 <button 
                   onClick={() => setShowConfirmModal(true)} 
-                  className="w-10 h-10 flex items-center justify-center bg-red-50 text-red-500 rounded-xl active:scale-90"
+                  className="w-10 h-10 flex items-center justify-center bg-red-500/10 text-red-500 dark:text-red-400 border border-red-500/10 dark:border-red-500/20 rounded-xl active:scale-90 shadow-sm transition-transform"
                 >
                   <Trash2 size={18} />
                 </button>
@@ -198,7 +202,13 @@ const Cart: React.FC = () => {
             </div>
             
             <button 
-              onClick={() => navigate('/payment-method')}
+              onClick={() => {
+                if (isClosed) {
+                  setModalOpen(true);
+                  return;
+                }
+                navigate('/payment-method');
+              }}
               className="w-full h-12 bg-primary text-white rounded-2xl font-black text-sm shadow-lg shadow-primary/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
             >
               <span>تأیید و پرداخت</span>
