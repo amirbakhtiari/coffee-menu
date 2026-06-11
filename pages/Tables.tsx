@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -20,10 +20,12 @@ import {
   ShieldCheck,
   CreditCard,
   ArrowLeft,
-  Check
+  Check,
+  ChevronDown
 } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 import AppBar from '../components/AppBar';
+import { BookingConfirmModal } from '../components/BookingConfirmModal';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useTables, useToggleTable, useResetTables } from '../hooks/api/useTablesApi';
 import { Table } from '../types';
@@ -46,70 +48,122 @@ const TableBlueprint: React.FC<{ capacity: number; isReserved: boolean; zone: an
   
   const renderChairs = () => {
     const chairs = [];
-    const radius = 22;
+    const radius = 21;
     const count = Math.min(Math.max(capacity, 2), 8);
     
+    // Color config
+    const cushionClass = isReserved
+      ? 'fill-rose-200/60 dark:fill-rose-950/40 text-rose-400/80 dark:text-rose-700/80'
+      : isVip
+        ? 'fill-amber-150 dark:fill-amber-950/40 text-amber-500 dark:text-amber-400'
+        : 'fill-emerald-200/50 dark:fill-emerald-950/40 text-emerald-400 dark:text-emerald-500';
+
     for (let i = 0; i < count; i++) {
       const angle = (i * 2 * Math.PI) / count;
       const cx = 35 + radius * Math.cos(angle);
       const cy = 35 + radius * Math.sin(angle);
+      const angleDeg = (angle * 180) / Math.PI;
       
       chairs.push(
-        <circle
-          key={i}
-          cx={cx}
-          cy={cy}
-          r="4.5"
-          className={`transition-all duration-500 fill-current ${
-            isReserved 
-              ? 'text-rose-450 dark:text-rose-500/90' 
-              : isVip
-                ? 'text-amber-400 dark:text-amber-500/95 animate-pulse'
-                : 'text-emerald-400 dark:text-emerald-500/90'
-          }`}
-        />
+        <g 
+          key={i} 
+          transform={`translate(${cx}, ${cy}) rotate(${angleDeg + 90})`}
+          className={`${isReserved ? 'text-rose-300 dark:text-rose-800' : isVip ? 'text-amber-400 dark:text-amber-500' : 'text-emerald-400 dark:text-emerald-500'}`}
+        >
+          {/* Chair Seat Cushion */}
+          <rect
+            x="-4.5"
+            y="-3.5"
+            width="9"
+            height="7"
+            rx="1.5"
+            className={cushionClass}
+          />
+          {/* Chair Backrest Arc */}
+          <path
+            d="M -5 -3 Q 0 -6.5 5 -3"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+          />
+        </g>
       );
     }
     return chairs;
   };
 
+  const centerColor = isReserved
+    ? 'text-rose-400/20 dark:text-rose-500/10 stroke-rose-300 dark:stroke-rose-800'
+    : isVip
+      ? 'text-amber-400/10 dark:text-amber-500/10 stroke-amber-300 dark:stroke-amber-700/80'
+      : 'text-emerald-400/10 dark:text-emerald-500/15 stroke-emerald-300 dark:stroke-emerald-700/80';
+
+  const innerPlateColor = isReserved
+    ? 'fill-rose-100/30 dark:fill-rose-950/20'
+    : isVip
+      ? 'fill-amber-100/30 dark:fill-amber-950/20'
+      : 'fill-emerald-100/30 dark:fill-emerald-950/20';
+
   return (
     <div className={`w-15 h-15 relative flex items-center justify-center rounded-2xl border transition-all duration-350 shrink-0 ${
       isReserved 
-        ? 'bg-rose-500/5 border-rose-200/40 dark:border-rose-950/20' 
+        ? 'bg-rose-500/5 border-rose-100/40 dark:border-rose-950/25' 
         : isVip
-          ? 'bg-amber-500/5 border-amber-200/40 dark:border-amber-950/20 shadow-sm shadow-amber-500/5'
-          : 'bg-emerald-500/5 border-emerald-200/40 dark:border-emerald-950/20'
+          ? 'bg-amber-500/5 border-amber-100/40 dark:border-amber-950/25'
+          : 'bg-emerald-500/5 border-emerald-100/40 dark:border-emerald-950/25'
     }`}>
       <svg className="w-[62px] h-[62px]" viewBox="0 0 70 70">
         {renderChairs()}
         
+        {/* Main Table top-view */}
         <circle
           cx="35"
           cy="35"
-          r="13.5"
-          className={`transition-all duration-500 fill-current ${
-            isReserved 
-              ? 'text-rose-50 dark:text-rose-950/70 stroke-rose-300 dark:stroke-rose-800' 
-              : isVip
-                ? 'text-amber-50/50 dark:text-amber-950/70 stroke-amber-300 dark:stroke-amber-800'
-                : 'text-emerald-50 dark:text-emerald-950/70 stroke-emerald-300 dark:stroke-emerald-800'
-          }`}
-          strokeWidth="1.5"
+          r="14"
+          className={`transition-all duration-500 fill-current ${centerColor}`}
+          strokeWidth="1.2"
         />
         
+        {/* Table Inner plate decoration */}
         <circle
           cx="35"
           cy="35"
-          r="8"
-          className={`fill-current ${
-            isReserved 
-              ? 'text-rose-100/70 dark:text-rose-900/40' 
-              : isVip
-                ? 'text-amber-100/70 dark:text-amber-900/40'
-                : 'text-emerald-100/70 dark:text-emerald-900/40'
-          }`}
+          r="8.5"
+          className={`transition-all duration-500 ${innerPlateColor}`}
         />
+
+        {/* Cafe Cup of Coffee top-view (cute touch!) */}
+        <g 
+          className={`transition-all duration-500 ${isReserved ? 'text-rose-300/60 dark:text-rose-700/60' : isVip ? 'text-amber-500/70 dark:text-amber-400/60' : 'text-emerald-500/70 dark:text-emerald-400/60'}`}
+          transform="translate(35, 35) rotate(-45)"
+        >
+          {/* Coffee liquid */}
+          <circle
+            cx="0"
+            cy="0"
+            r="3"
+            fill="currentColor"
+            opacity="0.2"
+          />
+          {/* Cup Rim */}
+          <circle
+            cx="0"
+            cy="0"
+            r="3.2"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="0.8"
+          />
+          {/* Cup Handle */}
+          <path
+            d="M 3.2 -1 Q 4.7 0 3.2 1"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="0.8"
+            strokeLinecap="round"
+          />
+        </g>
       </svg>
     </div>
   );
@@ -127,13 +181,40 @@ export const Tables: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<'all' | 'free' | 'reserved' | 'vip'>('all');
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
 
+  const shamsiDates = useMemo(() => {
+    const dates = [];
+    const today = new Date();
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(today.getTime() + i * 24 * 60 * 60 * 1000);
+      const value = d.toLocaleDateString('fa-IR', { weekday: 'long', day: 'numeric', month: 'long' });
+      const weekday = d.toLocaleDateString('fa-IR', { weekday: 'long' });
+      const dayNum = d.toLocaleDateString('fa-IR', { day: 'numeric' });
+      const month = d.toLocaleDateString('fa-IR', { month: 'long' });
+      
+      let label = weekday;
+      if (i === 0) label = 'امروز';
+      else if (i === 1) label = 'فردا';
+      
+      dates.push({ value, label, dayNum, month, weekday });
+    }
+    return dates;
+  }, []);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   // Booking Flow Steps:
-  // 'details' -> 'rules' -> 'phone' -> 'otp' -> 'deposit'
-  const [bookingStep, setBookingStep] = useState<'details' | 'rules' | 'phone' | 'otp' | 'deposit'>('details');
+  // 'details' -> 'rules' -> 'schedule' -> 'phone' -> 'otp' -> 'deposit'
+  const [bookingStep, setBookingStep] = useState<'details' | 'rules' | 'schedule' | 'phone' | 'otp' | 'deposit'>('details');
   const [mobileNumber, setMobileNumber] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [otpTimer, setOtpTimer] = useState(59);
   const [rulesAccepted, setRulesAccepted] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [reserveDate, setReserveDate] = useState(shamsiDates[0].value);
+  const [reserveTime, setReserveTime] = useState('۱۷:۰۰');
+  const [reservePurpose, setReservePurpose] = useState<'birthday' | 'meeting' | 'gathering' | 'other'>('gathering');
+  const [timeSlot, setTimeSlot] = useState<'morning' | 'afternoon' | 'evening'>('evening');
+  const [isPurposeDropdownOpen, setIsPurposeDropdownOpen] = useState(false);
 
   // Notify when available state for busy tables
   const [notifyPhone, setNotifyPhone] = useState('');
@@ -149,9 +230,27 @@ export const Tables: React.FC = () => {
     setOtpCode('');
     setOtpTimer(59);
     setRulesAccepted(false);
+    setReserveDate(shamsiDates[0].value);
+    setReserveTime('۱۷:۰۰');
+    setReservePurpose('gathering');
+    setTimeSlot('evening');
+    setIsPurposeDropdownOpen(false);
     setNotifyPhone('');
     setIsNotifyRequested(false);
-  }, [selectedTableId]);
+  }, [selectedTableId, shamsiDates]);
+
+  // Handle click outside of the purpose dropdown to close it
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsPurposeDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Handle OTP request countdown simulation
   useEffect(() => {
@@ -192,6 +291,17 @@ export const Tables: React.FC = () => {
       notifyError('خطایی در بازنشانی اطلاعات رخ داد');
     }
   };
+
+  // Derive normalized clean phone number and check validation
+  const cleanMobile = toEnglishDigits(mobileNumber).replace(/\D/g, '');
+  const normalizedMobile = cleanMobile.startsWith('98') && cleanMobile.length === 12
+    ? '0' + cleanMobile.substring(2)
+    : cleanMobile.startsWith('0098') && cleanMobile.length === 14
+      ? '0' + cleanMobile.substring(4)
+      : cleanMobile.length === 10 && cleanMobile.startsWith('9')
+        ? '0' + cleanMobile
+        : cleanMobile;
+  const isPhoneValid = /^09\d{9}$/.test(normalizedMobile);
 
   // Stats calculate
   const totalCount = tables.length;
@@ -273,8 +383,14 @@ export const Tables: React.FC = () => {
 
   const handleIntegratePaymentRedirect = () => {
     if (!selectedTable) return;
+    
+    let purpText = 'دورهمی دوستانه';
+    if (reservePurpose === 'birthday') purpText = 'جشن تولد';
+    if (reservePurpose === 'meeting') purpText = 'جلسه کاری و تولید';
+    if (reservePurpose === 'other') purpText = 'تفریح و گپ';
+
     // Redirect to simulated gateway path
-    navigate(`/gateway-transition?type=table&tableId=${selectedTable.id}&phone=${mobileNumber}`);
+    navigate(`/gateway-transition?type=table&tableId=${selectedTable.id}&phone=${mobileNumber}&date=${encodeURIComponent(reserveDate)}&time=${encodeURIComponent(reserveTime)}&purpose=${encodeURIComponent(purpText)}`);
   };
 
   return (
@@ -511,7 +627,7 @@ export const Tables: React.FC = () => {
                           ) : (
                             <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-xl text-[9px] font-black ${
                               table.isReserved 
-                                ? 'bg-rose-500/10 text-rose-500 dark:text-rose-455' 
+                                ? 'bg-rose-500/10 text-rose-500 dark:text-rose-400' 
                                 : 'bg-emerald-500/10 text-emerald-555 dark:text-emerald-400'
                             }`}>
                               <CircleDot size={7} className={`fill-current ${table.isReserved ? 'text-rose-500' : 'text-emerald-400 animate-pulse'}`} />
@@ -613,6 +729,34 @@ export const Tables: React.FC = () => {
                             </div>
                           </div>
 
+                          {/* Reservation Info Badge/Card */}
+                          {(selectedTable.reservedBy || selectedTable.reserveTime || selectedTable.reservePurpose) && (
+                            <div className="bg-emerald-500/[0.03] dark:bg-emerald-500/[0.05] border border-emerald-500/20 rounded-3xl p-4.5 space-y-3.5 text-xs font-semibold text-right" dir="rtl">
+                              <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-extrabold pb-2 border-b border-emerald-500/10">
+                                <CheckCircle2 size={16} />
+                                <span>جزئیات رویداد و رزرو میز</span>
+                              </div>
+                              {selectedTable.reservedBy && (
+                                <div className="flex justify-between items-center">
+                                  <span className="text-gray-500 dark:text-gray-400 font-bold">مشتری رزرو کننده:</span>
+                                  <span className="text-dark dark:text-white font-extrabold">{selectedTable.reservedBy}</span>
+                                </div>
+                              )}
+                              {selectedTable.reserveTime && (
+                                <div className="flex justify-between items-center">
+                                  <span className="text-gray-500 dark:text-gray-400 font-bold">زمان حضور رزرو شده:</span>
+                                  <span className="text-dark dark:text-white font-extrabold font-mono">{selectedTable.reserveTime}</span>
+                                </div>
+                              )}
+                              {selectedTable.reservePurpose && (
+                                <div className="flex justify-between items-center">
+                                  <span className="text-gray-500 dark:text-gray-400 font-bold">هدف/موضوع رزرو:</span>
+                                  <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2.5 py-1 rounded-lg text-[10px] font-black">{selectedTable.reservePurpose}</span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
                           {/* Notify Box/Form */}
                           {!isNotifyRequested ? (
                             <div className="space-y-4">
@@ -708,14 +852,14 @@ export const Tables: React.FC = () => {
                                 disabled={toggleTableMutation.isPending}
                                 className="text-[10px] text-gray-400 hover:text-rose-500 dark:text-white/20 dark:hover:text-rose-400 font-bold transition-colors cursor-pointer"
                               >
-                                {toggleTableMutation.isPending ? 'در حال بی اثر کردن...' : 'آیا مسئول کافه هستید؟ آزاد کردن دستی میز'}
+                                {toggleTableMutation.isPending ? 'در حال تغییر...' : 'تغییر وضعیت به آزاد'}
                               </button>
                             </div>
                           </div>
                         </motion.div>
                       )}
 
-                      {/* INITIAL DETAILS OF AN AVAILABLE TABLE */}
+                      {/* STEP: Details */}
                       {!selectedTable.isReserved && bookingStep === 'details' && (
                         <motion.div
                           initial={{ opacity: 0, y: 10 }}
@@ -725,8 +869,8 @@ export const Tables: React.FC = () => {
                           {/* Title Header */}
                           <div className="flex justify-between items-start">
                             <div>
-                              <span className="bg-primary/10 text-primary dark:text-[#E89C6A] text-[10px] px-3 py-1 rounded-full font-black mb-1.5 inline-block">
-                                {selectedTable.zone}
+                              <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] px-3 py-1 rounded-full font-black mb-1.5 inline-block">
+                                {selectedTable.zone} • فعال
                               </span>
                               <h3 className="text-xl font-black text-dark dark:text-white leading-none">
                                 میز شماره {selectedTable.number}
@@ -763,14 +907,14 @@ export const Tables: React.FC = () => {
                           <div className="space-y-3 pt-2">
                             <button
                               onClick={() => setBookingStep('rules')}
-                              className="w-full py-4 rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 text-[12px] font-black cursor-pointer flex items-center justify-center gap-2 hover:bg-primary-dark active:scale-[0.98] transition-all"
+                              className="w-full py-4 rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 text-[12px] font-black cursor-pointer flex items-center justify-center gap-2 hover:bg-primary-dark active:scale-[0.98] transition-all focus:outline-none"
                             >
                               <span>شروع فرآیند ثبت رزرو موقت</span>
                             </button>
 
                             <button
                               onClick={() => setSelectedTableId(null)}
-                              className="w-full py-3 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 text-gray-750 dark:text-gray-300 text-[11px] font-bold rounded-2xl active:scale-[0.98] transition-all"
+                              className="w-full py-3 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 text-gray-750 dark:text-gray-300 text-[11px] font-bold rounded-2xl active:scale-[0.98] transition-all focus:outline-none"
                             >
                               انصراف و بستن
                             </button>
@@ -793,49 +937,253 @@ export const Tables: React.FC = () => {
                             <p className="text-[10px] text-gray-400">لطفاً پیش از ثبت رزرو، ضوابط زیر را به دقت تایید نمایند</p>
                           </div>
 
-                          <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 rounded-3xl p-4.5 space-y-4 max-h-[190px] overflow-y-auto pr-1 text-[11px] text-gray-600 dark:text-gray-350 leading-relaxed font-medium">
+                          <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 rounded-3xl p-4.5 space-y-4 max-h-[220px] overflow-y-auto pr-1 text-[11px] text-gray-650 dark:text-gray-300 leading-relaxed font-medium">
                             <div className="flex gap-2.5 items-start">
+                              <span className="text-primary font-black shrink-0 mt-0.5">💳</span>
+                              <p><strong>پرداخت وجه:</strong> جهت رزرو موقت، پرداخت آنلاین هزینه رزرو اولیه الزامی است.</p>
+                            </div>
+                            <div className="flex gap-2.5 items-start pt-2 border-t border-gray-100/30">
                               <span className="text-primary font-black shrink-0 mt-0.5">⏳</span>
-                              <p><strong>مدت زمان نگه داشتن میز:</strong> پس از ثبت رزرو نهایی، میز تا حداکثر <span className="text-primary font-bold">۱ ساعت</span> در وضعیت رزرو به نام شما باقی می‌ماند تا در کافه حضور بیابید.</p>
+                              <p><strong>مدت نگه داشتن میز:</strong> پس از ثبت نهایی رزرو، میز تا حداکثر <span className="text-primary font-bold">۱ ساعت</span> در وضعیت رزرو باقی می‌ماند تا در کافه حضور یابید.</p>
                             </div>
-                            <div className="flex gap-2.5 items-start">
-                              <span className="text-primary font-black shrink-0 mt-0.5">💰</span>
-                              <p><strong>مبلغ بیعانه تضمینی:</strong> مبلغ کسر شده (۵۰,۰۰۰ تومان) صرفاً جهت تضمین حضور شما بوده و به صورت کامل از مبلغ فاکتور سفارش نهایی شما کسر می‌گردد.</p>
+                            <div className="flex gap-2.5 items-start pt-2 border-t border-gray-100/30">
+                              <span className="text-primary font-black shrink-0 mt-0.5">🔔</span>
+                              <p><strong>اطلاع‌رسانی پیامکی:</strong> دقیقاً <span className="text-primary font-bold">۲۰ دقیقه پیش از حضور</span> شما در کافه، پیامک یادآوری جهت آمادگی ارسال می‌شود.</p>
                             </div>
-                            <div className="flex gap-2.5 items-start">
-                              <span className="text-primary font-black shrink-0 mt-0.5">⚠️</span>
-                              <p><strong>عدم حضور فیزیکی:</strong> در صورت انقضای زمان یک ساعت و عدم مراجعه، میز آزاد شده و بیعانه ثبت شده عودت داده نمی‌شود.</p>
+                            <div className="flex gap-2.5 items-start pt-2 border-t border-gray-100/30">
+                              <span className="text-[#EF4444] font-black shrink-0 mt-0.5">⚠️</span>
+                              <p><strong>لغو خودکار بعد از ۱۰ دقیقه:</strong> در صورت عدم حضور به موقع در کافه، <span className="text-rose-500 font-bold">۱۰ دقیقه پس از زمان مقرر رزرو</span>، میز به طور خودکار آزاد شده و به حالت قبل بازمی‌گردد.</p>
                             </div>
                           </div>
 
-                          <label className="flex items-center gap-3 cursor-pointer p-1 rounded-xl">
+                          {/* Checkbox template to accept rules */}
+                          <label className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/[0.02] border border-gray-100/50 dark:border-white/5 rounded-2xl cursor-pointer select-none">
                             <input
                               type="checkbox"
                               checked={rulesAccepted}
                               onChange={(e) => setRulesAccepted(e.target.checked)}
-                              className="w-4 h-4 rounded border-gray-300 dark:border-white/10 text-primary focus:ring-primary focus:ring-opacity-50"
+                              className="w-4.5 h-4.5 rounded border-gray-305 text-primary focus:ring-primary focus:ring-2 dark:bg-white/5 dark:border-white/10"
                             />
-                            <span className="text-[11px] font-black text-[#374151] dark:text-[#E4E4E7]">قوانین رزرو میز فوق را مطالعه کرده و قبول دارم</span>
+                            <span className="text-[11px] font-black text-gray-700 dark:text-gray-300">
+                              تمامی قوانین و شرایط فوق را خوانده و می‌پذیرم
+                            </span>
                           </label>
 
                           <div className="flex gap-3 pt-2">
                             <button
                               onClick={() => setBookingStep('details')}
-                              className="flex-1 py-3.5 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 text-[11px] font-bold rounded-2xl active:scale-95 transition-all text-center"
+                              className="flex-1 py-3.5 bg-gray-100 dark:bg-white/10 text-gray-650 dark:text-gray-300 text-[11px] font-bold rounded-2xl active:scale-95 transition-all text-center focus:outline-none"
                             >
                               مرحله قبل
                             </button>
                             <button
                               disabled={!rulesAccepted}
-                              onClick={() => setBookingStep('phone')}
-                              className="flex-1 py-3.5 bg-primary disabled:opacity-50 text-white text-[11px] font-black rounded-2xl active:scale-95 transition-all text-center flex items-center justify-center gap-1 shadow-lg shadow-primary/10"
+                              onClick={() => setIsConfirmModalOpen(true)}
+                              className="flex-1 py-3.5 bg-primary disabled:opacity-50 text-white text-[11px] font-black rounded-2xl active:scale-95 transition-all text-center flex items-center justify-center gap-1 shadow-lg shadow-primary/10 focus:outline-none"
                             >
                               پذیرش و ادامه
                             </button>
                           </div>
                         </motion.div>
                       )}
+                      {/* STEP: Schedule selection */}
+                      {!selectedTable.isReserved && bookingStep === 'schedule' && (
+                        <motion.div
+                          initial={{ opacity: 0, x: -15 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="space-y-5 text-right font-sans"
+                        >
+                          <div className="text-center space-y-2 mb-1">
+                            <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
+                              <CalendarClock size={22} className="animate-pulse" />
+                            </div>
+                            <h3 className="text-base font-black text-dark dark:text-white">برنامه‌ریزی و جزئیات رزرو</h3>
+                            <p className="text-[10px] text-gray-400">تاریخ، ساعت و هدف از رزرو میز خود را مشخص نمایید</p>
+                          </div>
 
+                          <div className="space-y-4">
+                            {/* 1. Pick Date */}
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between pb-0.5">
+                                <label className="text-[11px] font-black text-gray-500 dark:text-gray-400 block">تاریخ رزرو میز:</label>
+                                <div className="flex items-center gap-1 text-[9px] font-black text-primary/80 dark:text-primary animate-pulse bg-primary/5 dark:bg-primary/10 px-2 py-0.5 rounded-lg border border-primary/10">
+                                  <span>ورق بزنید (تا یک هفته)</span>
+                                  <ArrowLeft size={10} strokeWidth={3} />
+                                </div>
+                              </div>
+                              <div className="relative">
+                                <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none snap-x" dir="rtl">
+                                  {shamsiDates.map((d) => (
+                                    <button
+                                      key={d.value}
+                                      type="button"
+                                      onClick={() => setReserveDate(d.value)}
+                                      className={`flex-shrink-0 w-[84px] py-2.5 rounded-2xl border text-center transition-all cursor-pointer snap-start focus:outline-none ${
+                                        reserveDate === d.value
+                                          ? 'bg-primary text-white border-primary shadow-md shadow-primary/25 scale-[1.02]'
+                                          : 'bg-white dark:bg-white/5 text-gray-700 dark:text-gray-305 border-gray-100 dark:border-white/5 hover:bg-gray-50'
+                                      }`}
+                                    >
+                                      <div className={`text-[9px] font-bold ${reserveDate === d.value ? 'text-white/80' : 'text-gray-400'}`}>{d.label}</div>
+                                      <div className="text-[16px] font-black font-mono leading-none my-0.5">{d.dayNum}</div>
+                                      <div className={`text-[9px] font-bold ${reserveDate === d.value ? 'text-white/85 font-black' : 'text-gray-500 dark:text-gray-450'}`}>{d.month}</div>
+                                    </button>
+                                  ))}
+                                </div>
+                                
+                                {/* Subtle fade overlay on the left edge with a delicate arrow */}
+                                <div className="absolute left-0 top-0 bottom-2 w-10 bg-gradient-to-r from-white dark:from-[#121214] to-transparent pointer-events-none flex items-center justify-start z-10">
+                                  <motion.div
+                                    animate={{ x: [0, -3, 0] }}
+                                    transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                                    className="text-primary pr-0.5"
+                                  >
+                                    <ArrowLeft size={14} strokeWidth={3} className="opacity-80" />
+                                  </motion.div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* 2. Pick Time Redesigned with Segments/Tabs */}
+                            <div className="space-y-2.5">
+                              <label className="text-[11px] font-black text-gray-500 dark:text-gray-400 block pb-0.5">ساعت پیشنهادی حضور شما:</label>
+                              
+                              {/* Segmented control for morning/afternoon/evening */}
+                              <div className="flex bg-gray-100/80 dark:bg-white/5 p-1 rounded-xl gap-1">
+                                {[
+                                  { value: 'morning', label: 'صبح و ظهر', icon: '🌅', desc: '۹ تا ۱۳' },
+                                  { value: 'afternoon', label: 'بعدازظهر', icon: '☀️', desc: '۱۴ تا ۱۷' },
+                                  { value: 'evening', label: 'عصر و شب', icon: '🌙', desc: '۱۸ تا ۲۳' }
+                                ].map((slot) => (
+                                  <button
+                                    key={slot.value}
+                                    type="button"
+                                    onClick={() => {
+                                      setTimeSlot(slot.value as any);
+                                      // Auto select first hour in slot if current selection is not in this slot
+                                      const slotHours = slot.value === 'morning' 
+                                        ? ['۰۹:۰۰', '۱۰:۰۰', '۱۱:۰۰', '۱۲:۰۰', '۱۳:۰۰'] 
+                                        : slot.value === 'afternoon'
+                                          ? ['۱۴:۰۰', '۱۵:۰۰', '۱۶:۰۰', '۱۷:۰۰']
+                                          : ['۱۸:۰۰', '۱۹:۰۰', '۲۰:۰۰', '۲۱:۰۰', '۲۲:۰۰', '۲۳:۰۰'];
+                                      if (!slotHours.includes(reserveTime)) {
+                                        setReserveTime(slotHours[0]);
+                                      }
+                                    }}
+                                    className={`flex-1 py-1.5 px-1 rounded-lg text-center transition-all cursor-pointer focus:outline-none ${
+                                      timeSlot === slot.value
+                                        ? 'bg-white dark:bg-white/10 text-dark dark:text-white shadow-sm font-black'
+                                        : 'text-gray-500 dark:text-gray-400 font-bold hover:text-dark dark:hover:text-white'
+                                    }`}
+                                  >
+                                    <div className="text-[10px] flex items-center justify-center gap-1">
+                                      <span>{slot.icon}</span>
+                                      <span>{slot.label}</span>
+                                    </div>
+                                    <div className="text-[8px] opacity-60 mt-0.5 font-mono">{slot.desc}</div>
+                                  </button>
+                                ))}
+                              </div>
+
+                              {/* Hours of selected slot */}
+                              <div className="grid grid-cols-4 gap-2 bg-gray-500/[0.02] dark:bg-white/[0.01] p-2.5 rounded-xl border border-gray-100 dark:border-white/5 min-h-[64px]">
+                                {(timeSlot === 'morning' 
+                                  ? ['۰۹:۰۰', '۱۰:۰۰', '۱۱:۰۰', '۱۲:۰۰', '۱۳:۰۰'] 
+                                  : timeSlot === 'afternoon'
+                                    ? ['۱۴:۰۰', '۱۵:۰۰', '۱۶:۰۰', '۱۷:۰۰']
+                                    : ['۱۸:۰۰', '۱۹:۰۰', '۲۰:۰۰', '۲۱:۰۰', '۲۲:۰۰', '۲۳:۰۰']
+                                ).map((t) => (
+                                  <button
+                                    key={t}
+                                    type="button"
+                                    onClick={() => setReserveTime(t)}
+                                    className={`py-2 rounded-xl border text-center text-[11px] font-black font-mono transition-all cursor-pointer focus:outline-none ${
+                                      reserveTime === t
+                                        ? 'bg-primary/10 text-primary border-primary'
+                                        : 'bg-white dark:bg-white/5 text-gray-600 dark:text-white/80 border-gray-100 dark:border-white/5 hover:bg-gray-50'
+                                    }`}
+                                  >
+                                    {t}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* 3. Pick Purpose with elegant Dropdown */}
+                            <div className="space-y-2 relative" ref={dropdownRef}>
+                              <label className="text-[11px] font-black text-gray-500 dark:text-gray-400 block pb-0.5">موضوع یا مناسبت رویداد:</label>
+                              <button
+                                type="button"
+                                onClick={() => setIsPurposeDropdownOpen(!isPurposeDropdownOpen)}
+                                className="w-full py-3.5 px-4 rounded-xl border bg-white dark:bg-white/5 border-gray-100 dark:border-white/5 text-gray-700 dark:text-white/90 font-bold text-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/10 transition-all cursor-pointer shadow-sm focus:outline-none"
+                              >
+                                <span className="flex items-center gap-2">
+                                  {reservePurpose === 'birthday' && '🎉 تولد'}
+                                  {reservePurpose === 'meeting' && '💼 جلسه کاری و تولید'}
+                                  {reservePurpose === 'gathering' && '👥 دورهمی دوستانه'}
+                                  {reservePurpose === 'other' && '☕ تفریح و گپ'}
+                                </span>
+                                <ChevronDown size={16} className={`text-gray-400 transition-transform duration-200 ${isPurposeDropdownOpen ? 'rotate-180' : ''}`} />
+                              </button>
+
+                              <AnimatePresence>
+                                {isPurposeDropdownOpen && (
+                                  <motion.div
+                                    initial={{ opacity: 0, y: -8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -8 }}
+                                    transition={{ duration: 0.15 }}
+                                    className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1E1E24] border border-gray-100 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden z-50 text-right p-0"
+                                  >
+                                    {[
+                                      { value: 'birthday', label: 'تولد 🎉', desc: 'مناسب برگزاری مراسم و جشن‌های خصوصی' },
+                                      { value: 'meeting', label: 'جلسه کاری و تولید 💼', desc: 'قرارهای کاری، ضبط برنامه یا تولید محتوا' },
+                                      { value: 'gathering', label: 'دورهمی دوستانه 👥', desc: 'ملاقات با اعضای خانواده و رفقا' },
+                                      { value: 'other', label: 'تفریح و گپ ☕', desc: 'اوقات فراغت شخصی با قهوه و شیرینی' },
+                                    ].map((item, index) => (
+                                      <button
+                                        key={item.value}
+                                        type="button"
+                                        onClick={() => {
+                                          setReservePurpose(item.value as any);
+                                          setIsPurposeDropdownOpen(false);
+                                        }}
+                                        className={`w-full py-3 px-5 text-right flex flex-col gap-0.5 transition-all cursor-pointer focus:outline-none border-b border-gray-100/40 dark:border-white/5 last:border-0 ${
+                                          index === 0 ? 'rounded-t-2xl' : ''
+                                        } ${
+                                          index === 3 ? 'rounded-b-2xl' : ''
+                                        } ${
+                                          reservePurpose === item.value 
+                                            ? 'bg-primary/10 text-primary font-black' 
+                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50/80 dark:hover:bg-white/5'
+                                        }`}
+                                      >
+                                        <div className="text-[12px] font-black">{item.label}</div>
+                                        <div className="text-[9px] text-gray-500 dark:text-gray-400 font-semibold">{item.desc}</div>
+                                      </button>
+                                    ))}
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-3 pt-3">
+                            <button
+                              onClick={() => setBookingStep('rules')}
+                              className="flex-1 py-3.5 bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 text-[11px] font-bold rounded-2xl active:scale-95 transition-all text-center font-sans focus:outline-none"
+                            >
+                              مرحله قبل
+                            </button>
+                            <button
+                              onClick={() => setBookingStep('phone')}
+                              className="flex-1 py-3.5 bg-primary text-white text-[11px] font-black rounded-2xl active:scale-95 transition-all text-center flex items-center justify-center gap-1 shadow-lg shadow-primary/10 font-sans focus:outline-none"
+                            >
+                              ثبت و ادامه
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
                       {/* STEP: Phone Input */}
                       {!selectedTable.isReserved && bookingStep === 'phone' && (
                         <motion.div
@@ -870,27 +1218,15 @@ export const Tables: React.FC = () => {
                                 className={`w-full py-4 text-center font-mono text-[17px] tracking-widest bg-gray-50 dark:bg-white/[0.03] border rounded-2xl text-dark dark:text-white focus:outline-none focus:ring-4 transition-all ${
                                   mobileNumber.length === 0
                                     ? 'border-gray-100 dark:border-white/5 focus:border-primary/50 focus:ring-primary/10'
-                                    : (() => {
-                                        const clean = toEnglishDigits(mobileNumber).replace(/\D/g, '');
-                                        let pt = clean;
-                                        if (clean.length === 10 && clean.startsWith('9')) pt = '0' + clean;
-                                        return /^09\d{9}$/.test(pt)
-                                          ? 'border-emerald-500/40 dark:border-emerald-500/40 focus:border-emerald-500 focus:ring-emerald-500/10'
-                                          : 'border-rose-300 dark:border-rose-950/40 focus:border-rose-500 focus:ring-rose-500/10';
-                                      })()
+                                    : isPhoneValid
+                                      ? 'border-emerald-500/40 dark:border-emerald-500/40 focus:border-emerald-500 focus:ring-emerald-500/10'
+                                      : 'border-rose-300 dark:border-rose-900/40 focus:border-rose-500 focus:ring-rose-500/10'
                                 }`}
                               />
                             </div>
                             
-                            {mobileNumber.length > 0 && !/^09\d{9}$/.test(
-                              (() => {
-                                const clean = toEnglishDigits(mobileNumber).replace(/\D/g, '');
-                                let pt = clean;
-                                if (clean.length === 10 && clean.startsWith('9')) pt = '0' + clean;
-                                return pt;
-                              })()
-                            ) && (
-                              <p className="text-rose-500 text-[11px] font-bold text-center mt-1">
+                            {mobileNumber.length > 0 && !isPhoneValid && (
+                              <p className="text-rose-500 text-[11px] font-bold text-center mt-1 animate-pulse">
                                 شماره موبایل وارد شده معتبر نیست. نمونه معتبر: ۰۹۱۲۳۴۵۶۷۸۹
                               </p>
                             )}
@@ -898,16 +1234,24 @@ export const Tables: React.FC = () => {
                             <span className="text-[10px] text-gray-400 text-center block leading-relaxed">کد فعال‌سازی تست <strong className="text-gray-600 dark:text-gray-300">"۱۲۳۴"</strong> بلافاصله ارسال خواهد شد.</span>
                           </div>
 
-                          <div className="flex gap-3 pt-3">
+                          <div className="flex gap-3 pt-3 font-sans">
                             <button
-                              onClick={() => setBookingStep('rules')}
-                              className="flex-1 py-3.5 bg-gray-100 dark:bg-white/10 text-gray-755 dark:text-gray-300 text-[11px] font-bold rounded-2xl active:scale-95 transition-all text-center"
+                              onClick={() => setBookingStep('schedule')}
+                              className="flex-1 py-3.5 bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 text-[11px] font-bold rounded-2xl active:scale-95 transition-all text-center"
                             >
                               مرحله قبل
                             </button>
                             <button
-                              onClick={sendVerificationSms}
-                              className="flex-1 py-3.5 bg-primary text-white text-[11px] font-black rounded-2xl active:scale-95 transition-all text-center flex items-center justify-center gap-1 shadow-lg shadow-primary/10"
+                              onClick={() => {
+                                if (!isPhoneValid) return;
+                                sendVerificationSms();
+                              }}
+                              disabled={!isPhoneValid}
+                              className={`flex-1 py-3.5 text-[11px] font-black rounded-2xl active:scale-95 transition-all text-center flex items-center justify-center gap-1 shadow-lg ${
+                                isPhoneValid
+                                  ? 'bg-primary text-white shadow-primary/10 cursor-pointer hover:brightness-105'
+                                  : 'bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-600 cursor-not-allowed shadow-none'
+                              }`}
                             >
                               ارسال کد تایید
                             </button>
@@ -1060,11 +1404,23 @@ export const Tables: React.FC = () => {
                           <div className="bg-gray-50 dark:bg-white/[0.03] rounded-3xl p-4.5 space-y-3.5 border border-gray-100 dark:border-white/5 text-xs font-medium">
                             <div className="flex items-center justify-between">
                               <span className="text-gray-500 dark:text-gray-400">میز انتخابی:</span>
-                              <span className="font-black text-dark dark:text-white">میز شماره {selectedTable.number} ({selectedTable.zone})</span>
+                              <span className="font-black text-dark dark:text-white font-sans">میز شماره {selectedTable.number} ({selectedTable.zone})</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-500 dark:text-gray-400">زمان حضور پیشنهادی:</span>
+                              <span className="font-black text-dark dark:text-white font-sans">{reserveDate} – ساعت {reserveTime}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-500 dark:text-gray-400">موضوع رویداد:</span>
+                              <span className="font-black text-dark dark:text-white bg-primary/10 text-primary px-2.5 py-0.5 rounded-lg text-[10px] font-sans">
+                                {reservePurpose === 'birthday' ? 'تولد 🎉' :
+                                 reservePurpose === 'meeting' ? 'جلسه کاری 💼' :
+                                 reservePurpose === 'gathering' ? 'دورهمی دوستانه 👥' : 'تفریح و گپ ☕'}
+                              </span>
                             </div>
                             <div className="flex items-center justify-between">
                               <span className="text-gray-500 dark:text-gray-400">مدت نگهداشت رزرو:</span>
-                              <span className="font-black text-dark dark:text-white">۱ ساعت پس از تراکنش</span>
+                              <span className="font-black text-dark dark:text-white font-sans">۱ ساعت پس از حضور</span>
                             </div>
                             <div className="flex items-center justify-between">
                               <span className="text-gray-500 dark:text-gray-400">شماره هماهنگی لند:</span>
@@ -1107,6 +1463,11 @@ export const Tables: React.FC = () => {
           </>
         )}
       </div>
+      <BookingConfirmModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={() => setBookingStep('schedule')}
+      />
     </PageTransition>
   );
 };

@@ -79,6 +79,7 @@ export interface Table {
   isReserved: boolean;
   reservedBy?: string;
   reserveTime?: string;
+  reservePurpose?: string;
   features: string[];
 }
 

@@ -15,6 +15,9 @@ const GatewayTransition: React.FC = () => {
   const type = searchParams.get('type');
   const tableId = searchParams.get('tableId');
   const phone = searchParams.get('phone') || '';
+  const dateValue = searchParams.get('date') || 'امروز';
+  const timeValue = searchParams.get('time') || '۱۷:۰۰';
+  const purposeValue = searchParams.get('purpose') || 'دورهمی دوستانه';
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -26,13 +29,12 @@ const GatewayTransition: React.FC = () => {
             const list = JSON.parse(saved);
             const updated = list.map((t: any) => {
               if (t.id === parseInt(tableId)) {
-                // Short Persian-formatted current time (like 20:15)
-                const PersianTime = new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
                 return {
                   ...t,
                   isReserved: true,
                   reservedBy: `شما (۰${phone.slice(-10)})`,
-                  reserveTime: `بیعانه ساعت ${PersianTime}`
+                  reserveTime: `${dateValue} - ساعت ${timeValue}`,
+                  reservePurpose: purposeValue
                 };
               }
               return t;

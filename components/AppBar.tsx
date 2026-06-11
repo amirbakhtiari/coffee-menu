@@ -30,27 +30,27 @@ const AppBar: React.FC<AppBarProps> = ({
   };
 
   return (
-    <header className={`relative flex items-center justify-between shrink-0 h-12 w-full ${className}`}>
+    <header className={`shrink-0 h-12 w-full grid grid-cols-3 items-center relative ${className}`}>
       {/* Right side alignment (Back button in RTL) */}
-      <div className="flex items-center justify-start min-w-[48px] z-10">
+      <div className="flex items-center justify-start z-10">
         {showBack && (
           <button 
             onClick={handleBack}
-            className="w-10 h-10 bg-white dark:bg-white/10 rounded-xl shadow-sm border border-gray-50 dark:border-white/5 flex items-center justify-center text-dark dark:text-white active:scale-90 transition-transform"
+            className="w-10 h-10 bg-white dark:bg-white/10 rounded-xl shadow-sm border border-gray-50 dark:border-white/5 flex items-center justify-center text-dark dark:text-white active:scale-90 transition-transform cursor-pointer"
           >
             <ChevronRight size={20} />
           </button>
         )}
       </div>
 
-      {/* Absolutely Centered Title and Subtitle */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-14 z-0">
-        <h1 className="text-[15px] font-black text-dark dark:text-white leading-tight pointer-events-auto">{title}</h1>
-        {subtitle && <p className="text-[9px] text-muted dark:text-white/40 font-bold mt-0.5 leading-none pointer-events-auto">{subtitle}</p>}
+      {/* Symmetrically Centered Title and Subtitle */}
+      <div className="flex flex-col items-center justify-center text-center z-0">
+        <h1 className="text-[15px] font-black text-dark dark:text-white leading-tight">{title}</h1>
+        {subtitle && <p className="text-[9px] text-muted dark:text-white/40 font-bold mt-0.5 leading-none">{subtitle}</p>}
       </div>
       
       {/* Left side alignment (Right Action in RTL) */}
-      <div className="flex items-center justify-end min-w-[48px] z-10">
+      <div className="flex items-center justify-end z-10">
         {rightAction}
       </div>
     </header>
