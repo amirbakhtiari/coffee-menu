@@ -547,7 +547,7 @@ export const Tables: React.FC = () => {
             </div>
 
             {/* Interactive Smooth Filter Scrollbar */}
-            <div className="mt-5 flex gap-1.5 pb-2 overflow-x-auto no-scrollbar -mx-5 px-5">
+            <div className="mt-5 flex gap-1.5 pb-2 overflow-x-auto no-scrollbar -mx-5 px-5 overscroll-x-contain">
               {[
                 { id: 'all', label: 'همه میزها', icon: Coffee },
                 { id: 'free', label: 'آزاد و آماده', icon: CheckCircle2 },
@@ -1012,7 +1012,7 @@ export const Tables: React.FC = () => {
                                 </div>
                               </div>
                               <div className="relative">
-                                <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none snap-x" dir="rtl">
+                                <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none snap-x overscroll-x-contain" dir="rtl">
                                   {shamsiDates.map((d) => (
                                     <button
                                       key={d.value}

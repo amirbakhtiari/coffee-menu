@@ -55,9 +55,13 @@ const Home: React.FC = () => {
 
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
 
-  // Scroll to top when category changes
+  // Scroll to safety boundary when category changes to prevent the top header card from suddenly sliding down
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (window.scrollY > 130) {
+      window.scrollTo(0, 130);
+    } else {
+      window.scrollTo(0, 0);
+    }
   }, [selectedCategory]);
 
   // Swipe to change categories in RTL:
@@ -79,7 +83,7 @@ const Home: React.FC = () => {
     }
   };
 
-  const swipeHandlers = useSwipeGesture({
+  const swipeContainerRef = useSwipeGesture({
     onSwipeLeft: handleSwipeLeft,
     onSwipeRight: handleSwipeRight,
     threshold: 50,
@@ -101,7 +105,7 @@ const Home: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="flex flex-col">
+      <div className="flex flex-col overflow-x-hidden">
         {/* Top Header Card */}
         <div 
           className="bg-white dark:bg-dark rounded-b-[40px] pt-12 pb-8 px-6 flex flex-col gap-4 relative shadow-sm dark:shadow-none border-b border-gray-100/40 dark:border-white/5 transition-all duration-300 overflow-hidden"
@@ -207,7 +211,7 @@ const Home: React.FC = () => {
         </div>
 
         {/* Full Menu Item Grid / List Visualizer */}
-        <div className="px-6 pb-4 mt-4 select-none" onTouchStart={swipeHandlers.onTouchStart} onTouchEnd={swipeHandlers.onTouchEnd}>
+        <div ref={swipeContainerRef} className="px-6 pb-4 mt-4 select-none touch-pan-y">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-black text-dark dark:text-white">
               {selectedCategory === CategoryType.DISCOUNTED ? 'پیشنهادهای شگفت‌انگیز لند' : 'آیتم‌های برگزیده'}

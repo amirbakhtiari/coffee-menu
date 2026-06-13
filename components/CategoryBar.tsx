@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { CategoryType } from '../types';
 import { Coffee, Milk, Zap, Loader, ChevronLeft, Percent, History, Droplets } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -35,6 +35,20 @@ const CategoryBar: React.FC<CategoryBarProps> = ({ selected, onSelect, categorie
     }
   };
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      // Find the active element using querySelector
+      const activeEl = scrollRef.current.querySelector('[data-active="true"]');
+      if (activeEl) {
+        activeEl.scrollIntoView({
+          behavior: 'smooth',
+          inline: 'center',
+          block: 'nearest'
+        });
+      }
+    }
+  }, [selected]);
+
   return (
     <div className="relative group">
       <AnimatePresence>
@@ -60,7 +74,7 @@ const CategoryBar: React.FC<CategoryBarProps> = ({ selected, onSelect, categorie
       <div 
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex gap-2.5 overflow-x-auto no-scrollbar px-6 py-2 touch-pan-x"
+        className="flex gap-2.5 overflow-x-auto no-scrollbar px-6 py-2 touch-pan-x overscroll-x-contain"
       >
         {loading ? (
           Array.from({ length: 5 }).map((_, i) => (
@@ -77,6 +91,7 @@ const CategoryBar: React.FC<CategoryBarProps> = ({ selected, onSelect, categorie
             return (
               <button
                 key={cat.id}
+                data-active={active}
                 onClick={() => onSelect(cat.id)}
                 className={`flex flex-col items-center gap-1.5 shrink-0 min-w-[84px] pt-2 px-2 pb-2.5 rounded-[22px] transition-all duration-300 ${
                   active 

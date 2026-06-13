@@ -19,9 +19,13 @@ const Menu: React.FC = () => {
   
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
 
-  // Scroll to top when category changes
+  // Scroll to safety boundary when category changes to prevent the top AppBar from suddenly sliding down
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (window.scrollY > 100) {
+      window.scrollTo(0, 100);
+    } else {
+      window.scrollTo(0, 0);
+    }
   }, [selectedCategory]);
 
   // Swipe to change categories in RTL:
@@ -43,7 +47,7 @@ const Menu: React.FC = () => {
     }
   };
 
-  const swipeHandlers = useSwipeGesture({
+  const swipeContainerRef = useSwipeGesture({
     onSwipeLeft: handleSwipeLeft,
     onSwipeRight: handleSwipeRight,
     threshold: 50,
@@ -66,7 +70,7 @@ const Menu: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="px-6 pb-4 min-h-screen bg-light-gray dark:bg-dark flex flex-col transition-colors">
+      <div className="px-6 pb-4 min-h-screen bg-light-gray dark:bg-dark flex flex-col transition-colors overflow-x-hidden">
         <div className="pt-12 pb-4 -mx-6 px-6 mb-2 bg-light-gray dark:bg-dark transition-colors">
           <AppBar 
             title="منوی کامل" 
@@ -83,7 +87,7 @@ const Menu: React.FC = () => {
           />
         </div>
 
-        <div className="sticky top-0 z-50 bg-light-gray/95 dark:bg-dark/95 backdrop-blur-md -mx-6 mb-4">
+        <div className="sticky top-0 z-50 bg-light-gray/95 dark:bg-dark/95 backdrop-blur-md -mx-6 mb-4 overflow-hidden">
           <CategoryBar 
             selected={selectedCategory} 
             onSelect={setSelectedCategory} 
@@ -92,7 +96,7 @@ const Menu: React.FC = () => {
           />
         </div>
 
-        <div className="flex-1 select-none" onTouchStart={swipeHandlers.onTouchStart} onTouchEnd={swipeHandlers.onTouchEnd}>
+        <div ref={swipeContainerRef} className="flex-1 select-none touch-pan-y">
           <AnimatePresence mode="wait">
             <motion.div 
               key={selectedCategory}

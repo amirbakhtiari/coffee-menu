@@ -41,6 +41,81 @@ const AnimatedRoutes = () => {
     };
   }, []);
 
+  // Global horizontal swipe/overscroll protector to secure iframe stability in RTL and standard layouts
+  useEffect(() => {
+    let startX = 0;
+    let startY = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 0) return;
+      const touch = e.touches[0];
+      const diffX = touch.clientX - startX;
+      const diffY = touch.clientY - startY;
+
+      // Check if primary gesture direction is horizontal
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        let isScrollableContainer = false;
+        let target: HTMLElement | null = e.target as HTMLElement;
+
+        while (target && target !== document.body) {
+          const style = window.getComputedStyle(target);
+          const hasHorizontalOverflow = 
+            target.scrollWidth > target.clientWidth && 
+            (style.overflowX === 'auto' || style.overflowX === 'scroll' || target.classList.contains('overflow-x-auto') || target.classList.contains('overflow-x-scroll') || target.classList.contains('no-scrollbar'));
+
+          if (hasHorizontalOverflow) {
+            isScrollableContainer = true;
+
+            const scrollLeft = target.scrollLeft;
+            const maxScroll = target.scrollWidth - target.clientWidth;
+
+            const distToZero = Math.abs(scrollLeft);
+            const distToMaxPositive = Math.abs(scrollLeft - maxScroll);
+            const distToMaxNegative = Math.abs(scrollLeft + maxScroll);
+
+            const isAtRightLimit = (distToZero < 2.5 && scrollLeft >= -2.5) || distToMaxPositive < 2.5;
+            const isAtLeftLimit = distToMaxNegative < 2.5 || (distToZero < 2.5 && scrollLeft <= 2.5);
+
+            // Block further scrolling if already at extreme RTL/LTR boundaries to prevent whole-page rubberbanding
+            if (diffX > 0 && isAtRightLimit) {
+              if (e.cancelable) e.preventDefault();
+              break;
+            }
+            if (diffX < 0 && isAtLeftLimit) {
+              if (e.cancelable) e.preventDefault();
+              break;
+            }
+
+            return; // Allow natural horizontal scroll inside the active container
+          }
+          target = target.parentElement;
+        }
+
+        // For non-scrollable areas, lock completely to secure layout geometry
+        if (!isScrollableContainer) {
+          if (e.cancelable) {
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, []);
+
   if (isOffline) {
     return <Offline />;
   }
