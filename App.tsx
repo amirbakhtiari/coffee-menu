@@ -23,6 +23,7 @@ import GatewayTransition from './pages/GatewayTransition';
 import PaymentResult from './pages/PaymentResult';
 import CafeInfo from './pages/CafeInfo';
 import Tables from './pages/Tables';
+import { SplashScreen } from './components/SplashScreen';
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -170,12 +171,24 @@ const AnimatedRoutes = () => {
 };
 
 const App: React.FC = () => {
+  const [showSplash, setShowSplash] = useState(() => {
+    // Check if splash screen was already displayed during this session
+    return !sessionStorage.getItem('cafe_land_splash_shown');
+  });
+
   return (
-    <Router>
-      <Layout>
-        <AnimatedRoutes />
-      </Layout>
-    </Router>
+    <>
+      <AnimatePresence mode="wait">
+        {showSplash && (
+          <SplashScreen onComplete={() => setShowSplash(false)} />
+        )}
+      </AnimatePresence>
+      <Router>
+        <Layout>
+          <AnimatedRoutes />
+        </Layout>
+      </Router>
+    </>
   );
 };
 
