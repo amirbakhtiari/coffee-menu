@@ -219,6 +219,7 @@ export const Tables: React.FC = () => {
   // Notify when available state for busy tables
   const [notifyPhone, setNotifyPhone] = useState('');
   const [isNotifyRequested, setIsNotifyRequested] = useState(false);
+  const [notifyPhoneSubmitAttempted, setNotifyPhoneSubmitAttempted] = useState(false);
 
   // Derive selected table from the live Query data
   const selectedTable = tables.find(t => t.id === selectedTableId) || null;
@@ -237,6 +238,7 @@ export const Tables: React.FC = () => {
     setIsPurposeDropdownOpen(false);
     setNotifyPhone('');
     setIsNotifyRequested(false);
+    setNotifyPhoneSubmitAttempted(false);
   }, [selectedTableId, shamsiDates]);
 
   // Handle click outside of the purpose dropdown to close it
@@ -359,6 +361,12 @@ export const Tables: React.FC = () => {
 
   const handleRegisterNotification = () => {
     if (!selectedTable) return;
+    setNotifyPhoneSubmitAttempted(true);
+
+    if (!notifyPhone || notifyPhone.trim() === '') {
+      return;
+    }
+
     const convertedDigits = toEnglishDigits(notifyPhone);
     let cleanPhone = convertedDigits.replace(/\D/g, '');
 
@@ -372,13 +380,11 @@ export const Tables: React.FC = () => {
 
     const isPhoneValid = /^09\d{9}$/.test(cleanPhone);
     if (!isPhoneValid) {
-      notifyError(`شماره وارد شده (${notifyPhone}) معتبر نیست. لطفا یک شماره معتبر مانند ۰۹۱۲۳۴۵۶۷۸۹ وارد کنید.`);
       return;
     }
 
     setNotifyPhone(cleanPhone);
     setIsNotifyRequested(true);
-    success(`درخواست اطلاع‌رسانی برای میز شماره ${selectedTable.number} ثبت شد.`);
   };
 
   const handleIntegratePaymentRedirect = () => {
@@ -729,33 +735,7 @@ export const Tables: React.FC = () => {
                             </div>
                           </div>
 
-                          {/* Reservation Info Badge/Card */}
-                          {(selectedTable.reservedBy || selectedTable.reserveTime || selectedTable.reservePurpose) && (
-                            <div className="bg-emerald-500/[0.03] dark:bg-emerald-500/[0.05] border border-emerald-500/20 rounded-3xl p-4.5 space-y-3.5 text-xs font-semibold text-right" dir="rtl">
-                              <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-extrabold pb-2 border-b border-emerald-500/10">
-                                <CheckCircle2 size={16} />
-                                <span>جزئیات رویداد و رزرو میز</span>
-                              </div>
-                              {selectedTable.reservedBy && (
-                                <div className="flex justify-between items-center">
-                                  <span className="text-gray-500 dark:text-gray-400 font-bold">مشتری رزرو کننده:</span>
-                                  <span className="text-dark dark:text-white font-extrabold">{selectedTable.reservedBy}</span>
-                                </div>
-                              )}
-                              {selectedTable.reserveTime && (
-                                <div className="flex justify-between items-center">
-                                  <span className="text-gray-500 dark:text-gray-400 font-bold">زمان حضور رزرو شده:</span>
-                                  <span className="text-dark dark:text-white font-extrabold font-mono">{selectedTable.reserveTime}</span>
-                                </div>
-                              )}
-                              {selectedTable.reservePurpose && (
-                                <div className="flex justify-between items-center">
-                                  <span className="text-gray-500 dark:text-gray-400 font-bold">هدف/موضوع رزرو:</span>
-                                  <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2.5 py-1 rounded-lg text-[10px] font-black">{selectedTable.reservePurpose}</span>
-                                </div>
-                              )}
-                            </div>
-                          )}
+
 
                           {/* Notify Box/Form */}
                           {!isNotifyRequested ? (
@@ -776,43 +756,52 @@ export const Tables: React.FC = () => {
                                 </div>
 
                                 <div className="relative">
-                                  <input
-                                    type="tel"
-                                    maxLength={11}
-                                    value={notifyPhone}
-                                    onChange={(e) => {
-                                      const converted = toEnglishDigits(e.target.value);
-                                      const filtered = converted.replace(/[^0-9]/g, '');
-                                      setNotifyPhone(filtered);
-                                    }}
-                                    placeholder="مثلاً ۰۹۱۲۳۴۵۶۷۸۹"
-                                    className={`w-full py-4 text-center font-mono text-[17px] tracking-widest bg-gray-50 dark:bg-white/[0.03] border rounded-2xl text-dark dark:text-white focus:outline-none focus:ring-4 transition-all ${
-                                      notifyPhone.length === 0
-                                        ? 'border-gray-100 dark:border-white/5 focus:border-primary/50 focus:ring-primary/10'
-                                        : (() => {
-                                            const clean = toEnglishDigits(notifyPhone).replace(/\D/g, '');
-                                            let pt = clean;
-                                            if (clean.length === 10 && clean.startsWith('9')) pt = '0' + clean;
-                                            return /^09\d{9}$/.test(pt)
-                                              ? 'border-emerald-500/40 dark:border-emerald-500/40 focus:border-emerald-500 focus:ring-emerald-500/10'
-                                              : 'border-rose-300 dark:border-rose-950/40 focus:border-rose-500 focus:ring-rose-500/10';
-                                          })()
-                                    }`}
-                                  />
-                                </div>
+                                  {(() => {
+                                    const convertedDigits = toEnglishDigits(notifyPhone);
+                                    let cleanPhone = convertedDigits.replace(/\D/g, '');
+                                    if (cleanPhone.startsWith('98') && cleanPhone.length === 12) {
+                                      cleanPhone = '0' + cleanPhone.substring(2);
+                                    } else if (cleanPhone.startsWith('0098') && cleanPhone.length === 14) {
+                                      cleanPhone = '0' + cleanPhone.substring(4);
+                                    } else if (cleanPhone.length === 10 && cleanPhone.startsWith('9')) {
+                                      cleanPhone = '0' + cleanPhone;
+                                    }
 
-                                {notifyPhone.length > 0 && !/^09\d{9}$/.test(
-                                  (() => {
-                                    const clean = toEnglishDigits(notifyPhone).replace(/\D/g, '');
-                                    let pt = clean;
-                                    if (clean.length === 10 && clean.startsWith('9')) pt = '0' + clean;
-                                    return pt;
-                                  })()
-                                ) && (
-                                  <p className="text-rose-500 text-[11px] font-bold text-center mt-1">
-                                    شماره موبایل وارد شده معتبر نیست. نمونه معتبر: ۰۹۱۲۳۴۵۶۷۸۹
-                                  </p>
-                                )}
+                                    const isPhoneValid = /^09\d{9}$/.test(cleanPhone);
+                                    const hasError = notifyPhoneSubmitAttempted && (notifyPhone.trim() === '' || !isPhoneValid);
+
+                                    return (
+                                      <>
+                                        <input
+                                          type="tel"
+                                          maxLength={11}
+                                          value={notifyPhone}
+                                          onChange={(e) => {
+                                            const converted = toEnglishDigits(e.target.value);
+                                            const filtered = converted.replace(/[^0-9]/g, '');
+                                            setNotifyPhone(filtered);
+                                            setNotifyPhoneSubmitAttempted(false);
+                                          }}
+                                          placeholder="مثلاً ۰۹۱۲۳۴۵۶۷۸۹"
+                                          className={`w-full py-4 text-center font-mono text-[17px] tracking-widest bg-gray-50 dark:bg-white/[0.03] border rounded-2xl text-dark dark:text-white focus:outline-none focus:ring-4 transition-all ${
+                                            hasError
+                                              ? 'border-rose-500 dark:border-rose-800 focus:border-rose-500 focus:ring-rose-500/10 bg-rose-500/[0.01]'
+                                              : isPhoneValid
+                                                ? 'border-emerald-500/40 dark:border-emerald-500/40 focus:border-emerald-500 focus:ring-emerald-500/10 bg-emerald-500/[0.01]'
+                                                : 'border-gray-100 dark:border-white/5 focus:border-primary/50 focus:ring-primary/10'
+                                          }`}
+                                        />
+                                        {hasError && (
+                                          <p className="text-rose-500 text-[11px] font-bold text-center mt-1 animate-pulse">
+                                            {notifyPhone.trim() === ''
+                                              ? 'لطفاً شماره همراه خود را وارد کنید.'
+                                              : 'شماره موبایل وارد شده معتبر نیست. نمونه معتبر: ۰۹۱۲۳۴۵۶۷۸۹'}
+                                          </p>
+                                        )}
+                                      </>
+                                    );
+                                  })()}
+                                </div>
                               </div>
 
                               <button
@@ -844,17 +833,6 @@ export const Tables: React.FC = () => {
                             >
                               بستن پنجره
                             </button>
-
-                            {/* Manual discharge button for testers and admins */}
-                            <div className="pt-2 border-t border-dashed border-gray-100 dark:border-white/5 text-center">
-                              <button
-                                onClick={() => handleToggleReserve(selectedTable.id)}
-                                disabled={toggleTableMutation.isPending}
-                                className="text-[10px] text-gray-400 hover:text-rose-500 dark:text-white/20 dark:hover:text-rose-400 font-bold transition-colors cursor-pointer"
-                              >
-                                {toggleTableMutation.isPending ? 'در حال تغییر...' : 'تغییر وضعیت به آزاد'}
-                              </button>
-                            </div>
                           </div>
                         </motion.div>
                       )}
