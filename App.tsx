@@ -76,21 +76,42 @@ const AnimatedRoutes = () => {
             const scrollLeft = target.scrollLeft;
             const maxScroll = target.scrollWidth - target.clientWidth;
 
-            const distToZero = Math.abs(scrollLeft);
-            const distToMaxPositive = Math.abs(scrollLeft - maxScroll);
-            const distToMaxNegative = Math.abs(scrollLeft + maxScroll);
+            const isRTL = style.direction === 'rtl';
 
-            const isAtRightLimit = (distToZero < 2.5 && scrollLeft >= -2.5) || distToMaxPositive < 2.5;
-            const isAtLeftLimit = distToMaxNegative < 2.5 || (distToZero < 2.5 && scrollLeft <= 2.5);
+            if (isRTL) {
+              // RTL negative scroll convention (Chrome, Safari, modern mobile)
+              // Right limit (start) is scrollLeft = 0
+              // Left limit (end) is scrollLeft = -maxScroll
+              const isAtRightLimit = Math.abs(scrollLeft) < 2.0;
+              const isAtLeftLimit = Math.abs(scrollLeft + maxScroll) < 2.0;
 
-            // Block further scrolling if already at extreme RTL/LTR boundaries to prevent whole-page rubberbanding
-            if (diffX > 0 && isAtRightLimit) {
-              if (e.cancelable) e.preventDefault();
-              break;
-            }
-            if (diffX < 0 && isAtLeftLimit) {
-              if (e.cancelable) e.preventDefault();
-              break;
+              // Swiping right (diffX > 0) scrolls left (towards -maxScroll)
+              // Swiping left (diffX < 0) scrolls right (towards 0)
+              if (diffX < 0 && isAtRightLimit) {
+                if (e.cancelable) e.preventDefault();
+                break;
+              }
+              if (diffX > 0 && isAtLeftLimit) {
+                if (e.cancelable) e.preventDefault();
+                break;
+              }
+            } else {
+              // LTR convention
+              // Left limit (start) is scrollLeft = 0
+              // Right limit (end) is scrollLeft = maxScroll
+              const isAtLeftLimit = Math.abs(scrollLeft) < 2.0;
+              const isAtRightLimit = Math.abs(scrollLeft - maxScroll) < 2.0;
+
+              // Swiping right (diffX > 0) scrolls left (towards 0)
+              // Swiping left (diffX < 0) scrolls right (towards maxScroll)
+              if (diffX > 0 && isAtLeftLimit) {
+                if (e.cancelable) e.preventDefault();
+                break;
+              }
+              if (diffX < 0 && isAtRightLimit) {
+                if (e.cancelable) e.preventDefault();
+                break;
+              }
             }
 
             return; // Allow natural horizontal scroll inside the active container
