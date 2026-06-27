@@ -30,29 +30,32 @@ const AppBar: React.FC<AppBarProps> = ({
   };
 
   return (
-    <header className={`shrink-0 h-12 w-full grid grid-cols-3 items-center relative ${className}`}>
+    <header className={`shrink-0 h-12 w-full flex items-center justify-center relative ${className}`}>
       {/* Right side alignment (Back button in RTL) */}
-      <div className="flex items-center justify-start z-10">
-        {showBack && (
+      {showBack && (
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center">
           <button 
+            type="button"
             onClick={handleBack}
             className="w-10 h-10 bg-white dark:bg-white/10 rounded-xl shadow-sm border border-gray-50 dark:border-white/5 flex items-center justify-center text-dark dark:text-white active:scale-90 transition-transform cursor-pointer"
           >
             <ChevronRight size={20} />
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Symmetrically Centered Title and Subtitle */}
-      <div className="flex flex-col items-center justify-center text-center z-0">
-        <h1 className="text-[15px] font-black text-dark dark:text-white leading-tight">{title}</h1>
-        {subtitle && <p className="text-[9px] text-muted dark:text-white/40 font-bold mt-0.5 leading-none">{subtitle}</p>}
+      <div className="flex flex-col items-center justify-center text-center z-0 px-12 max-w-full">
+        <h1 className="text-[15px] font-black text-dark dark:text-white leading-tight truncate">{title}</h1>
+        {subtitle && <p className="text-[9px] text-muted dark:text-white/40 font-bold mt-0.5 leading-none text-center truncate max-w-[180px] sm:max-w-xs">{subtitle}</p>}
       </div>
       
       {/* Left side alignment (Right Action in RTL) */}
-      <div className="flex items-center justify-end z-10">
-        {rightAction}
-      </div>
+      {rightAction && (
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10 flex items-center">
+          {rightAction}
+        </div>
+      )}
     </header>
   );
 };
