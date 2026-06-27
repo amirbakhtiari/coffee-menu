@@ -32,7 +32,7 @@ const EditProfile: React.FC = () => {
   const [otpError, setOtpError] = useState<string | null>(null);
   const [pendingProfileData, setPendingProfileData] = useState<ProfileFormData | null>(null);
 
-  const { control, handleSubmit, setValue, watch, reset } = useForm<ProfileFormData>({
+  const { control, handleSubmit, setValue, watch, reset, setError, clearErrors, formState: { errors } } = useForm<ProfileFormData>({
     defaultValues: {
       fullName: '',
       mobile: '',
@@ -145,15 +145,30 @@ const EditProfile: React.FC = () => {
   };
 
   const onSubmit = (data: ProfileFormData) => {
+    clearErrors('fullName');
+    clearErrors('mobile');
+
+    let hasError = false;
+
+    if (!data.fullName.trim()) {
+      setError('fullName', { type: 'manual', message: 'لطفاً نام و نام خانوادگی خود را وارد کنید.' });
+      hasError = true;
+    }
+
+    const numericPhone = data.mobile.replace(/\D/g, '');
+    if (!numericPhone) {
+      setError('mobile', { type: 'manual', message: 'لطفاً شماره موبایل خود را وارد کنید.' });
+      hasError = true;
+    } else if (!/^09\d{9}$/.test(numericPhone)) {
+      setError('mobile', { type: 'manual', message: 'لطفاً یک شماره موبایل معتبر شروع با ۰۹ وارد کنید.' });
+      hasError = true;
+    }
+
+    if (hasError) return;
+
     const isMobileChanged = data.mobile !== userProfile?.mobile;
 
     if (isMobileChanged) {
-      const numericPhone = data.mobile.replace(/\D/g, '');
-      if (!/^09\d{9}$/.test(numericPhone)) {
-        error('لطفاً یک شماره موبایل معتبر شروع با ۰۹ وارد کنید.');
-        return;
-      }
-
       setPendingProfileData(data);
       requestOtp(data.mobile, {
         onSuccess: () => {
@@ -163,7 +178,7 @@ const EditProfile: React.FC = () => {
           setOtpError(null);
         },
         onError: (err: any) => {
-          error(err?.message || 'خطا در ارسال کد فعال‌سازی');
+          setError('mobile', { type: 'manual', message: err?.message || 'خطا در ارسال کد فعال‌سازی.' });
         }
       });
     } else {
@@ -176,6 +191,9 @@ const EditProfile: React.FC = () => {
         onSuccess: () => {
           success('تغییرات با موفقیت ذخیره شد.');
           navigate('/profile');
+        },
+        onError: (err: any) => {
+          setError('fullName', { type: 'manual', message: err?.message || 'خطا در ذخیره‌سازی اطلاعات.' });
         }
       });
     }
@@ -189,114 +207,143 @@ const EditProfile: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="px-6 pt-5 pb-6 h-[100dvh] bg-light-gray dark:bg-dark transition-colors flex flex-col overflow-hidden" dir="rtl">
-        <AppBar 
-          title="ویرایش پروفایل"
-          subtitle="به‌روزرسانی مشخصات کاربری"
-          onBack={() => navigate('/profile')}
-          className="mb-4"
-        />
+      <div className="px-6 pt-12 pb-16 min-h-screen bg-light-gray dark:bg-dark transition-colors flex flex-col justify-between" dir="rtl">
+        <div className="flex-1 flex flex-col justify-between">
+          <div className="space-y-6">
+            <AppBar 
+              title="ویرایش پروفایل"
+              subtitle="به‌روزرسانی مشخصات کاربری"
+              onBack={() => navigate('/profile')}
+            />
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col justify-between overflow-hidden">
-          <div className="bg-white dark:bg-black/20 rounded-[32px] p-6 shadow-sm dark:shadow-none border border-gray-50 dark:border-white/5 space-y-6">
-            {/* نام و نام خانوادگی */}
-            <div className="space-y-2.5">
-              <label className="flex flex-row items-center gap-2 text-[11px] font-black text-muted dark:text-white/40 mr-1">
-                <User size={14} className="text-primary" />
-                <span>نام و نام خانوادگی</span>
-              </label>
-              <Controller
-                name="fullName"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => (
-                  <input 
-                    {...field}
-                    type="text"
-                    className="w-full bg-white dark:bg-black/40 border border-gray-200/80 dark:border-white/10 rounded-2xl py-4 px-6 text-sm font-black text-dark dark:text-white focus:border-primary/50 focus:bg-white dark:focus:bg-black/60 focus:ring-4 focus:ring-primary/10 text-right outline-none transition-all shadow-sm"
+            <form id="edit-profile-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="bg-white dark:bg-black/20 rounded-[32px] p-6 shadow-sm dark:shadow-none border border-gray-50 dark:border-white/5 space-y-6">
+                {/* نام و نام خانوادگی */}
+                <div className="space-y-2.5">
+                  <label className="flex flex-row items-center gap-2 text-[11px] font-black text-muted dark:text-white/40 mr-1">
+                    <User size={14} className="text-primary" />
+                    <span>نام و نام خانوادگی</span>
+                  </label>
+                  <Controller
+                    name="fullName"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <input 
+                        {...field}
+                        type="text"
+                        onChange={(e) => {
+                          field.onChange(e);
+                          if (errors.fullName) clearErrors('fullName');
+                        }}
+                        className={`w-full bg-white dark:bg-black/40 border rounded-2xl py-4 px-6 text-sm font-black text-dark dark:text-white focus:ring-4 text-right outline-none transition-all shadow-sm ${
+                          errors.fullName 
+                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' 
+                            : 'border-gray-200/80 dark:border-white/10 focus:border-primary/50 focus:ring-primary/10'
+                        }`}
+                      />
+                    )}
                   />
-                )}
-              />
-            </div>
+                  {errors.fullName && (
+                    <p className="text-red-500 text-[10px] font-bold mr-1 mt-1 flex items-center gap-1 animate-pulse">
+                      <span>●</span>
+                      <span>{errors.fullName.message}</span>
+                    </p>
+                  )}
+                </div>
 
-            {/* شماره موبایل */}
-            <div className="space-y-2.5">
-              <label className="flex flex-row items-center gap-2 text-[11px] font-black text-muted dark:text-white/40 mr-1">
-                <Smartphone size={14} className="text-primary" />
-                <span>شماره موبایل</span>
-                <span className="text-[10px] text-muted/60 dark:text-white/30 mr-auto font-bold">(جهت تغییر، شماره جدید را وارد کنید)</span>
-              </label>
-              <Controller
-                name="mobile"
-                control={control}
-                render={({ field }) => (
-                  <input 
-                    {...field}
-                    type="tel"
-                    className="w-full bg-white dark:bg-black/40 border border-gray-200/80 dark:border-white/10 rounded-2xl py-4 px-6 text-sm font-black text-dark dark:text-white focus:border-primary/50 focus:bg-white dark:focus:bg-black/60 focus:ring-4 focus:ring-primary/10 text-left outline-none transition-all shadow-sm font-sans"
-                    dir="ltr"
-                    onChange={(e) => {
-                      const converted = e.target.value.replace(/\D/g, '');
-                      field.onChange(converted);
-                    }}
+                {/* شماره موبایل */}
+                <div className="space-y-2.5">
+                  <label className="flex flex-row items-center gap-2 text-[11px] font-black text-muted dark:text-white/40 mr-1">
+                    <Smartphone size={14} className="text-primary" />
+                    <span>شماره موبایل</span>
+                    <span className="text-[10px] text-muted/60 dark:text-white/30 mr-auto font-bold">(جهت تغییر، شماره جدید را وارد کنید)</span>
+                  </label>
+                  <Controller
+                    name="mobile"
+                    control={control}
+                    render={({ field }) => (
+                      <input 
+                        {...field}
+                        type="tel"
+                        className={`w-full bg-white dark:bg-black/40 border rounded-2xl py-4 px-6 text-sm font-black text-dark dark:text-white focus:ring-4 text-left outline-none transition-all shadow-sm font-sans ${
+                          errors.mobile 
+                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' 
+                            : 'border-gray-200/80 dark:border-white/10 focus:border-primary/50 focus:ring-primary/10'
+                        }`}
+                        dir="ltr"
+                        onChange={(e) => {
+                          const converted = e.target.value.replace(/\D/g, '');
+                          field.onChange(converted);
+                          if (errors.mobile) clearErrors('mobile');
+                        }}
+                      />
+                    )}
                   />
-                )}
-              />
-            </div>
-
-            {/* تاریخ تولد */}
-            <div className="space-y-3">
-              <label className="flex flex-row items-center gap-2 text-[11px] font-black text-muted dark:text-white/40 mr-1">
-                <Calendar size={14} className="text-primary" />
-                <span>تاریخ تولد</span>
-              </label>
-              <div className="grid grid-cols-3 gap-3">
-                <Controller
-                  name="year"
-                  control={control}
-                  render={({ field }) => (
-                    <Dropdown 
-                      label="سال"
-                      value={field.value}
-                      onChange={field.onChange}
-                      options={years}
-                    />
+                  {errors.mobile && (
+                    <p className="text-red-500 text-[10px] font-bold mr-1 mt-1 flex items-center gap-1 animate-pulse">
+                      <span>●</span>
+                      <span>{errors.mobile.message}</span>
+                    </p>
                   )}
-                />
+                </div>
 
-                <Controller
-                  name="month"
-                  control={control}
-                  render={({ field }) => (
-                    <Dropdown 
-                      label="ماه"
-                      value={field.value}
-                      onChange={field.onChange}
-                      options={months}
+                {/* تاریخ تولد */}
+                <div className="space-y-3">
+                  <label className="flex flex-row items-center gap-2 text-[11px] font-black text-muted dark:text-white/40 mr-1">
+                    <Calendar size={14} className="text-primary" />
+                    <span>تاریخ تولد</span>
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    <Controller
+                      name="year"
+                      control={control}
+                      render={({ field }) => (
+                        <Dropdown 
+                          label="سال"
+                          value={field.value}
+                          onChange={field.onChange}
+                          options={years}
+                        />
+                      )}
                     />
-                  )}
-                />
 
-                <Controller
-                  name="day"
-                  control={control}
-                  render={({ field }) => (
-                    <Dropdown 
-                      label="روز"
-                      value={field.value}
-                      onChange={field.onChange}
-                      options={days}
+                    <Controller
+                      name="month"
+                      control={control}
+                      render={({ field }) => (
+                        <Dropdown 
+                          label="ماه"
+                          value={field.value}
+                          onChange={field.onChange}
+                          options={months}
+                        />
+                      )}
                     />
-                  )}
-                />
+
+                    <Controller
+                      name="day"
+                      control={control}
+                      render={({ field }) => (
+                        <Dropdown 
+                          label="روز"
+                          value={field.value}
+                          onChange={field.onChange}
+                          options={days}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
+            </form>
           </div>
 
           <button 
             type="submit"
+            form="edit-profile-form"
             disabled={isUpdating || isRequestingOtp}
-            className={`w-full py-5 rounded-[24px] font-black text-sm flex items-center justify-center gap-3 shadow-xl transition-all active:scale-[0.98] mt-4 ${
+            className={`w-full py-5 rounded-[24px] font-black text-sm flex items-center justify-center gap-3 shadow-xl transition-all active:scale-[0.98] mt-6 ${
               isUpdating || isRequestingOtp ? 'bg-muted text-white cursor-wait' : 'bg-primary text-white shadow-primary/25 hover:bg-primary/90'
             }`}
           >
@@ -312,7 +359,7 @@ const EditProfile: React.FC = () => {
               </>
             )}
           </button>
-        </form>
+        </div>
       </div>
 
       {/* OTP verification modal overlay */}
