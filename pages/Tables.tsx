@@ -1107,11 +1107,11 @@ export const Tables: React.FC = () => {
                               <AnimatePresence>
                                 {isPurposeDropdownOpen && (
                                   <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: 'auto' }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="relative mt-2 bg-gray-50 dark:bg-white/[0.02] border border-gray-100/50 dark:border-white/5 rounded-2xl overflow-hidden text-right p-0 z-10"
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    transition={{ duration: 0.15 }}
+                                    className="absolute left-0 right-0 bottom-full mb-2 bg-white dark:bg-[#1E1E24] border border-gray-100 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden text-right p-0 z-50"
                                   >
                                     {[
                                       { value: 'birthday', label: 'تولد 🎉', desc: 'مناسب برگزاری مراسم و جشن‌های خصوصی' },
@@ -1126,14 +1126,14 @@ export const Tables: React.FC = () => {
                                           setReservePurpose(item.value as any);
                                           setIsPurposeDropdownOpen(false);
                                         }}
-                                        className={`w-full py-3 px-5 text-right flex flex-col gap-0.5 transition-all cursor-pointer focus:outline-none border-b border-gray-100/40 dark:border-white/5 last:border-0 ${
+                                        className={`w-full py-3.5 px-5 text-right flex flex-col gap-0.5 transition-all cursor-pointer focus:outline-none border-b border-gray-100/40 dark:border-white/5 last:border-0 ${
                                           index === 0 ? 'rounded-t-2xl' : ''
                                         } ${
                                           index === 3 ? 'rounded-b-2xl' : ''
                                         } ${
                                           reservePurpose === item.value 
                                             ? 'bg-primary/10 text-primary font-black' 
-                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-white/10'
+                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50/80 dark:hover:bg-white/5'
                                         }`}
                                       >
                                         <div className="text-[12px] font-black">{item.label}</div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, User, Calendar, Smartphone, Check, ShieldCheck, Loader2, X, RefreshCw } from 'lucide-react';
+import { ChevronRight, User, Calendar, Smartphone, Check, ShieldCheck, Loader2, X, RefreshCw, Edit2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm, Controller } from 'react-hook-form';
 import PageTransition from '../components/PageTransition';
@@ -231,7 +231,7 @@ const EditProfile: React.FC = () => {
                   <ShieldCheck size={12} className="text-green-500 mr-auto" />
                 )}
               </label>
-              <div className="flex gap-2">
+              <div className={`relative flex items-center bg-lightGray dark:bg-black/40 border-2 rounded-2xl transition-all ${isEditingPhone ? 'border-primary/40 bg-white dark:bg-black/60 shadow-md shadow-primary/5' : 'border-transparent'}`}>
                 <Controller
                   name="mobile"
                   control={control}
@@ -240,10 +240,10 @@ const EditProfile: React.FC = () => {
                       {...field}
                       type="tel"
                       readOnly={!isEditingPhone}
-                      className={`flex-1 border-none rounded-2xl py-4 px-6 text-sm font-black text-dark dark:text-white text-right outline-none transition-all ${
+                      className={`w-full bg-transparent border-none py-4 pl-14 pr-6 text-sm font-black text-dark dark:text-white text-left outline-none transition-all ${
                         !isEditingPhone 
-                          ? 'bg-gray-100 dark:bg-white/5 text-muted dark:text-white/20 opacity-60 cursor-not-allowed' 
-                          : 'bg-lightGray dark:bg-black/40 focus:ring-2 focus:ring-primary/20'
+                          ? 'text-muted/60 dark:text-white/40 cursor-not-allowed' 
+                          : 'text-dark dark:text-white font-black'
                       }`}
                       dir="ltr"
                       onChange={(e) => {
@@ -256,13 +256,18 @@ const EditProfile: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsEditingPhone(!isEditingPhone)}
-                  className={`px-5 py-4 rounded-2xl text-[11px] font-black transition-colors ${
+                  className={`absolute left-3 p-2.5 rounded-xl transition-all flex items-center justify-center cursor-pointer ${
                     isEditingPhone 
-                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
-                      : 'bg-primary/5 dark:bg-primary/10 text-primary hover:bg-primary/10'
+                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20' 
+                      : 'bg-primary/5 dark:bg-primary/10 text-primary hover:bg-primary/15'
                   }`}
+                  title={isEditingPhone ? 'قفل و تایید' : 'ویرایش شماره'}
                 >
-                  {isEditingPhone ? 'قفل و تایید' : 'ویرایش'}
+                  {isEditingPhone ? (
+                    <Check size={15} className="stroke-[3]" />
+                  ) : (
+                    <Edit2 size={15} className="stroke-[2.5]" />
+                  )}
                 </button>
               </div>
             </div>
