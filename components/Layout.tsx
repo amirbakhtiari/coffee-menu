@@ -40,6 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     location.pathname === '/payment-result' ||
     location.pathname === '/cafe-info' ||
     location.pathname === '/tables' ||
+    location.pathname === '/edit-profile' ||
     location.pathname === '/success';
 
   // دکمه ویتر را در صفحات خاص مخفی می‌کنیم
@@ -47,6 +48,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     location.pathname.startsWith('/product/') ||
     location.pathname === '/cart' ||
     location.pathname === '/profile' ||
+    location.pathname === '/edit-profile' ||
     location.pathname === '/guest-profile' ||
     location.pathname === '/loyalty' || 
     location.pathname.startsWith('/tier-detail/') ||
