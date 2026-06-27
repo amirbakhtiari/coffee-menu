@@ -241,10 +241,19 @@ const CafeInfo: React.FC = () => {
           </div>
 
           {/* App Version Subtle Indicator */}
-          <div className="text-center mt-2 pb-4 select-none">
+          <div className="text-center mt-2 pb-4 flex flex-col items-center gap-1.5 select-none">
             <span className="text-[10px] text-muted/40 dark:text-white/10 font-mono tracking-wider">
               نسخه‌ هوشمند ۱.۰.۱
             </span>
+            <a 
+              href="https://abracafe.ir" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-[11px] font-extrabold text-primary hover:text-primary/80 transition-all flex items-center gap-0.5"
+            >
+              <span>قدرت گرفته از ابرکافه</span>
+              <ArrowUpLeft size={10} className="stroke-[2.5]" />
+            </a>
           </div>
         </div>
       </div>
