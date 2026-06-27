@@ -214,7 +214,7 @@ const EditProfile: React.FC = () => {
                   <input 
                     {...field}
                     type="text"
-                    className="w-full bg-lightGray dark:bg-black/40 border-none rounded-2xl py-4 px-6 text-sm font-black text-dark dark:text-white focus:ring-2 focus:ring-primary/20 text-right outline-none transition-colors"
+                    className="w-full bg-white dark:bg-black/40 border border-gray-200/80 dark:border-white/10 rounded-2xl py-4 px-6 text-sm font-black text-dark dark:text-white focus:border-primary/50 focus:bg-white dark:focus:bg-black/60 focus:ring-4 focus:ring-primary/10 text-right outline-none transition-all shadow-sm"
                   />
                 )}
               />
@@ -231,7 +231,11 @@ const EditProfile: React.FC = () => {
                   <ShieldCheck size={12} className="text-green-500 mr-auto" />
                 )}
               </label>
-              <div className={`relative flex items-center bg-lightGray dark:bg-black/40 border-2 rounded-2xl transition-all ${isEditingPhone ? 'border-primary/40 bg-white dark:bg-black/60 shadow-md shadow-primary/5' : 'border-transparent'}`}>
+              <div className={`relative flex items-center rounded-2xl transition-all border ${
+                isEditingPhone 
+                  ? 'border-primary bg-white dark:bg-black/60 shadow-lg shadow-primary/5' 
+                  : 'border-gray-200/80 dark:border-white/10 bg-lightGray/50 dark:bg-black/40'
+              }`}>
                 <Controller
                   name="mobile"
                   control={control}

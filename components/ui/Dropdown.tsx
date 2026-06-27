@@ -40,7 +40,7 @@ const Dropdown: React.FC<DropdownProps> = ({ label, value, onChange, options, cl
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-lightGray dark:bg-black/40 border-none rounded-2xl py-4 px-3 flex items-center justify-between text-xs font-black text-dark dark:text-white focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+        className="w-full bg-white dark:bg-black/40 border border-gray-200/80 dark:border-white/10 rounded-2xl py-4 px-3 flex items-center justify-between text-xs font-black text-dark dark:text-white focus:border-primary/50 focus:bg-white dark:focus:bg-black/60 focus:ring-4 focus:ring-primary/10 transition-all outline-none"
       >
         <span className="flex-1 text-center">{selectedOption?.label}</span>
         <ChevronDown 
