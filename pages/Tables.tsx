@@ -1107,11 +1107,11 @@ export const Tables: React.FC = () => {
                               <AnimatePresence>
                                 {isPurposeDropdownOpen && (
                                   <motion.div
-                                    initial={{ opacity: 0, y: -8 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -8 }}
-                                    transition={{ duration: 0.15 }}
-                                    className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1E1E24] border border-gray-100 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden z-50 text-right p-0"
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="relative mt-2 bg-gray-50 dark:bg-white/[0.02] border border-gray-100/50 dark:border-white/5 rounded-2xl overflow-hidden text-right p-0 z-10"
                                   >
                                     {[
                                       { value: 'birthday', label: 'تولد 🎉', desc: 'مناسب برگزاری مراسم و جشن‌های خصوصی' },
@@ -1133,7 +1133,7 @@ export const Tables: React.FC = () => {
                                         } ${
                                           reservePurpose === item.value 
                                             ? 'bg-primary/10 text-primary font-black' 
-                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50/80 dark:hover:bg-white/5'
+                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-white/10'
                                         }`}
                                       >
                                         <div className="text-[12px] font-black">{item.label}</div>

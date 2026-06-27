@@ -24,7 +24,9 @@ const Profile: React.FC = () => {
   const { profile: userProfile, isLoading: profileLoading } = useUserProfileApi();
   const { requestOtp, isRequestingOtp, verifyOtp, isVerifyingOtp, verifyOtpError } = useAuthApi();
 
-  const [isScheduling, setIsScheduling] = useState(false);
+  const [permission, setPermission] = useState<NotificationPermission>(
+    typeof Notification !== 'undefined' ? Notification.permission : 'default'
+  );
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   
@@ -46,16 +48,14 @@ const Profile: React.FC = () => {
     return () => clearInterval(interval);
   }, [authStep, timer]);
 
-  const handleTestNotification = async () => {
+  const handleRequestNotificationPermission = async () => {
     if (isIOS && !isStandalone) {
       warning('در آیفون، نوتیفیکیشن فقط بعد از نصب برنامه فعال می‌شود.');
       return;
     }
     const granted = await requestNotificationPermission();
-    if (granted) {
-      setIsScheduling(true);
-      scheduleTestNotification(5000);
-      setTimeout(() => setIsScheduling(false), 5000);
+    if (typeof Notification !== 'undefined') {
+      setPermission(Notification.permission);
     }
   };
 
@@ -271,8 +271,7 @@ const Profile: React.FC = () => {
             </button>
 
             <button 
-              onClick={handleTestNotification}
-              disabled={isScheduling}
+              onClick={handleRequestNotificationPermission}
               className="w-full bg-white dark:bg-black/20 p-5 rounded-[28px] border border-gray-50 dark:border-white/5 flex flex-row items-center justify-between group active:scale-[0.98] transition-all"
             >
               <div className="flex flex-row items-center gap-4">
@@ -281,7 +280,7 @@ const Profile: React.FC = () => {
                 </div>
                 <span className="font-black text-dark dark:text-white text-sm">اعلان‌های سیستم</span>
               </div>
-              <span className="text-[10px] font-black text-primary">{isScheduling ? 'درحال ارسال...' : 'تست'}</span>
+              <span className="text-[10px] font-black text-primary">{permission === 'granted' ? 'فعال' : 'غیرفعال'}</span>
             </button>
 
             <button 

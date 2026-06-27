@@ -1,11 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, User, Calendar, Smartphone, Check, ShieldCheck, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ChevronRight, User, Calendar, Smartphone, Check, ShieldCheck, Loader2, X, RefreshCw } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useForm, Controller } from 'react-hook-form';
 import PageTransition from '../components/PageTransition';
 import AppBar from '../components/AppBar';
 import { useUserProfileApi } from '../hooks/api/useUserApi';
+import { useAuthApi } from '../hooks/api/useAuthApi';
+import { useNotificationStore } from '../store/useNotificationStore';
+import OTPInput from '../components/OTPInput';
 import Dropdown from '../components/ui/Dropdown';
 
 interface ProfileFormData {
@@ -20,6 +23,15 @@ interface ProfileFormData {
 const EditProfile: React.FC = () => {
   const navigate = useNavigate();
   const { profile: userProfile, isLoading, updateProfile, isUpdating } = useUserProfileApi();
+  const { requestOtp, isRequestingOtp, verifyOtp, isVerifyingOtp } = useAuthApi();
+  const { success, error } = useNotificationStore();
+
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otpCode, setOtpCode] = useState<string[]>(['', '', '', '']);
+  const [otpTimer, setOtpTimer] = useState(60);
+  const [otpError, setOtpError] = useState<string | null>(null);
+  const [pendingProfileData, setPendingProfileData] = useState<ProfileFormData | null>(null);
 
   const { control, handleSubmit, setValue, watch, reset } = useForm<ProfileFormData>({
     defaultValues: {
@@ -48,6 +60,16 @@ const EditProfile: React.FC = () => {
     }
   }, [userProfile, reset]);
 
+  useEffect(() => {
+    let interval: any;
+    if (showOtpModal && otpTimer > 0) {
+      interval = setInterval(() => {
+        setOtpTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [showOtpModal, otpTimer]);
+
   const years = Array.from({ length: 1405 - 1300 + 1 }, (_, i) => (1405 - i).toString());
   const months = [
     { value: '۰۱', label: 'فروردین' },
@@ -74,14 +96,91 @@ const EditProfile: React.FC = () => {
   const daysCount = getDaysInMonth(selectedMonth);
   const days = Array.from({ length: daysCount }, (_, i) => (i + 1).toString().padStart(2, '0').replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[parseInt(d)]));
 
-  const onSubmit = (data: ProfileFormData) => {
-    const finalData = {
-      fullName: data.fullName,
-      birthDate: `${data.year}/${data.month}/${data.day}`
-    };
-    updateProfile(finalData, {
-      onSuccess: () => navigate('/profile')
+  const handleResendOtp = () => {
+    if (!pendingProfileData) return;
+    requestOtp(pendingProfileData.mobile, {
+      onSuccess: () => {
+        setOtpTimer(60);
+        setOtpCode(['', '', '', '']);
+        setOtpError(null);
+        success('کد فعال‌سازی مجدداً ارسال شد.');
+      },
+      onError: (err: any) => {
+        setOtpError(err?.message || 'خطا در ارسال مجدد کد تایید');
+      }
     });
+  };
+
+  const handleVerifyOtp = () => {
+    if (!pendingProfileData) return;
+    const codeStr = otpCode.join('');
+    if (codeStr.length < 4) {
+      setOtpError('لطفا کد تایید ۴ رقمی را به طور کامل وارد کنید.');
+      return;
+    }
+
+    verifyOtp({ mobile: pendingProfileData.mobile, code: codeStr }, {
+      onSuccess: () => {
+        // OTP verified successfully! Now call updateProfile to persist the changes
+        const finalData = {
+          fullName: pendingProfileData.fullName,
+          birthDate: `${pendingProfileData.year}/${pendingProfileData.month}/${pendingProfileData.day}`,
+          mobile: pendingProfileData.mobile,
+        };
+
+        updateProfile(finalData, {
+          onSuccess: () => {
+            success('اطلاعات کاربری و شماره موبایل شما با موفقیت به‌روزرسانی شد.');
+            setShowOtpModal(false);
+            setIsEditingPhone(false);
+            navigate('/profile');
+          },
+          onError: (err: any) => {
+            setOtpError(err?.message || 'خطا در ذخیره‌سازی اطلاعات کاربری');
+          }
+        });
+      },
+      onError: (err: any) => {
+        setOtpError(err?.message || 'کد وارد شده صحیح نیست. کد آزمایشی ۱۲۳۴ می‌باشد.');
+      }
+    });
+  };
+
+  const onSubmit = (data: ProfileFormData) => {
+    const isMobileChanged = data.mobile !== userProfile?.mobile;
+
+    if (isMobileChanged) {
+      const numericPhone = data.mobile.replace(/\D/g, '');
+      if (!/^09\d{9}$/.test(numericPhone)) {
+        error('لطفاً یک شماره موبایل معتبر شروع با ۰۹ وارد کنید.');
+        return;
+      }
+
+      setPendingProfileData(data);
+      requestOtp(data.mobile, {
+        onSuccess: () => {
+          setShowOtpModal(true);
+          setOtpTimer(60);
+          setOtpCode(['', '', '', '']);
+          setOtpError(null);
+        },
+        onError: (err: any) => {
+          error(err?.message || 'خطا در ارسال کد فعال‌سازی');
+        }
+      });
+    } else {
+      const finalData = {
+        fullName: data.fullName,
+        birthDate: `${data.year}/${data.month}/${data.day}`,
+        mobile: data.mobile,
+      };
+      updateProfile(finalData, {
+        onSuccess: () => {
+          success('تغییرات با موفقیت ذخیره شد.');
+          navigate('/profile');
+        }
+      });
+    }
   };
 
   if (isLoading) return (
@@ -122,25 +221,50 @@ const EditProfile: React.FC = () => {
             </div>
 
             {/* شماره موبایل */}
-            <div className="space-y-3 opacity-60">
+            <div className="space-y-3">
               <label className="flex flex-row items-center gap-2 text-[11px] font-black text-muted dark:text-white/40 mr-1">
-                <Smartphone size={14} />
-                <span>شماره موبایل (غیر قابل تغییر)</span>
-                <ShieldCheck size={12} className="text-green-500 mr-auto" />
-              </label>
-              <Controller
-                name="mobile"
-                control={control}
-                render={({ field }) => (
-                  <input 
-                    {...field}
-                    type="text"
-                    readOnly
-                    className="w-full bg-gray-100 dark:bg-white/5 border-none rounded-2xl py-4 px-6 text-sm font-bold text-muted dark:text-white/20 text-right outline-none cursor-not-allowed"
-                    dir="ltr"
-                  />
+                <Smartphone size={14} className="text-primary" />
+                <span>شماره موبایل</span>
+                {isEditingPhone ? (
+                  <span className="text-[10px] text-primary font-black mr-auto animate-pulse">در حال ویرایش...</span>
+                ) : (
+                  <ShieldCheck size={12} className="text-green-500 mr-auto" />
                 )}
-              />
+              </label>
+              <div className="flex gap-2">
+                <Controller
+                  name="mobile"
+                  control={control}
+                  render={({ field }) => (
+                    <input 
+                      {...field}
+                      type="tel"
+                      readOnly={!isEditingPhone}
+                      className={`flex-1 border-none rounded-2xl py-4 px-6 text-sm font-black text-dark dark:text-white text-right outline-none transition-all ${
+                        !isEditingPhone 
+                          ? 'bg-gray-100 dark:bg-white/5 text-muted dark:text-white/20 opacity-60 cursor-not-allowed' 
+                          : 'bg-lightGray dark:bg-black/40 focus:ring-2 focus:ring-primary/20'
+                      }`}
+                      dir="ltr"
+                      onChange={(e) => {
+                        const converted = e.target.value.replace(/\D/g, '');
+                        field.onChange(converted);
+                      }}
+                    />
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsEditingPhone(!isEditingPhone)}
+                  className={`px-5 py-4 rounded-2xl text-[11px] font-black transition-colors ${
+                    isEditingPhone 
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
+                      : 'bg-primary/5 dark:bg-primary/10 text-primary hover:bg-primary/10'
+                  }`}
+                >
+                  {isEditingPhone ? 'قفل و تایید' : 'ویرایش'}
+                </button>
+              </div>
             </div>
 
             {/* تاریخ تولد */}
@@ -194,15 +318,15 @@ const EditProfile: React.FC = () => {
 
           <button 
             type="submit"
-            disabled={isUpdating}
+            disabled={isUpdating || isRequestingOtp}
             className={`w-full py-5 rounded-[24px] font-black text-sm flex items-center justify-center gap-3 shadow-xl transition-all active:scale-[0.98] ${
-              isUpdating ? 'bg-muted text-white cursor-wait' : 'bg-primary text-white shadow-primary/25 hover:bg-primary/90'
+              isUpdating || isRequestingOtp ? 'bg-muted text-white cursor-wait' : 'bg-primary text-white shadow-primary/25 hover:bg-primary/90'
             }`}
           >
-            {isUpdating ? (
+            {isUpdating || isRequestingOtp ? (
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <span>در حال ذخیره...</span>
+                <span>در حال پردازش...</span>
               </div>
             ) : (
               <>
@@ -213,6 +337,96 @@ const EditProfile: React.FC = () => {
           </button>
         </form>
       </div>
+
+      {/* OTP verification modal overlay */}
+      <AnimatePresence>
+        {showOtpModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 z-50 select-none">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="bg-white dark:bg-[#121214] border border-gray-100 dark:border-white/10 rounded-[32px] p-6 w-full max-w-sm shadow-2xl relative text-center space-y-6"
+            >
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => setShowOtpModal(false)}
+                className="absolute top-4 left-4 p-1.5 rounded-full bg-gray-50 dark:bg-white/5 text-gray-400 hover:text-dark dark:hover:text-white transition-colors cursor-pointer border border-transparent hover:border-gray-100 dark:hover:border-white/5"
+              >
+                <X size={16} />
+              </button>
+
+              <div className="space-y-2 pt-4 text-right">
+                <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Smartphone size={22} className="animate-pulse" />
+                </div>
+                <h3 className="text-base font-black text-dark dark:text-white text-center">تایید شماره همراه جدید</h3>
+                <p className="text-[11px] text-gray-550 dark:text-gray-400 leading-relaxed font-semibold text-center">
+                  کد تایید ۴ رقمی به شماره جدید شما ارسال شد. لطفاً آن را جهت تایید شماره جدید وارد نمایید.
+                </p>
+              </div>
+
+              {/* OTP Input Fields */}
+              <div className="flex justify-center py-2" dir="ltr">
+                <OTPInput
+                  value={otpCode}
+                  onChange={(val) => {
+                    setOtpCode(val);
+                    setOtpError(null);
+                  }}
+                  error={!!otpError}
+                />
+              </div>
+
+              {otpError && (
+                <p className="text-red-500 text-[11px] font-black animate-pulse leading-relaxed">
+                  {otpError}
+                </p>
+              )}
+
+              {/* Resend and timer section */}
+              <div className="flex items-center justify-between text-[11px] font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/[0.02] p-3 rounded-2xl border border-gray-100/40 dark:border-white/5">
+                <span className="bg-orange-500/5 text-primary tracking-wide px-2 py-1 rounded-lg">کد تستی فعال‌سازی: ١٢٣٤</span>
+                {otpTimer > 0 ? (
+                  <span className="font-mono text-gray-400">ارسال مجدد تا {otpTimer} ثانیه</span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    className="text-primary hover:underline cursor-pointer flex items-center gap-1"
+                  >
+                    ارسال مجدد کد تایید
+                  </button>
+                )}
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowOtpModal(false)}
+                  className="flex-1 py-3.5 bg-gray-100 dark:bg-white/10 text-gray-650 dark:text-gray-300 text-[11px] font-bold rounded-2xl active:scale-95 transition-all text-center"
+                >
+                  انصراف
+                </button>
+                <button
+                  type="button"
+                  onClick={handleVerifyOtp}
+                  disabled={isVerifyingOtp}
+                  className="flex-1 py-3.5 bg-primary text-white text-[11px] font-black rounded-2xl active:scale-95 transition-all text-center shadow-lg shadow-primary/10 flex items-center justify-center gap-1"
+                >
+                  {isVerifyingOtp ? (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  ) : (
+                    'تایید شماره'
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </PageTransition>
   );
 };
