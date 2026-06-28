@@ -70,7 +70,7 @@ const Menu: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="px-6 pb-4 min-h-screen bg-light-gray dark:bg-dark flex flex-col transition-colors overflow-x-clip">
+      <div className="px-6 pb-4 min-h-screen bg-light-gray dark:bg-dark flex flex-col transition-colors">
         <div className="pt-12 pb-4 -mx-6 px-6 mb-2 bg-light-gray dark:bg-dark transition-colors">
           <AppBar 
             title="منوی کامل" 

@@ -105,7 +105,7 @@ const Home: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="flex flex-col overflow-x-clip">
+      <div className="flex flex-col">
         {/* Top Header Card */}
         <div 
           className="bg-white dark:bg-dark rounded-b-[32px] pt-7 pb-4 px-6 flex flex-col gap-3 relative shadow-sm dark:shadow-none border-b border-gray-100/40 dark:border-white/5 transition-all duration-300 overflow-hidden"
