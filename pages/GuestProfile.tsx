@@ -12,7 +12,7 @@ interface GuestProfileProps {
 const GuestProfile: React.FC<GuestProfileProps> = ({ onLoginClick }) => {
   return (
     <PageTransition>
-      <div className="px-6 py-20 min-h-screen bg-lightGray dark:bg-dark flex flex-col items-center justify-center text-center gap-10 transition-colors">
+      <div className="px-6 py-12 h-[100dvh] bg-lightGray dark:bg-dark flex flex-col items-center justify-center text-center gap-8 transition-colors overflow-hidden touch-none relative">
         <motion.div 
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -43,7 +43,7 @@ const GuestProfile: React.FC<GuestProfileProps> = ({ onLoginClick }) => {
           </Button>
         </div>
 
-        <p className="fixed bottom-10 text-[9px] text-muted font-black uppercase tracking-widest opacity-40">
+        <p className="absolute bottom-10 text-[9px] text-muted font-black uppercase tracking-widest opacity-40">
           کافه لند - لذت یک قهوه هوشمند
         </p>
       </div>
