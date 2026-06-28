@@ -207,158 +207,160 @@ const EditProfile: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="px-6 pt-12 pb-16 min-h-screen bg-light-gray dark:bg-dark transition-colors flex flex-col justify-between" dir="rtl">
-        <div className="flex-1 flex flex-col justify-between">
-          <div className="space-y-6">
-            <AppBar 
-              title="ویرایش پروفایل"
-              subtitle="به‌روزرسانی مشخصات کاربری"
-              onBack={() => navigate('/profile')}
-            />
+      <div className="h-[100dvh] flex flex-col bg-light-gray dark:bg-dark overflow-hidden transition-colors" dir="rtl">
+        {/* Sticky Header Wrapper */}
+        <div className="px-6 pt-6 pb-2 shrink-0 z-50 bg-light-gray/95 dark:bg-dark/95 backdrop-blur-md transition-colors">
+          <AppBar 
+            title="ویرایش پروفایل"
+            subtitle="به‌روزرسانی مشخصات کاربری"
+            onBack={() => navigate('/profile')}
+            className="mb-0"
+          />
+        </div>
 
-            <form id="edit-profile-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <div className="bg-white dark:bg-black/20 rounded-[32px] p-6 shadow-sm dark:shadow-none border border-gray-50 dark:border-white/5 space-y-6">
-                {/* نام و نام خانوادگی */}
-                <div className="space-y-2.5">
-                  <label className="flex flex-row items-center gap-2 text-[11px] font-black text-muted dark:text-white/40 mr-1">
-                    <User size={14} className="text-primary" />
-                    <span>نام و نام خانوادگی</span>
-                  </label>
+        {/* Scrollable Content Body */}
+        <div className="flex-1 overflow-y-auto no-scrollbar px-6 pb-28 pt-2">
+          <form id="edit-profile-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div className="bg-white dark:bg-black/20 rounded-[32px] p-6 shadow-sm dark:shadow-none border border-gray-50 dark:border-white/5 space-y-6">
+              {/* نام و نام خانوادگی */}
+              <div className="space-y-2.5">
+                <label className="flex flex-row items-center gap-2 text-[11px] font-black text-muted dark:text-white/40 mr-1">
+                  <User size={14} className="text-primary" />
+                  <span>نام و نام خانوادگی</span>
+                </label>
+                <Controller
+                  name="fullName"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <input 
+                      {...field}
+                      type="text"
+                      onChange={(e) => {
+                        field.onChange(e);
+                        if (errors.fullName) clearErrors('fullName');
+                      }}
+                      className={`w-full bg-white dark:bg-black/40 border rounded-2xl py-4 px-6 text-sm font-black text-dark dark:text-white focus:ring-4 text-right outline-none transition-all shadow-sm ${
+                        errors.fullName 
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' 
+                          : 'border-gray-200/80 dark:border-white/10 focus:border-primary/50 focus:ring-primary/10'
+                      }`}
+                    />
+                  )}
+                />
+                {errors.fullName && (
+                  <p className="text-red-500 text-[10px] font-bold mr-1 mt-1 flex items-center gap-1 animate-pulse">
+                    <span>●</span>
+                    <span>{errors.fullName.message}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* شماره موبایل */}
+              <div className="space-y-2.5">
+                <label className="flex flex-row items-center gap-2 text-[11px] font-black text-muted dark:text-white/40 mr-1">
+                  <Smartphone size={14} className="text-primary" />
+                  <span>شماره موبایل</span>
+                  <span className="text-[10px] text-muted/60 dark:text-white/30 mr-auto font-bold">(جهت تغییر، شماره جدید را وارد کنید)</span>
+                </label>
+                <Controller
+                  name="mobile"
+                  control={control}
+                  render={({ field }) => (
+                    <input 
+                      {...field}
+                      type="tel"
+                      className={`w-full bg-white dark:bg-black/40 border rounded-2xl py-4 px-6 text-sm font-black text-dark dark:text-white focus:ring-4 text-left outline-none transition-all shadow-sm font-sans ${
+                        errors.mobile 
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' 
+                          : 'border-gray-200/80 dark:border-white/10 focus:border-primary/50 focus:ring-primary/10'
+                      }`}
+                      dir="ltr"
+                      onChange={(e) => {
+                        const converted = e.target.value.replace(/\D/g, '');
+                        field.onChange(converted);
+                        if (errors.mobile) clearErrors('mobile');
+                      }}
+                    />
+                  )}
+                />
+                {errors.mobile && (
+                  <p className="text-red-500 text-[10px] font-bold mr-1 mt-1 flex items-center gap-1 animate-pulse">
+                    <span>●</span>
+                    <span>{errors.mobile.message}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* تاریخ تولد */}
+              <div className="space-y-3">
+                <label className="flex flex-row items-center gap-2 text-[11px] font-black text-muted dark:text-white/40 mr-1">
+                  <Calendar size={14} className="text-primary" />
+                  <span>تاریخ تولد</span>
+                </label>
+                <div className="grid grid-cols-3 gap-3">
                   <Controller
-                    name="fullName"
+                    name="year"
                     control={control}
-                    rules={{ required: true }}
                     render={({ field }) => (
-                      <input 
-                        {...field}
-                        type="text"
-                        onChange={(e) => {
-                          field.onChange(e);
-                          if (errors.fullName) clearErrors('fullName');
-                        }}
-                        className={`w-full bg-white dark:bg-black/40 border rounded-2xl py-4 px-6 text-sm font-black text-dark dark:text-white focus:ring-4 text-right outline-none transition-all shadow-sm ${
-                          errors.fullName 
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' 
-                            : 'border-gray-200/80 dark:border-white/10 focus:border-primary/50 focus:ring-primary/10'
-                        }`}
+                      <Dropdown 
+                        label="سال"
+                        value={field.value}
+                        onChange={field.onChange}
+                        options={years}
                       />
                     )}
                   />
-                  {errors.fullName && (
-                    <p className="text-red-500 text-[10px] font-bold mr-1 mt-1 flex items-center gap-1 animate-pulse">
-                      <span>●</span>
-                      <span>{errors.fullName.message}</span>
-                    </p>
-                  )}
-                </div>
 
-                {/* شماره موبایل */}
-                <div className="space-y-2.5">
-                  <label className="flex flex-row items-center gap-2 text-[11px] font-black text-muted dark:text-white/40 mr-1">
-                    <Smartphone size={14} className="text-primary" />
-                    <span>شماره موبایل</span>
-                    <span className="text-[10px] text-muted/60 dark:text-white/30 mr-auto font-bold">(جهت تغییر، شماره جدید را وارد کنید)</span>
-                  </label>
                   <Controller
-                    name="mobile"
+                    name="month"
                     control={control}
                     render={({ field }) => (
-                      <input 
-                        {...field}
-                        type="tel"
-                        className={`w-full bg-white dark:bg-black/40 border rounded-2xl py-4 px-6 text-sm font-black text-dark dark:text-white focus:ring-4 text-left outline-none transition-all shadow-sm font-sans ${
-                          errors.mobile 
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' 
-                            : 'border-gray-200/80 dark:border-white/10 focus:border-primary/50 focus:ring-primary/10'
-                        }`}
-                        dir="ltr"
-                        onChange={(e) => {
-                          const converted = e.target.value.replace(/\D/g, '');
-                          field.onChange(converted);
-                          if (errors.mobile) clearErrors('mobile');
-                        }}
+                      <Dropdown 
+                        label="ماه"
+                        value={field.value}
+                        onChange={field.onChange}
+                        options={months}
                       />
                     )}
                   />
-                  {errors.mobile && (
-                    <p className="text-red-500 text-[10px] font-bold mr-1 mt-1 flex items-center gap-1 animate-pulse">
-                      <span>●</span>
-                      <span>{errors.mobile.message}</span>
-                    </p>
-                  )}
-                </div>
 
-                {/* تاریخ تولد */}
-                <div className="space-y-3">
-                  <label className="flex flex-row items-center gap-2 text-[11px] font-black text-muted dark:text-white/40 mr-1">
-                    <Calendar size={14} className="text-primary" />
-                    <span>تاریخ تولد</span>
-                  </label>
-                  <div className="grid grid-cols-3 gap-3">
-                    <Controller
-                      name="year"
-                      control={control}
-                      render={({ field }) => (
-                        <Dropdown 
-                          label="سال"
-                          value={field.value}
-                          onChange={field.onChange}
-                          options={years}
-                        />
-                      )}
-                    />
-
-                    <Controller
-                      name="month"
-                      control={control}
-                      render={({ field }) => (
-                        <Dropdown 
-                          label="ماه"
-                          value={field.value}
-                          onChange={field.onChange}
-                          options={months}
-                        />
-                      )}
-                    />
-
-                    <Controller
-                      name="day"
-                      control={control}
-                      render={({ field }) => (
-                        <Dropdown 
-                          label="روز"
-                          value={field.value}
-                          onChange={field.onChange}
-                          options={days}
-                        />
-                      )}
-                    />
-                  </div>
+                  <Controller
+                    name="day"
+                    control={control}
+                    render={({ field }) => (
+                      <Dropdown 
+                        label="روز"
+                        value={field.value}
+                        onChange={field.onChange}
+                        options={days}
+                      />
+                    )}
+                  />
                 </div>
               </div>
-            </form>
-          </div>
+            </div>
 
-          <button 
-            type="submit"
-            form="edit-profile-form"
-            disabled={isUpdating || isRequestingOtp}
-            className={`w-full py-5 rounded-[24px] font-black text-sm flex items-center justify-center gap-3 shadow-xl transition-all active:scale-[0.98] mt-6 ${
-              isUpdating || isRequestingOtp ? 'bg-muted text-white cursor-wait' : 'bg-primary text-white shadow-primary/25 hover:bg-primary/90'
-            }`}
-          >
-            {isUpdating || isRequestingOtp ? (
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <span>در حال پردازش...</span>
-              </div>
-            ) : (
-              <>
-                <Check size={20} />
-                <span>تایید و ذخیره تغییرات</span>
-              </>
-            )}
-          </button>
+            <button 
+              type="submit"
+              disabled={isUpdating || isRequestingOtp}
+              className={`w-full py-5 rounded-[24px] font-black text-sm flex items-center justify-center gap-3 shadow-xl transition-all active:scale-[0.98] mt-6 ${
+                isUpdating || isRequestingOtp ? 'bg-muted text-white cursor-wait' : 'bg-primary text-white shadow-primary/25 hover:bg-primary/90'
+              }`}
+            >
+              {isUpdating || isRequestingOtp ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>در حال پردازش...</span>
+                </div>
+              ) : (
+                <>
+                  <Check size={20} />
+                  <span>تایید و ذخیره تغییرات</span>
+                </>
+              )}
+            </button>
+          </form>
         </div>
       </div>
 
