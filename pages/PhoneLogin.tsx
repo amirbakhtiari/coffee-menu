@@ -11,6 +11,17 @@ interface PhoneLoginProps {
   loading: boolean;
 }
 
+const toEnglishDigits = (str: string): string => {
+  const persianDigits = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g];
+  const arabicDigits = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
+  
+  let result = str;
+  for (let i = 0; i < 10; i++) {
+    result = result.replace(persianDigits[i], i.toString()).replace(arabicDigits[i], i.toString());
+  }
+  return result;
+};
+
 const PhoneLogin: React.FC<PhoneLoginProps> = ({ onBack, onSubmit, loading }) => {
   const { control, handleSubmit, watch } = useForm({
     defaultValues: {
@@ -66,7 +77,11 @@ const PhoneLogin: React.FC<PhoneLoginProps> = ({ onBack, onSubmit, loading }) =>
                     placeholder="09123456789"
                     maxLength={11}
                     className="w-full bg-white dark:bg-black/20 border border-gray-100 dark:border-white/10 rounded-3xl p-5 pr-14 text-base font-black text-dark dark:text-white focus:border-primary outline-none transition-all shadow-sm dark:shadow-none ltr"
-                    onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ''))}
+                    onChange={(e) => {
+                      const eng = toEnglishDigits(e.target.value);
+                      const converted = eng.replace(/\D/g, '');
+                      field.onChange(converted);
+                    }}
                   />
                 )}
               />

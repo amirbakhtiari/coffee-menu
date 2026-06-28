@@ -20,6 +20,17 @@ interface ProfileFormData {
   day: string;
 }
 
+const toEnglishDigits = (str: string): string => {
+  const persianDigits = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g];
+  const arabicDigits = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
+  
+  let result = str;
+  for (let i = 0; i < 10; i++) {
+    result = result.replace(persianDigits[i], i.toString()).replace(arabicDigits[i], i.toString());
+  }
+  return result;
+};
+
 const EditProfile: React.FC = () => {
   const navigate = useNavigate();
   const { profile: userProfile, isLoading, updateProfile, isUpdating } = useUserProfileApi();
@@ -50,7 +61,7 @@ const EditProfile: React.FC = () => {
       const parts = userProfile.birthDate.split('/');
       reset({
         fullName: userProfile.fullName,
-        mobile: userProfile.mobile,
+        mobile: toEnglishDigits(userProfile.mobile),
         birthDate: userProfile.birthDate,
         year: parts[0] || '۱۳۷۰',
         month: parts[1] || '۰۱',
@@ -155,7 +166,8 @@ const EditProfile: React.FC = () => {
       hasError = true;
     }
 
-    const numericPhone = data.mobile.replace(/\D/g, '');
+    const normalizedMobile = toEnglishDigits(data.mobile);
+    const numericPhone = normalizedMobile.replace(/\D/g, '');
     if (!numericPhone) {
       setError('mobile', { type: 'manual', message: 'لطفاً شماره موبایل خود را وارد کنید.' });
       hasError = true;
@@ -166,11 +178,14 @@ const EditProfile: React.FC = () => {
 
     if (hasError) return;
 
-    const isMobileChanged = data.mobile !== userProfile?.mobile;
+    const isMobileChanged = normalizedMobile !== toEnglishDigits(userProfile?.mobile || '');
 
     if (isMobileChanged) {
-      setPendingProfileData(data);
-      requestOtp(data.mobile, {
+      setPendingProfileData({
+        ...data,
+        mobile: normalizedMobile
+      });
+      requestOtp(normalizedMobile, {
         onSuccess: () => {
           setShowOtpModal(true);
           setOtpTimer(60);
@@ -185,7 +200,7 @@ const EditProfile: React.FC = () => {
       const finalData = {
         fullName: data.fullName,
         birthDate: `${data.year}/${data.month}/${data.day}`,
-        mobile: data.mobile,
+        mobile: normalizedMobile,
       };
       updateProfile(finalData, {
         onSuccess: () => {
@@ -277,7 +292,8 @@ const EditProfile: React.FC = () => {
                       }`}
                       dir="ltr"
                       onChange={(e) => {
-                        const converted = e.target.value.replace(/\D/g, '');
+                        const eng = toEnglishDigits(e.target.value);
+                        const converted = eng.replace(/\D/g, '');
                         field.onChange(converted);
                         if (errors.mobile) clearErrors('mobile');
                       }}
