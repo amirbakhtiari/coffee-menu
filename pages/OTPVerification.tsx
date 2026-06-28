@@ -35,40 +35,46 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
 
   return (
     <PageTransition>
-      <div className="px-6 pt-12 min-h-screen bg-light-gray dark:bg-dark flex flex-col items-center gap-12 transition-colors" dir="rtl">
-        <button onClick={onBack} className="w-12 h-12 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-sm dark:shadow-none self-start border border-transparent dark:border-white/5">
-          <ChevronRight size={22} className="dark:text-white" />
-        </button>
+      <div className="px-6 py-8 h-[100dvh] bg-light-gray dark:bg-dark flex flex-col justify-between transition-colors overflow-hidden touch-none relative" dir="rtl">
+        {/* Top Header Section */}
+        <div className="w-full flex flex-col gap-6">
+          <button onClick={onBack} className="w-12 h-12 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-sm dark:shadow-none self-start border border-transparent dark:border-white/5">
+            <ChevronRight size={22} className="dark:text-white" />
+          </button>
 
-        <div className="text-center space-y-3">
-           <div className="w-20 h-20 bg-primary/10 dark:bg-primary/20 rounded-[32px] flex items-center justify-center text-primary mx-auto">
-             <CheckCircle2 size={40} />
-           </div>
-           <h2 className="text-xl font-black text-dark dark:text-white">کد تایید را وارد کنید</h2>
-           <p className="text-muted dark:text-white/60 text-[11px] font-medium leading-relaxed">کد ۴ رقمی به شماره <span className="text-dark dark:text-white font-black tracking-widest" dir="ltr">{phone}</span> ارسال شد.</p>
+          <div className="text-center space-y-3">
+             <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-[24px] flex items-center justify-center text-primary mx-auto">
+               <CheckCircle2 size={32} />
+             </div>
+             <h2 className="text-xl font-black text-dark dark:text-white">کد تایید را وارد کنید</h2>
+             <p className="text-muted dark:text-white/60 text-[11px] font-medium leading-relaxed">کد ۴ رقمی به شماره <span className="text-dark dark:text-white font-black tracking-widest" dir="ltr">{phone}</span> ارسال شد.</p>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col items-center gap-12">
-          <motion.div
-            animate={error ? { x: [-5, 5, -5, 5, 0] } : {}}
-            transition={{ duration: 0.4 }}
-          >
-            <Controller
-              name="otp"
-              control={control}
-              rules={{ validate: (val) => val.every(d => d !== '') }}
-              render={({ field }) => (
-                <OTPInput 
-                  value={field.value} 
-                  onChange={field.onChange} 
-                  length={4} 
-                  error={!!error}
-                />
-              )}
-            />
-          </motion.div>
+        {/* Form taking the remaining height with justify-between */}
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full flex-1 flex flex-col justify-between mt-8">
+          <div className="w-full flex justify-center">
+            <motion.div
+              animate={error ? { x: [-5, 5, -5, 5, 0] } : {}}
+              transition={{ duration: 0.4 }}
+            >
+              <Controller
+                name="otp"
+                control={control}
+                rules={{ validate: (val) => val.every(d => d !== '') }}
+                render={({ field }) => (
+                  <OTPInput 
+                    value={field.value} 
+                    onChange={field.onChange} 
+                    length={4} 
+                    error={!!error}
+                  />
+                )}
+              />
+            </motion.div>
+          </div>
 
-          <div className="w-full space-y-4">
+          <div className="w-full space-y-4 pb-2">
             <Button 
               type="submit"
               loading={loading}
