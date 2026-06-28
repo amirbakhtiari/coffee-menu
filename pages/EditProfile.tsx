@@ -209,7 +209,7 @@ const EditProfile: React.FC = () => {
     <PageTransition>
       <div className="h-[100dvh] flex flex-col bg-light-gray dark:bg-dark overflow-hidden transition-colors" dir="rtl">
         {/* Sticky Header Wrapper */}
-        <div className="px-6 pt-6 pb-2 shrink-0 z-50 bg-light-gray/95 dark:bg-dark/95 backdrop-blur-md transition-colors">
+        <div className="px-6 pt-6 pb-2 shrink-0 z-50 bg-light-gray/95 dark:bg-dark/95 backdrop-blur-md transition-colors border-b border-gray-100/50 dark:border-white/5">
           <AppBar 
             title="ویرایش پروفایل"
             subtitle="به‌روزرسانی مشخصات کاربری"

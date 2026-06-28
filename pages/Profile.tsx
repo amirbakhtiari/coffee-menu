@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Bell, LogOut, ChevronLeft, History, Crown, Settings2, Moon, Sun, Loader2 } from 'lucide-react';
+import { User, Bell, LogOut, ChevronLeft, History, Crown, Pencil, Moon, Sun, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { requestNotificationPermission, scheduleTestNotification } from '../services/notificationService';
 import { useTheme } from '../ThemeContext';
@@ -217,7 +217,7 @@ const Profile: React.FC = () => {
                 className="w-10 h-10 bg-primary/10 dark:bg-primary/20 text-primary rounded-xl flex items-center justify-center active:scale-90 transition-transform shadow-sm"
                 title="ویرایش مشخصات"
               >
-                <Settings2 size={18} />
+                <Pencil size={18} />
               </button>
             </div>
             
