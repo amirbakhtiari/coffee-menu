@@ -15,7 +15,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
-  const { setModalOpen } = useCafeStore();
+  const { setModalOpen, isLoggedIn } = useCafeStore();
   const { data: cafeStatus } = useCafeStatus();
 
   useEffect(() => {
@@ -41,7 +41,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     location.pathname === '/cafe-info' ||
     location.pathname === '/tables' ||
     location.pathname === '/edit-profile' ||
-    location.pathname === '/success';
+    location.pathname === '/success' ||
+    (location.pathname === '/profile' && !isLoggedIn);
 
   // دکمه ویتر را در صفحات خاص مخفی می‌کنیم
   const hideWaiter = 

@@ -13,6 +13,7 @@ import OTPVerification from './OTPVerification';
 import { useUserProfileApi } from '../hooks/api/useUserApi';
 import { useAuthApi } from '../hooks/api/useAuthApi';
 import { useNotificationStore } from '../store/useNotificationStore';
+import { useCafeStore } from '../store/useCafeStore';
 
 type AuthStep = 'guest' | 'phone' | 'otp';
 
@@ -20,6 +21,7 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { warning } = useNotificationStore();
+  const { isLoggedIn, setIsLoggedIn } = useCafeStore();
   
   const { profile: userProfile, isLoading: profileLoading } = useUserProfileApi();
   const { requestOtp, isRequestingOtp, verifyOtp, isVerifyingOtp, verifyOtpError } = useAuthApi();
@@ -30,7 +32,6 @@ const Profile: React.FC = () => {
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authStep, setAuthStep] = useState<AuthStep>('guest');
   const [phone, setPhone] = useState('');
   const [timer, setTimer] = useState(60);
