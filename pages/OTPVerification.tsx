@@ -38,8 +38,13 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({
       <div className="px-6 py-8 h-[100dvh] bg-light-gray dark:bg-dark flex flex-col transition-colors overflow-hidden touch-none relative" dir="rtl">
         {/* Top Header Row */}
         <div className="flex items-center justify-between w-full">
-          <button onClick={onBack} className="w-12 h-12 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-sm dark:shadow-none border border-transparent dark:border-white/5 active:scale-90 transition-transform">
-            <ChevronRight size={22} className="dark:text-white" />
+          <button 
+            type="button"
+            onClick={onBack} 
+            className="w-12 h-12 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-md dark:shadow-none border border-gray-200 dark:border-white/10 active:scale-90 transition-transform"
+            title="بازگشت"
+          >
+            <ChevronRight size={22} className="text-dark dark:text-white" />
           </button>
         </div>
 

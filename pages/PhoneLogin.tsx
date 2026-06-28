@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Smartphone, ArrowRight, ChevronRight, Loader2 } from 'lucide-react';
+import { Smartphone, ArrowRight, ChevronRight, Loader2, Coffee } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import PageTransition from '../components/PageTransition';
 import Button from '../components/Button';
@@ -26,18 +26,31 @@ const PhoneLogin: React.FC<PhoneLoginProps> = ({ onBack, onSubmit, loading }) =>
       <div className="px-6 py-8 h-[100dvh] bg-lightGray dark:bg-dark flex flex-col transition-colors overflow-hidden touch-none relative" dir="rtl">
         {/* Top Header Row */}
         <div className="flex items-center justify-between w-full">
-          <button onClick={onBack} className="w-12 h-12 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-sm dark:shadow-none border border-transparent dark:border-white/5 active:scale-90 transition-transform">
-            <ChevronRight size={22} className="dark:text-white" />
+          <button 
+            type="button"
+            onClick={onBack} 
+            className="w-12 h-12 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-md dark:shadow-none border border-gray-200 dark:border-white/10 active:scale-90 transition-transform"
+            title="بازگشت"
+          >
+            <ChevronRight size={22} className="text-dark dark:text-white" />
           </button>
         </div>
 
         {/* Center Content Group */}
         <div className="flex-1 flex flex-col justify-center max-w-sm mx-auto w-full gap-8">
-          <div className="space-y-2 text-center">
-            <h2 className="text-2xl font-black text-dark dark:text-white">ورود به حساب</h2>
-            <p className="text-muted dark:text-white/60 text-xs font-medium px-4">
-              شماره موبایل خود را وارد کنید تا کد تایید ارسال شود.
-            </p>
+          <div className="flex flex-col items-center gap-5">
+            {/* Branding Icon Container */}
+            <div className="w-20 h-20 bg-primary/10 dark:bg-primary/20 text-primary rounded-[28px] flex items-center justify-center shadow-inner relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent" />
+              <Coffee size={36} strokeWidth={2.2} />
+            </div>
+
+            <div className="space-y-2 text-center">
+              <h2 className="text-2xl font-black text-dark dark:text-white">ورود به حساب</h2>
+              <p className="text-muted dark:text-white/60 text-xs font-medium px-4">
+                شماره موبایل خود را وارد کنید تا کد تایید ارسال شود.
+              </p>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
