@@ -98,12 +98,9 @@ const Profile: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="px-6 pt-6 pb-6 transition-colors" dir="rtl">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="space-y-6"
-        >
+      <div className="h-[100dvh] flex flex-col bg-light-gray dark:bg-dark overflow-hidden transition-colors" dir="rtl">
+        {/* Sticky Header Wrapper */}
+        <div className="px-6 pt-6 pb-2 shrink-0 z-50 bg-light-gray/95 dark:bg-dark/95 backdrop-blur-md transition-colors border-b border-gray-100/50 dark:border-white/5">
           <AppBar 
             title="پروفایل"
             subtitle="امیر عزیز، خوش آمدی"
@@ -113,7 +110,17 @@ const Profile: React.FC = () => {
                 <User size={20} />
               </div>
             }
+            className="mb-0"
           />
+        </div>
+
+        {/* Scrollable Content Body */}
+        <div className="flex-1 overflow-y-auto no-scrollbar px-6 pb-28 pt-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="space-y-6"
+          >
 
           {/* باشگاه مشتریان */}
           <motion.section 
@@ -298,6 +305,7 @@ const Profile: React.FC = () => {
             </button>
           </div>
         </motion.div>
+        </div>
       </div>
     </PageTransition>
   );
