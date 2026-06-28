@@ -79,7 +79,7 @@ const LoyaltyClub: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-[#080808] relative overflow-x-hidden" dir="rtl">
+      <div className="min-h-screen bg-[#080808] relative overflow-x-clip" dir="rtl">
         {/* Subtle Background Glow */}
         <div className="absolute top-0 right-0 w-full h-[500px] bg-gradient-to-b from-primary/10 to-transparent pointer-events-none z-0" />
         
