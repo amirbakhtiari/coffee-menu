@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Allow: /cafe-info
+Allow: /menu
+
+Sitemap: https://abracafe.ir/sitemap.xml

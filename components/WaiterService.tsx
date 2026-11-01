@@ -2,8 +2,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserCheck, X, ConciergeBell, MessageCircleQuestion, Check } from 'lucide-react';
+import { useTranslation } from '../store/useLanguageStore';
 
 const WaiterService: React.FC = () => {
+  const { t, dir } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isCalled, setIsCalled] = useState(false);
 
@@ -38,13 +40,13 @@ const WaiterService: React.FC = () => {
             exit={{ opacity: 0, scale: 0.9, y: -10 }}
             className="fixed top-6 inset-x-0 z-[150] flex justify-center px-6 pointer-events-none"
           >
-            <div className="bg-white/95 dark:bg-[#1A1A1A]/95 backdrop-blur-xl px-4 py-3 rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_15px_40px_rgba(0,0,0,0.45)] border border-white/50 dark:border-white/10 flex items-center gap-3 pointer-events-auto w-auto max-w-[280px]" dir="rtl">
+            <div className="bg-white/95 dark:bg-[#1A1A1A]/95 backdrop-blur-xl px-4 py-3 rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_15px_40px_rgba(0,0,0,0.45)] border border-white/50 dark:border-white/10 flex items-center gap-3 pointer-events-auto w-auto max-w-[280px]" dir={dir}>
               <div className="shrink-0 w-8 h-8 bg-green-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-green-500/20">
                 <Check size={18} strokeWidth={3.5} />
               </div>
-              <div className="flex flex-col text-right">
-                <span className="text-[13px] font-black text-dark dark:text-white leading-tight mb-0.5">درخواست ثبت شد</span>
-                <span className="text-[10px] font-bold text-muted dark:text-white/40 leading-none">ویتر بزودی می‌آید</span>
+              <div className="flex flex-col text-start">
+                <span className="text-[13px] font-black text-dark dark:text-white leading-tight mb-0.5">{t('waiter_request_sent')}</span>
+                <span className="text-[10px] font-bold text-muted dark:text-white/40 leading-none">{t('waiter_coming')}</span>
               </div>
             </div>
           </motion.div>
@@ -71,26 +73,12 @@ const WaiterService: React.FC = () => {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   onClick={handleCallWaiter}
-                  className="group flex items-center gap-3 bg-white dark:bg-[#1A1A1A] p-2 pr-5 rounded-2xl border border-gray-100 dark:border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.1)] dark:shadow-[0_15px_35px_rgba(0,0,0,0.4)] hover:bg-white/90 dark:hover:bg-[#222] transition-all active:scale-95"
-                  dir="rtl"
+                  className="group flex items-center gap-3 bg-white dark:bg-[#1A1A1A] p-2 px-4 rounded-2xl border border-gray-100 dark:border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.1)] dark:shadow-[0_15px_35px_rgba(0,0,0,0.4)] hover:bg-white/90 dark:hover:bg-[#222] transition-all active:scale-95 cursor-pointer"
+                  dir={dir}
                 >
-                  <span className="text-[13px] font-black text-dark dark:text-white whitespace-nowrap">درخواست ویتر</span>
+                  <span className="text-[13px] font-black text-dark dark:text-white whitespace-nowrap">{t('waiter_call')}</span>
                   <div className="shrink-0 w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
                     <ConciergeBell size={18} />
-                  </div>
-                </motion.button>
-                
-                {/* راهنمایی منو */}
-                <motion.button 
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 }}
-                  className="group flex items-center gap-3 bg-white/80 dark:bg-[#1A1A1A]/80 backdrop-blur-md p-2 pr-5 rounded-2xl border border-white/40 dark:border-white/5 opacity-80 hover:opacity-100 transition-all active:scale-95"
-                  dir="rtl"
-                >
-                  <span className="text-[13px] font-black text-dark/50 dark:text-white/40 whitespace-nowrap">راهنمایی منو</span>
-                  <div className="shrink-0 w-10 h-10 bg-dark/5 dark:bg-white/5 rounded-xl flex items-center justify-center text-dark/30 dark:text-white/20">
-                    <MessageCircleQuestion size={18} />
                   </div>
                 </motion.button>
 

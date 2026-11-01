@@ -29,6 +29,7 @@ import { BookingConfirmModal } from '../components/BookingConfirmModal';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useTables, useToggleTable, useResetTables } from '../hooks/api/useTablesApi';
 import { Table } from '../types';
+import { useTranslation } from '../store/useLanguageStore';
 
 
 const toEnglishDigits = (str: string): string => {
@@ -171,6 +172,7 @@ const TableBlueprint: React.FC<{ capacity: number; isReserved: boolean; zone: an
 
 export const Tables: React.FC = () => {
   const navigate = useNavigate();
+  const { t, isRTL, dir } = useTranslation();
   const { success, info, error: notifyError } = useNotificationStore();
 
   // React Query Hooks
@@ -401,12 +403,12 @@ export const Tables: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="px-5 pb-8 min-h-screen bg-light-gray dark:bg-dark text-dark dark:text-white flex flex-col transition-colors" dir="rtl">
+      <div className="px-5 pb-8 min-h-screen bg-light-gray dark:bg-dark text-dark dark:text-white flex flex-col transition-colors" dir={dir}>
         {/* Top Sticky Header */}
         <div className="pt-6 pb-3 -mx-5 px-5 bg-white/95 dark:bg-dark/95 backdrop-blur-md sticky top-0 z-40 transition-colors border-b border-gray-100 dark:border-white/5 shadow-sm">
           <AppBar 
-            title="وضعیت میزها"
-            subtitle="سرویس‌دهی و رزرو آنلاین میزهای کافه"
+            title={t('tables_title')}
+            subtitle={t('table_available')}
             onBack={() => navigate('/')}
             className="mb-0"
             rightAction={

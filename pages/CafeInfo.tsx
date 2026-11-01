@@ -16,58 +16,99 @@ import {
 import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
 import AppBar from '../components/AppBar';
+import SEO from '../components/SEO';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useCafeStatus } from '../hooks/api/useCafeApi';
+import { useTranslation } from '../store/useLanguageStore';
 
 const CafeInfo: React.FC = () => {
   const navigate = useNavigate();
   const { success } = useNotificationStore();
+  const { t, isRTL, dir } = useTranslation();
   
   const { data: cafeStatus } = useCafeStatus();
   const isClosed = cafeStatus?.isClosed || false;
 
+  const cafeStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'CafeOrCoffeeShop',
+    '@id': 'https://abracafe.ir/#cafe',
+    name: t('app_name'),
+    alternateName: ['Caffe Land', 'Café Land'],
+    image: ['https://abracafe.ir/cafe-hero.png'],
+    telephone: '+98-21-88887766',
+    url: 'https://abracafe.ir/cafe-info',
+    priceRange: '$$',
+    servesCuisine: ['Specialty Coffee', 'Espresso Bar', 'Artisanal Desserts'],
+    description: t('about_cafe_desc'),
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: t('location_desc'),
+      addressLocality: 'Tehran',
+      addressRegion: 'Tehran',
+      postalCode: '19697',
+      addressCountry: 'IR',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 35.759022,
+      longitude: 51.405527,
+    },
+    hasMap: 'https://maps.google.com/?q=35.759022,51.405527',
+  };
+
   const openingHours = [
-    { day: 'شنبه', hours: '۸:۰۰ الی ۲۳:۰۰', isToday: false },
-    { day: 'یکشنبه', hours: '۸:۰۰ الی ۲۳:۰۰', isToday: false },
-    { day: 'دوشنبه', hours: '۸:۰۰ الی ۲۳:۰۰', isToday: false },
-    { day: 'سه‌شنبه', hours: '۸:۰۰ الی ۲۳:۰۰', isToday: true }, // Highlight based on current local time
-    { day: 'چهارشنبه', hours: '۸:۰۰ الی ۲۳:۰۰', isToday: false },
-    { day: 'پنجشنبه', hours: '۸:۰۰ الی ۲۴:۰۰', isToday: false },
-    { day: 'جمعه', hours: '۱۰:۰۰ الی ۲۳:۰۰', isToday: false },
+    { day: t('saturday'), hours: t('hours_weekday'), isToday: false },
+    { day: t('sunday'), hours: t('hours_weekday'), isToday: false },
+    { day: t('monday'), hours: t('hours_weekday'), isToday: false },
+    { day: t('tuesday'), hours: t('hours_weekday'), isToday: true },
+    { day: t('wednesday'), hours: t('hours_weekday'), isToday: false },
+    { day: t('thursday'), hours: t('hours_weekday'), isToday: false },
+    { day: t('friday'), hours: t('hours_weekend'), isToday: false },
   ];
 
   const amenities = [
-    { icon: <Wifi size={14} />, name: 'اینترنت پرسرعت' },
-    { icon: <Laptop size={14} />, name: 'مناسب کار با لپ‌تاپ' },
-    { icon: <Compass size={14} />, name: 'فضای روباز و بسته' },
+    { icon: <Wifi size={14} />, name: t('amenity_wifi') },
+    { icon: <Laptop size={14} />, name: t('amenity_power') },
+    { icon: <Compass size={14} />, name: t('amenity_space') },
   ];
 
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: 'کافه لند',
-        text: 'دیدن منوی هوشمند کافه لند و ثبت سفارش آنلاین',
+        title: t('app_name'),
+        text: `${t('app_name')} - ${t('app_tagline')}`,
         url: window.location.origin
       }).catch(console.error);
     } else {
       navigator.clipboard.writeText(window.location.origin);
-      success('لینک کپی شد!');
+      success(t('share_copied_msg'));
     }
   };
 
   return (
     <PageTransition>
-      <div className="px-6 pb-24 min-h-screen bg-light-gray dark:bg-dark text-right transition-colors" dir="rtl">
+      <SEO
+        title={`${t('cafe_info_title')} | ${t('app_name')}`}
+        description={t('about_cafe_desc')}
+        keywords="کافه لند, Cafe Land, Specialty Coffee, Tehran Cafe"
+        ogType="restaurant"
+        ogImage="/cafe-hero.png"
+        canonicalUrl={typeof window !== 'undefined' ? `${window.location.origin}/cafe-info` : 'https://abracafe.ir/cafe-info'}
+        schemaJson={cafeStructuredData}
+      />
+      <div className="px-6 pb-6 min-h-screen bg-light-gray dark:bg-dark text-start transition-colors" dir={dir}>
         {/* Unified App Bar */}
         <div className="pt-12 pb-4">
           <AppBar 
-            title="اطلاعات فروشگاه" 
+            title={t('cafe_info_title')} 
             onBack={() => navigate(-1)}
-            subtitle="درباره ما و ساعات پذیرایی کافه لند"
+            subtitle={t('about_cafe_title')}
             rightAction={
               <button 
                 onClick={handleShare}
-                className="w-10 h-10 bg-white dark:bg-white/10 rounded-xl shadow-sm border border-gray-50 dark:border-white/5 flex items-center justify-center text-dark dark:text-white active:scale-90 transition-transform"
+                className="w-10 h-10 bg-white dark:bg-white/10 rounded-xl shadow-sm border border-gray-50 dark:border-white/5 flex items-center justify-center text-dark dark:text-white active:scale-90 transition-transform cursor-pointer"
+                title={t('btn_share_info')}
               >
                 <Share2 size={18} />
               </button>
@@ -84,7 +125,7 @@ const CafeInfo: React.FC = () => {
           >
             <img 
               src="/cafe-hero.png" 
-              alt="نمای داخل کافه لند" 
+              alt={t('app_name')} 
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               referrerPolicy="no-referrer"
             />
@@ -93,24 +134,24 @@ const CafeInfo: React.FC = () => {
             
             {/* Cafe Open / Close Dynamic Badge */}
             {isClosed ? (
-              <div className="absolute top-4 right-4 bg-amber-500/10 backdrop-blur-md border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] font-black px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+              <div className="absolute top-4 end-4 bg-amber-500/10 backdrop-blur-md border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] font-black px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
                 <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
-                <span>کافه بسته است</span>
+                <span>{t('closed_now')}</span>
               </div>
             ) : (
-              <div className="absolute top-4 right-4 bg-green-500/10 backdrop-blur-md border border-green-500/30 text-green-600 dark:text-green-400 text-[10px] font-black px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+              <div className="absolute top-4 end-4 bg-green-500/10 backdrop-blur-md border border-green-500/30 text-green-600 dark:text-green-400 text-[10px] font-black px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                <span>کافه باز است</span>
+                <span>{t('open_now')}</span>
               </div>
             )}
 
             {/* Cafe Brand Details Overlay */}
-            <div className="absolute bottom-5 right-6 text-right">
+            <div className="absolute bottom-5 start-6 text-start">
               <span className="text-[8px] bg-primary/20 backdrop-blur-sm border border-primary/30 text-primary font-black px-2 pb-0.5 rounded-md uppercase tracking-widest inline-block mb-1">
-                کافه لند دسک
+                {t('app_name')}
               </span>
-              <h2 className="text-xl font-black text-white leading-tight">کافه لند</h2>
-              <p className="text-[10px] text-white/70 font-bold mt-1">تجربه طعم‌های تازه و آرامش کامل در قلب پایتخت</p>
+              <h2 className="text-xl font-black text-white leading-tight">{t('app_name')}</h2>
+              <p className="text-[10px] text-white/70 font-bold mt-1">{t('app_tagline')}</p>
             </div>
           </motion.div>
 
@@ -133,14 +174,14 @@ const CafeInfo: React.FC = () => {
             <motion.a 
               href="tel:02188887766"
               whileTap={{ scale: 0.97 }}
-              className="bg-white dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5 flex items-center gap-3 transition-all duration-300 text-right shadow-sm hover:border-primary/30"
+              className="bg-white dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5 flex items-center gap-3 transition-all duration-300 text-start shadow-sm hover:border-primary/30"
             >
               <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
                 <Phone size={16} strokeWidth={2.5} />
               </div>
               <div className="min-w-0">
-                <span className="text-[9px] text-muted dark:text-white/40 font-bold block mb-0.5">تماس مستقیم</span>
-                <p className="text-xs font-black text-dark dark:text-white font-mono leading-none" dir="ltr">۰۲۱-۸۸۸۸۷۷۶۶</p>
+                <span className="text-[9px] text-muted dark:text-white/40 font-bold block mb-0.5">{t('btn_call_cafe')}</span>
+                <p className="text-xs font-black text-dark dark:text-white font-mono leading-none" dir="ltr">021-88887766</p>
               </div>
             </motion.a>
 
@@ -150,13 +191,13 @@ const CafeInfo: React.FC = () => {
               target="_blank"
               rel="noreferrer"
               whileTap={{ scale: 0.97 }}
-              className="bg-white dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5 flex items-center gap-3 transition-all duration-300 text-right shadow-sm hover:border-pink-500/30"
+              className="bg-white dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5 flex items-center gap-3 transition-all duration-300 text-start shadow-sm hover:border-pink-500/30"
             >
               <div className="w-9 h-9 bg-pink-500/10 dark:bg-pink-500/20 rounded-xl flex items-center justify-center text-pink-600 dark:text-pink-400 shrink-0">
                 <Instagram size={16} strokeWidth={2.5} />
               </div>
               <div className="min-w-0">
-                <span className="text-[9px] text-muted dark:text-white/40 font-bold block mb-0.5">اینستاگرام کافه</span>
+                <span className="text-[9px] text-muted dark:text-white/40 font-bold block mb-0.5">Instagram</span>
                 <p className="text-xs font-black text-dark dark:text-white leading-none font-mono" dir="ltr">@caffeland</p>
               </div>
             </motion.a>
@@ -164,18 +205,18 @@ const CafeInfo: React.FC = () => {
 
           {/* Location details, Address, Map Frame */}
           <div className="bg-white dark:bg-white/5 rounded-[32px] border border-gray-100 dark:border-white/5 overflow-hidden shadow-sm flex flex-col gap-4 p-5">
-            <div className="flex items-start gap-3.5 text-right">
+            <div className="flex items-start gap-3.5 text-start">
               <div className="w-11 h-11 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shrink-0 mt-0.5">
                 <MapPin size={20} />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-xs font-black text-muted dark:text-white/30 uppercase tracking-widest">موقعیت و آدرس کافه</h3>
-                <h4 className="text-sm font-black text-dark dark:text-white mt-1 leading-normal">خیابان ولیعصر، برج نگین</h4>
-                <p className="text-[11px] leading-relaxed text-muted dark:text-white/50 font-bold mt-1.5">خیابان ولیعصر، نرسیده به میدان ونک، طبقه اول ساختمان نگین</p>
+                <h3 className="text-xs font-black text-muted dark:text-white/30 uppercase tracking-widest">{t('location_title')}</h3>
+                <h4 className="text-sm font-black text-dark dark:text-white mt-1 leading-normal">{t('app_name')}</h4>
+                <p className="text-[11px] leading-relaxed text-muted dark:text-white/50 font-bold mt-1.5">{t('location_desc')}</p>
               </div>
             </div>
 
-            {/* Embedded maps iframe inside gorgeous frame */}
+            {/* Embedded maps iframe inside frame */}
             <div className="h-44 relative rounded-[24px] overflow-hidden group border border-gray-50 dark:border-white/5">
               <iframe 
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3238.1678170251786!2d51.40552731526012!3d35.75902198017586!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzXCsDQ1JzMyLjUiTiA1McKwMjQnMjcuOSJF!5e0!3m2!1sen!2sir!4v1652361234567!5m2!1sen!2sir" 
@@ -192,10 +233,10 @@ const CafeInfo: React.FC = () => {
                 href="https://maps.google.com/?q=35.759022,51.405527"
                 target="_blank"
                 rel="noreferrer"
-                className="absolute bottom-3 left-3 px-4 py-2 bg-white dark:bg-dark border border-gray-100 dark:border-white/10 rounded-2xl flex items-center gap-1.5 text-xs font-black text-primary shadow-lg hover:scale-105 active:scale-95 transition-all"
+                className="absolute bottom-3 start-3 px-4 py-2 bg-white dark:bg-dark border border-gray-100 dark:border-white/10 rounded-2xl flex items-center gap-1.5 text-xs font-black text-primary shadow-lg hover:scale-105 active:scale-95 transition-all"
               >
-                <Navigation size={14} className="rotate-180" />
-                <span>مسیریابی هوشمند</span>
+                <Navigation size={14} />
+                <span>{t('btn_directions')}</span>
               </a>
             </div>
           </div>
@@ -206,7 +247,7 @@ const CafeInfo: React.FC = () => {
               <div className="w-10 h-10 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
                 <Clock size={18} />
               </div>
-              <h3 className="font-black text-sm text-dark dark:text-white">ساعت کار شعبه ولیعصر</h3>
+              <h3 className="font-black text-sm text-dark dark:text-white">{t('working_hours_title')}</h3>
             </div>
 
             <div className="space-y-3.5 mt-1">
@@ -215,7 +256,7 @@ const CafeInfo: React.FC = () => {
                   key={idx} 
                   className={`flex items-center justify-between px-3 py-2 rounded-xl transition-all ${
                     item.isToday 
-                      ? 'bg-primary/10 dark:bg-primary/20 border-r-4 border-primary shadow-sm' 
+                      ? 'bg-primary/10 dark:bg-primary/20 border-s-4 border-primary shadow-sm' 
                       : 'hover:bg-gray-50/50 dark:hover:bg-white/5'
                   }`}
                 >
@@ -226,7 +267,7 @@ const CafeInfo: React.FC = () => {
                       {item.day}
                     </span>
                     {item.isToday && (
-                      <span className="text-[8px] bg-primary text-white font-black px-1.5 py-0.5 rounded-md">امروز</span>
+                      <span className="text-[8px] bg-primary text-white font-black px-1.5 py-0.5 rounded-md">{t('today_badge')}</span>
                     )}
                   </div>
                   <div className="flex-1 mx-4 border-b border-dashed border-gray-100 dark:border-white/10" />
@@ -241,9 +282,9 @@ const CafeInfo: React.FC = () => {
           </div>
 
           {/* App Version Subtle Indicator */}
-          <div className="text-center mt-2 pb-4 flex flex-col items-center gap-1.5 select-none">
+          <div className="text-center mt-1 pb-1 flex flex-col items-center gap-1 select-none">
             <span className="text-[10px] text-muted/40 dark:text-white/10 font-mono tracking-wider">
-              نسخه‌ هوشمند ۱.۰.۱
+              {t('app_name')} v1.0.1
             </span>
             <a 
               href="https://abracafe.ir" 
@@ -251,7 +292,7 @@ const CafeInfo: React.FC = () => {
               rel="noopener noreferrer" 
               className="text-[11px] font-extrabold text-primary hover:text-primary/80 transition-all flex items-center gap-0.5"
             >
-              <span>قدرت گرفته از ابرکافه</span>
+              <span>Powered by AbraCafe</span>
               <ArrowUpLeft size={10} className="stroke-[2.5]" />
             </a>
           </div>

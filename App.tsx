@@ -180,7 +180,10 @@ const App: React.FC = () => {
     <>
       <AnimatePresence mode="wait">
         {showSplash && (
-          <SplashScreen onComplete={() => setShowSplash(false)} />
+          <SplashScreen onComplete={() => {
+            sessionStorage.setItem('cafe_land_splash_shown', 'true');
+            setShowSplash(false);
+          }} />
         )}
       </AnimatePresence>
       <Router>

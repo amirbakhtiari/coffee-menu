@@ -1,8 +1,9 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { CategoryType } from '../types';
-import { Coffee, Milk, Zap, Loader, ChevronLeft, Percent, History, Droplets } from 'lucide-react';
+import { Coffee, Milk, Zap, Loader, ChevronLeft, ChevronRight, Percent, History, Droplets } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from '../store/useLanguageStore';
 
 interface CategoryBarProps {
   selected: CategoryType;
@@ -22,8 +23,28 @@ const ICON_MAP: Record<string, React.FC<any>> = {
 };
 
 const CategoryBar: React.FC<CategoryBarProps> = ({ selected, onSelect, categories = [], loading = false }) => {
+  const { t, isRTL } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showIndicator, setShowIndicator] = useState(true);
+
+  const getCategoryLabel = (cat: { id: CategoryType; label: string }) => {
+    switch (cat.id) {
+      case CategoryType.PREVIOUS_ORDERS:
+        return t('cat_previous_orders');
+      case CategoryType.DISCOUNTED:
+        return t('cat_discounted');
+      case CategoryType.CAPPUCCINO:
+        return t('cat_cappuccino');
+      case CategoryType.LATTE:
+        return t('cat_latte');
+      case CategoryType.ESPRESSO:
+        return t('cat_espresso');
+      case CategoryType.MOCHA:
+        return t('cat_mocha');
+      default:
+        return cat.label;
+    }
+  };
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -49,6 +70,12 @@ const CategoryBar: React.FC<CategoryBarProps> = ({ selected, onSelect, categorie
     }
   }, [selected]);
 
+  const IndicatorIcon = isRTL ? ChevronLeft : ChevronRight;
+  const indicatorPositionClass = isRTL ? 'left-2' : 'right-2';
+  const gradientClass = isRTL 
+    ? 'bg-gradient-to-r from-lightGray dark:from-dark via-lightGray/80 dark:via-dark/80 to-transparent -left-2' 
+    : 'bg-gradient-to-l from-lightGray dark:from-dark via-lightGray/80 dark:via-dark/80 to-transparent -right-2';
+
   return (
     <div className="relative group">
       <AnimatePresence>
@@ -57,15 +84,15 @@ const CategoryBar: React.FC<CategoryBarProps> = ({ selected, onSelect, categorie
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 pointer-events-none flex items-center gap-1"
+            className={`absolute ${indicatorPositionClass} top-1/2 -translate-y-1/2 z-10 pointer-events-none flex items-center gap-1`}
           >
-            <div className="w-8 h-12 bg-gradient-to-r from-lightGray dark:from-dark via-lightGray/80 dark:via-dark/80 to-transparent absolute -left-2 top-1/2 -translate-y-1/2" />
+            <div className={`w-8 h-12 absolute top-1/2 -translate-y-1/2 ${gradientClass}`} />
             <motion.div
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
               className="relative text-primary/40"
             >
-              <ChevronLeft size={18} strokeWidth={3} />
+              <IndicatorIcon size={18} strokeWidth={3} />
             </motion.div>
           </motion.div>
         )}
@@ -102,7 +129,7 @@ const CategoryBar: React.FC<CategoryBarProps> = ({ selected, onSelect, categorie
                 <div className={`p-1.5 rounded-full transition-colors ${active ? 'bg-white/20' : 'bg-secondary/30 dark:bg-white/5 text-primary'}`}>
                   <Icon size={16} />
                 </div>
-                <span className="text-[10px] font-black whitespace-nowrap tracking-tight">{cat.label}</span>
+                <span className="text-[10px] font-black whitespace-nowrap tracking-tight">{getCategoryLabel(cat)}</span>
               </button>
             );
           })

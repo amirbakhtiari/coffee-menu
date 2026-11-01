@@ -6,14 +6,17 @@ import InstallBanner from './InstallBanner';
 import WaiterService from './WaiterService';
 import ToastNotification from './Notification';
 import { CafeClosedModal } from './CafeClosedModal';
+import { LanguageBottomSheet } from './LanguageBottomSheet';
 import { useCafeStore } from '../store/useCafeStore';
 import { useCafeStatus } from '../hooks/api/useCafeApi';
+import { useTranslation } from '../store/useLanguageStore';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { dir } = useTranslation();
   const location = useLocation();
   const { setModalOpen, isLoggedIn } = useCafeStore();
   const { data: cafeStatus } = useCafeStatus();
@@ -63,10 +66,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const removeDefaultPadding = hideBottomNav || location.pathname === '/cart';
 
   return (
-    <div className="flex flex-col min-h-screen max-w-md mx-auto relative bg-light-gray dark:bg-dark text-dark dark:text-white transition-colors">
+    <div dir={dir} className="flex flex-col min-h-screen max-w-md mx-auto relative bg-light-gray dark:bg-dark text-dark dark:text-white transition-colors">
       <InstallBanner />
       <ToastNotification />
       <CafeClosedModal />
+      <LanguageBottomSheet />
       
       {/* دکمه شناور ویتر در تمام صفحات به جز موارد استثنا نمایش داده می‌شود */}
       {!hideWaiter && <WaiterService />}

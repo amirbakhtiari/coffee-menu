@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { useTranslation } from '../store/useLanguageStore';
 
 interface AppBarProps {
   title: string;
@@ -20,6 +21,7 @@ const AppBar: React.FC<AppBarProps> = ({
   className = "mb-4"
 }) => {
   const navigate = useNavigate();
+  const { isRTL } = useTranslation();
 
   const handleBack = () => {
     if (onBack) {
@@ -29,17 +31,19 @@ const AppBar: React.FC<AppBarProps> = ({
     }
   };
 
+  const BackIcon = isRTL ? ChevronRight : ChevronLeft;
+
   return (
     <header className={`shrink-0 h-12 w-full flex items-center justify-center relative ${className}`}>
-      {/* Right side alignment (Back button in RTL) */}
+      {/* Start side (Back button in RTL = right, in LTR = left) */}
       {showBack && (
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center">
+        <div className="absolute start-0 top-1/2 -translate-y-1/2 z-10 flex items-center">
           <button 
             type="button"
             onClick={handleBack}
             className="w-10 h-10 bg-white dark:bg-white/10 rounded-xl shadow-sm border border-gray-50 dark:border-white/5 flex items-center justify-center text-dark dark:text-white active:scale-90 transition-transform cursor-pointer"
           >
-            <ChevronRight size={20} />
+            <BackIcon size={20} />
           </button>
         </div>
       )}
@@ -50,9 +54,9 @@ const AppBar: React.FC<AppBarProps> = ({
         {subtitle && <p className="text-[9px] text-muted dark:text-white/40 font-bold mt-0.5 leading-none text-center truncate max-w-[180px] sm:max-w-xs">{subtitle}</p>}
       </div>
       
-      {/* Left side alignment (Right Action in RTL) */}
+      {/* End side (Action button in RTL = left, in LTR = right) */}
       {rightAction && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10 flex items-center">
+        <div className="absolute end-0 top-1/2 -translate-y-1/2 z-10 flex items-center">
           {rightAction}
         </div>
       )}

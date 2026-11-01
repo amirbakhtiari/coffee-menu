@@ -52,6 +52,15 @@ export interface UserProfile {
   points: number;
 }
 
+export interface OrderTimelineStep {
+  id: string;
+  stepNumber: number;
+  title: string;
+  desc: string;
+  time?: string;
+  status: 'completed' | 'current' | 'upcoming';
+}
+
 export interface Order {
   id: string;
   date: string;
@@ -63,6 +72,11 @@ export interface Order {
   points: number;
   paymentMethod: 'نقدی' | 'درگاه بانکی' | 'عضویت';
   address?: string;
+  tableNumber?: string;
+  orderType?: 'در کافه' | 'بیرون‌بر' | 'ارسال با پیک';
+  estimatedDelivery?: string;
+  currentStepIndex?: number;
+  timeline?: OrderTimelineStep[];
   summary?: {
     subtotal: number;
     delivery: number;
@@ -70,6 +84,7 @@ export interface Order {
     total: number;
   };
 }
+
 
 export interface Table {
   id: number;

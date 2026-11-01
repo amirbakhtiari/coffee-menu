@@ -32,19 +32,19 @@ const RelatedProductCard: React.FC<RelatedProductCardProps> = ({ product }) => {
         )}
         
         {product.discountPercent && (
-          <span className="absolute top-1 right-1 bg-red-500 text-white text-[8px] font-black px-1 rounded-full shadow-sm">
-            {product.discountPercent}%
+          <span className="absolute top-1.5 right-1.5 bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full shadow-sm">
+            ٪{product.discountPercent}
           </span>
         )}
       </div>
       
-      <div className="mt-1 px-0.5">
+      <div className="mt-1.5 px-0.5">
         <h4 className="font-extrabold text-dark dark:text-white text-[10px] leading-tight truncate">{product.name}</h4>
         <p className="text-muted text-[8px] truncate opacity-60 m-0">{product.subName}</p>
         
-        <div className="flex items-center justify-end gap-0.5 mt-1">
+        <div className="flex items-baseline justify-end gap-1 mt-1">
           <span className="text-primary font-black text-[11px]">{product.price.toLocaleString()}</span>
-          <span className="text-[7.5px] text-primary/50 font-black italic">T</span>
+          <span className="text-[7.5px] text-primary/70 font-bold">تومان</span>
         </div>
       </div>
     </div>

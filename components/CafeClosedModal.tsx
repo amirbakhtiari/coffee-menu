@@ -4,11 +4,13 @@ import { Clock, ArrowLeft, Coffee } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCafeStore } from '../store/useCafeStore';
 import { useCafeStatus } from '../hooks/api/useCafeApi';
+import { useTranslation } from '../store/useLanguageStore';
 
 export const CafeClosedModal: React.FC = () => {
   const navigate = useNavigate();
   const { isModalOpen, setModalOpen } = useCafeStore();
   const { data: cafeStatus } = useCafeStatus();
+  const { t, dir } = useTranslation();
 
   if (!isModalOpen) return null;
 
@@ -21,7 +23,7 @@ export const CafeClosedModal: React.FC = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => setModalOpen(false)}
-          className="absolute inset-0 bg-black/65 backdrop-blur-md"
+          className="absolute inset-0 bg-black/65 backdrop-blur-md cursor-pointer"
         />
 
         {/* Modal Card Layout */}
@@ -30,11 +32,11 @@ export const CafeClosedModal: React.FC = () => {
           animate={{ scale: 1, y: 0, opacity: 1 }}
           exit={{ scale: 0.9, y: 20, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-          className="bg-white dark:bg-[#1C1C1E] border border-gray-100 dark:border-white/5 rounded-[36px] w-full max-w-sm p-6 relative overflow-hidden shadow-2xl text-right z-10"
-          dir="rtl"
+          className="bg-white dark:bg-[#1C1C1E] border border-gray-100 dark:border-white/5 rounded-[36px] w-full max-w-sm p-6 relative overflow-hidden shadow-2xl z-10"
+          dir={dir}
         >
           {/* Ambient Glowing Spot */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full translate-x-8 -translate-y-8 blur-2xl pointer-events-none" />
+          <div className="absolute top-0 start-0 w-32 h-32 bg-amber-500/10 rounded-full translate-x-8 -translate-y-8 blur-2xl pointer-events-none" />
           
           <div className="flex flex-col items-center text-center mt-2">
             {/* Soft pulsing coffee cup icon */}
@@ -42,16 +44,12 @@ export const CafeClosedModal: React.FC = () => {
               <Coffee size={30} strokeWidth={2} />
             </div>
 
-            <span className="text-[10px] uppercase font-black text-amber-600 dark:text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full mb-2">
-              بازه خارج از فرآیند سرویس‌دهی
-            </span>
-
             <h3 className="text-lg font-black text-dark dark:text-white mb-2">
-              کافه لند در حال حاضر بسته است ☕
+              {t('cafe_closed_status')}
             </h3>
 
             <p className="text-gray-500 dark:text-white/60 text-xs leading-relaxed max-w-[280px] mb-6">
-              مشتری گرامی، شیفت کاری جاری کافه لند به پایان رسیده است. در حال حاضر امکان ثبت سفارش آنلاین وجود ندارد، اما می‌توانید همین حالا کاندید دریافت میز دلخواه خود باشید و آن را برای شیفت‌های بعدی رزرو کنید!
+              {t('about_cafe_desc')}
             </p>
 
             {/* Current Day Schedule Banner */}

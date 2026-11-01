@@ -11,6 +11,7 @@ import PageTransition from '../components/PageTransition';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSwipeGesture } from '../hooks/useSwipeGesture';
 
+import HaloDivider from '../components/HaloDivider';
 import AppBar from '../components/AppBar';
 
 const Menu: React.FC = () => {
@@ -104,28 +105,40 @@ const Menu: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className={viewMode === 'grid' ? "grid grid-cols-2 gap-4" : "flex flex-col gap-4"}
+              className={viewMode === 'grid' ? "grid grid-cols-2 gap-2" : "flex flex-col gap-0"}
             >
               {products.map((product, index) => (
-                <motion.div 
-                  key={product.id}
-                  ref={index === products.length - 1 ? lastProductElementRef : undefined}
-                  initial={{ opacity: 0, y: 20 }} 
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <ProductCard product={product} variant={viewMode} />
-                </motion.div>
+                <React.Fragment key={product.id}>
+                  <motion.div 
+                    ref={index === products.length - 1 ? lastProductElementRef : undefined}
+                    initial={{ opacity: 0, y: 20 }} 
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ProductCard product={product} variant={viewMode} />
+                  </motion.div>
+
+                  {/* خط جداکننده به صورت هاله ای از رنگ کشیده شده از یک سمت به سمت دیگر */}
+                  {viewMode === 'list' && index < products.length - 1 && (
+                    <HaloDivider />
+                  )}
+
+                  {viewMode === 'grid' && index % 2 === 1 && index < products.length - 1 && (
+                    <div className="col-span-2 w-full">
+                      <HaloDivider />
+                    </div>
+                  )}
+                </React.Fragment>
               ))}
 
               {(loading || isFetchingNextPage) && (
                 <>
                   {[1, 2, 3, 4].map(i => (
-                    <div key={`loading-${i}`} className={viewMode === 'grid' ? "bg-white dark:bg-black/20 p-3.5 rounded-[32px] flex flex-col gap-2 border border-gray-100 dark:border-white/5 shadow-sm animate-pulse" : "bg-white dark:bg-black/20 p-3.5 rounded-[24px] flex flex-row-reverse gap-4 border border-gray-100 dark:border-white/5 shadow-sm animate-pulse h-28"}>
-                      <div className={viewMode === 'grid' ? "aspect-square w-full rounded-[22px] bg-gray-100 dark:bg-white/5" : "w-24 shrink-0 rounded-[18px] bg-gray-100 dark:bg-white/5"}></div>
+                    <div key={`loading-${i}`} className={viewMode === 'grid' ? "bg-white/70 dark:bg-white/[0.03] p-2.5 rounded-[20px] flex flex-col gap-2 animate-pulse" : "bg-transparent p-2 rounded-[18px] flex flex-row gap-2.5 animate-pulse h-24"}>
+                      <div className={viewMode === 'grid' ? "aspect-square w-full rounded-[14px] bg-gray-200/60 dark:bg-white/5" : "w-20 shrink-0 rounded-[14px] bg-gray-200/60 dark:bg-white/5"}></div>
                       <div className="flex-1 flex flex-col justify-center gap-2">
-                        <div className="h-3 w-3/4 rounded-full bg-gray-100 dark:bg-white/5"></div>
-                        <div className="h-2 w-1/2 rounded-full bg-gray-50 dark:bg-white/5"></div>
+                        <div className="h-3 w-3/4 rounded-full bg-gray-200/60 dark:bg-white/5"></div>
+                        <div className="h-2 w-1/2 rounded-full bg-gray-200/40 dark:bg-white/5"></div>
                       </div>
                     </div>
                   ))}

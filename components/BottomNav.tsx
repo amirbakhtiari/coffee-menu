@@ -4,16 +4,18 @@ import { Home, ShoppingBag, User } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useCartStore } from '../store/useCartStore';
+import { useTranslation } from '../store/useLanguageStore';
 
 const BottomNav: React.FC = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const totalItems = useCartStore(state => state.totalItems());
   const isActive = (path: string) => location.pathname === path;
 
   const navItems = [
-    { path: '/', icon: Home, label: 'خانه' },
-    { path: '/cart', icon: ShoppingBag, label: 'سبد خرید', badge: totalItems },
-    { path: '/profile', icon: User, label: 'پروفایل' },
+    { path: '/', icon: Home, label: t('nav_home') },
+    { path: '/cart', icon: ShoppingBag, label: t('nav_cart'), badge: totalItems },
+    { path: '/profile', icon: User, label: t('nav_profile') },
   ];
 
   return (

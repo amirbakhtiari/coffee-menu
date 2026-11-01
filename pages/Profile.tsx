@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Bell, LogOut, ChevronLeft, History, Crown, Pencil, Moon, Sun, Loader2 } from 'lucide-react';
+import { User, Bell, LogOut, ChevronLeft, ChevronRight, History, Crown, Pencil, Moon, Sun, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { requestNotificationPermission, scheduleTestNotification } from '../services/notificationService';
 import { useTheme } from '../ThemeContext';
@@ -14,11 +14,13 @@ import { useUserProfileApi } from '../hooks/api/useUserApi';
 import { useAuthApi } from '../hooks/api/useAuthApi';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useCafeStore } from '../store/useCafeStore';
+import { useTranslation } from '../store/useLanguageStore';
 
 type AuthStep = 'guest' | 'phone' | 'otp';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const { t, isRTL, dir } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const { warning } = useNotificationStore();
   const { isLoggedIn, setIsLoggedIn } = useCafeStore();
@@ -98,12 +100,12 @@ const Profile: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="h-[100dvh] flex flex-col bg-light-gray dark:bg-dark overflow-hidden transition-colors" dir="rtl">
+      <div className="h-[100dvh] flex flex-col bg-light-gray dark:bg-dark overflow-hidden transition-colors" dir={dir}>
         {/* Sticky Header Wrapper */}
         <div className="px-6 pt-6 pb-2 shrink-0 z-50 bg-light-gray/95 dark:bg-dark/95 backdrop-blur-md transition-colors border-b border-gray-100/50 dark:border-white/5">
           <AppBar 
-            title="پروفایل"
-            subtitle="امیر عزیز، خوش آمدی"
+            title={t('profile_title')}
+            subtitle={userProfile.fullName}
             showBack={false}
             rightAction={
               <div className="w-10 h-10 bg-white dark:bg-black/40 rounded-xl border border-gray-100 dark:border-white/10 shadow-sm flex items-center justify-center text-primary relative overflow-hidden">
@@ -267,41 +269,41 @@ const Profile: React.FC = () => {
           <div className="space-y-3">
             <button 
               onClick={() => navigate('/orders')}
-              className="w-full bg-white dark:bg-black/20 p-5 rounded-[28px] border border-gray-50 dark:border-white/5 flex flex-row items-center justify-between group active:scale-[0.98] transition-all"
+              className="w-full bg-white dark:bg-black/20 p-5 rounded-[28px] border border-gray-50 dark:border-white/5 flex flex-row items-center justify-between group active:scale-[0.98] transition-all cursor-pointer"
             >
               <div className="flex flex-row items-center gap-4">
                 <div className="w-11 h-11 bg-orange-50 dark:bg-orange-500/10 text-orange-500 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
                   <History size={20} />
                 </div>
-                <span className="font-black text-dark dark:text-white text-sm">سفارشات من</span>
+                <span className="font-black text-dark dark:text-white text-sm">{t('order_history_btn')}</span>
               </div>
-              <ChevronLeft size={20} className="text-gray-200 dark:text-white/10" />
+              {isRTL ? <ChevronLeft size={20} className="text-gray-200 dark:text-white/10" /> : <ChevronRight size={20} className="text-gray-200 dark:text-white/10" />}
             </button>
 
             <button 
               onClick={handleRequestNotificationPermission}
-              className="w-full bg-white dark:bg-black/20 p-5 rounded-[28px] border border-gray-50 dark:border-white/5 flex flex-row items-center justify-between group active:scale-[0.98] transition-all"
+              className="w-full bg-white dark:bg-black/20 p-5 rounded-[28px] border border-gray-50 dark:border-white/5 flex flex-row items-center justify-between group active:scale-[0.98] transition-all cursor-pointer"
             >
               <div className="flex flex-row items-center gap-4">
                 <div className="w-11 h-11 bg-blue-50 dark:bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
                   <Bell size={20} />
                 </div>
-                <span className="font-black text-dark dark:text-white text-sm">اعلان‌های سیستم</span>
+                <span className="font-black text-dark dark:text-white text-sm">{t('messages_title')}</span>
               </div>
-              <span className="text-[10px] font-black text-primary">{permission === 'granted' ? 'فعال' : 'غیرفعال'}</span>
+              <span className="text-[10px] font-black text-primary">{permission === 'granted' ? 'ON' : 'OFF'}</span>
             </button>
 
             <button 
               onClick={() => { setIsLoggedIn(false); setAuthStep('guest'); setPhone(''); }}
-              className="w-full bg-white dark:bg-black/20 p-5 rounded-[28px] border border-gray-50 dark:border-white/5 flex flex-row items-center justify-between group active:scale-[0.98] transition-all hover:bg-red-50/20"
+              className="w-full bg-white dark:bg-black/20 p-5 rounded-[28px] border border-gray-50 dark:border-white/5 flex flex-row items-center justify-between group active:scale-[0.98] transition-all hover:bg-red-50/20 cursor-pointer"
             >
               <div className="flex flex-row items-center gap-4">
                 <div className="w-11 h-11 bg-red-50 dark:bg-red-500/10 text-red-500 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110">
                   <LogOut size={20} />
                 </div>
-                <span className="font-black text-dark dark:text-white text-sm">خروج از حساب</span>
+                <span className="font-black text-dark dark:text-white text-sm">{t('logout_btn')}</span>
               </div>
-              <ChevronLeft size={20} className="text-red-200 dark:text-red-500/20" />
+              {isRTL ? <ChevronLeft size={20} className="text-red-200 dark:text-red-500/20" /> : <ChevronRight size={20} className="text-red-200 dark:text-red-500/20" />}
             </button>
           </div>
         </motion.div>
